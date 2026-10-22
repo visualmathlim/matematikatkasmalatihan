@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VisualMath.Lim - TKA SMA 2025</title>
     
-    <!-- Google Fonts: Poppins untuk kesan modern dan mudah dibaca -->
+    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome CDN untuk Ikon -->
+    <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Konfigurasi Tema Tailwind Kustom -->
+    <!-- Konfigurasi Tema Warna VisualMath.Lim -->
     <script>
         tailwind.config = {
             theme: {
@@ -38,16 +38,11 @@
         }
     </script>
 
-    <!-- CSS Tambahan untuk memperbaiki tampilan tag <details> -->
     <style>
-        /* Menghilangkan tanda panah bawaan browser pada tag summary */
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
-        
-        /* Animasi rotasi panah kustom saat accordion terbuka */
         details[open] summary ~ * { animation: fadeIn 0.3s ease-in-out; }
         details[open] summary .fa-chevron-down { transform: rotate(180deg); }
-        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -56,29 +51,20 @@
 </head>
 <body class="bg-brand-navy text-gray-200 font-sans antialiased selection:bg-brand-cyan selection:text-brand-navy">
 
-    <!-- 1. NAVBAR -->
+    <!-- NAVBAR -->
     <nav class="sticky top-0 z-50 bg-brand-navy/90 backdrop-blur-md border-b border-brand-cyan/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Kiri: Logo & Nama -->
+            <div class="flex items-center justify-center md:justify-start h-16">
                 <div class="flex items-center gap-3">
-                    <!-- Pastikan file logo.png ada di folder yang sama -->
                     <img src="logo.png" alt="Logo VisualMath.Lim" class="h-10 w-auto object-contain bg-white/10 rounded p-1">
-                    <span class="text-white font-bold text-xl tracking-wide hidden sm:block">VisualMath.Lim</span>
-                </div>
-                <!-- Kanan: Tombol Kembali -->
-                <div>
-                    <a href="#" class="text-sm font-medium text-gray-300 hover:text-brand-cyan transition-colors border border-gray-500 hover:border-brand-cyan px-4 py-2 rounded-full">
-                        <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Web Utama
-                    </a>
+                    <span class="text-white font-bold text-xl tracking-wide">VisualMath.Lim</span>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- 2. HERO SECTION -->
+    <!-- HERO SECTION -->
     <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <!-- Elemen Dekorasi Background Latar -->
         <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-cyan/10 rounded-full blur-3xl"></div>
         <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-brand-cyan/10 rounded-full blur-3xl"></div>
 
@@ -99,7 +85,7 @@
         </div>
     </section>
 
-    <!-- 3. SECTION 1: ARENA TRYOUT (Grid Card Gamifikasi) -->
+    <!-- SECTION 1: ARENA TRYOUT -->
     <section id="arena-tryout" class="py-16 px-4 sm:px-6 lg:px-8 bg-black/20 border-t border-b border-white/5">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
@@ -109,7 +95,6 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 
-                <!-- Card Paket 1 -->
                 <div class="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-brand-cyan hover:shadow-glow-cyan transition-all duration-300 flex flex-col justify-between h-full">
                     <div class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl">
                         Wajib Coba 🔥
@@ -119,49 +104,46 @@
                             <i class="fa-solid fa-hourglass-half"></i> ⏱️ 25 Soal | Waktu Terukur
                         </div>
                         <h3 class="text-xl font-bold text-white mb-2 group-hover:text-brand-cyan transition-colors">Paket 1</h3>
-                        <p class="text-gray-400 text-sm mb-6">Bedah Soal Asli TKA 2025</p>
+                        <p class="text-gray-400 text-sm mb-6">Tryout Soal Asli TKA 2025</p>
                     </div>
                     <a href="tryout-paket-1.html" class="block w-full text-center bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors mt-auto">
                         Mulai Tes
                     </a>
                 </div>
 
-                <!-- Card Paket 2 -->
                 <div class="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-brand-cyan hover:shadow-glow-cyan transition-all duration-300 flex flex-col justify-between h-full">
                     <div>
                         <div class="text-brand-cyan text-sm font-semibold mb-3 flex items-center gap-2">
                             <i class="fa-solid fa-hourglass-half"></i> ⏱️ 25 Soal | Waktu Terukur
                         </div>
                         <h3 class="text-xl font-bold text-white mb-2 group-hover:text-brand-cyan transition-colors">Paket 2</h3>
-                        <p class="text-gray-400 text-sm mb-6">Tantangan HOTS (Level Up)</p>
+                        <p class="text-gray-400 text-sm mb-6">Tryout Tantangan HOTS</p>
                     </div>
                     <a href="tryout-paket-2.html" class="block w-full text-center bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors mt-auto">
                         Mulai Tes
                     </a>
                 </div>
 
-                <!-- Card Paket 3 -->
                 <div class="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-brand-cyan hover:shadow-glow-cyan transition-all duration-300 flex flex-col justify-between h-full">
                     <div>
                         <div class="text-brand-cyan text-sm font-semibold mb-3 flex items-center gap-2">
                             <i class="fa-solid fa-hourglass-half"></i> ⏱️ 25 Soal | Waktu Terukur
                         </div>
                         <h3 class="text-xl font-bold text-white mb-2 group-hover:text-brand-cyan transition-colors">Paket 3</h3>
-                        <p class="text-gray-400 text-sm mb-6">Simulasi Resmi Kemendikdasmen</p>
+                        <p class="text-gray-400 text-sm mb-6">Tryout Simulasi Resmi Kemendikdasmen</p>
                     </div>
                     <a href="tryout-paket-3.html" class="block w-full text-center bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors mt-auto">
                         Mulai Tes
                     </a>
                 </div>
 
-                <!-- Card Paket 4 -->
                 <div class="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-brand-cyan hover:shadow-glow-cyan transition-all duration-300 flex flex-col justify-between h-full">
                     <div>
                         <div class="text-brand-cyan text-sm font-semibold mb-3 flex items-center gap-2">
                             <i class="fa-solid fa-hourglass-half"></i> ⏱️ 25 Soal | Waktu Terukur
                         </div>
                         <h3 class="text-xl font-bold text-white mb-2 group-hover:text-brand-cyan transition-colors">Paket 4</h3>
-                        <p class="text-gray-400 text-sm mb-6">Prediksi Ekstra Kemendikdasmen</p>
+                        <p class="text-gray-400 text-sm mb-6">Tryout Prediksi Ekstra</p>
                     </div>
                     <a href="tryout-paket-4.html" class="block w-full text-center bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors mt-auto">
                         Mulai Tes
@@ -172,7 +154,7 @@
         </div>
     </section>
 
-    <!-- 4. SECTION 2: LATIHAN FOKUS (Accordion / Drill-Down) -->
+    <!-- SECTION 2: LATIHAN FOKUS -->
     <section class="py-20 px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
             <div class="text-center mb-12">
@@ -182,7 +164,7 @@
 
             <div class="space-y-4">
                 
-                <!-- Accordion 1: Bilangan -->
+                <!-- 1. Bilangan -->
                 <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
                     <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
                         <div class="flex items-center gap-4">
@@ -194,113 +176,11 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
                     </summary>
                     <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <ul class="space-y-2">
-                            <li><a href="bilangan.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Bedah Soal Asli 2025</a></li>
-                            <li><a href="bilangan.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Tantangan HOTS</a></li>
-                            <li><a href="bilangan.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="bilangan.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Prediksi Ekstra Kemendikdasmen</a></li>
-                        </ul>
-                    </div>
-                </details>
-
-                <!-- Accordion 2: Aljabar -->
-                <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
-                    <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan">
-                                <i class="fa-solid fa-square-root-variable"></i>
-                            </div>
-                            2. Aljabar
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
-                    </summary>
-                    <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <ul class="space-y-2">
-                            <li><a href="aljabar.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Bedah Soal Asli 2025</a></li>
-                            <li><a href="aljabar.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Tantangan HOTS</a></li>
-                            <li><a href="aljabar.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="aljabar.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Prediksi Ekstra Kemendikdasmen</a></li>
-                        </ul>
-                    </div>
-                </details>
-
-                <!-- Accordion 3: Geometri dan Pengukuran -->
-                <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
-                    <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan">
-                                <i class="fa-solid fa-shapes"></i>
-                            </div>
-                            3. Geometri & Pengukuran
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
-                    </summary>
-                    <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <ul class="space-y-2">
-                            <li><a href="geometri.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Bedah Soal Asli 2025</a></li>
-                            <li><a href="geometri.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Tantangan HOTS</a></li>
-                            <li><a href="geometri.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="geometri.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Prediksi Ekstra Kemendikdasmen</a></li>
-                        </ul>
-                    </div>
-                </details>
-
-                <!-- Accordion 4: Data dan Peluang -->
-                <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
-                    <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan">
-                                <i class="fa-solid fa-chart-pie"></i>
-                            </div>
-                            4. Data & Peluang
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
-                    </summary>
-                    <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <ul class="space-y-2">
-                            <li><a href="data-peluang.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Bedah Soal Asli 2025</a></li>
-                            <li><a href="data-peluang.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Tantangan HOTS</a></li>
-                            <li><a href="data-peluang.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="data-peluang.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Prediksi Ekstra Kemendikdasmen</a></li>
-                        </ul>
-                    </div>
-                </details>
-
-                <!-- Accordion 5: Trigonometri -->
-                <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
-                    <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan">
-                                <i class="fa-solid fa-ruler-combined"></i>
-                            </div>
-                            5. Trigonometri
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
-                    </summary>
-                    <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <ul class="space-y-2">
-                            <li><a href="trigonometri.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Bedah Soal Asli 2025</a></li>
-                            <li><a href="trigonometri.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Tantangan HOTS</a></li>
-                            <li><a href="trigonometri.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="trigonometri.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Prediksi Ekstra Kemendikdasmen</a></li>
-                        </ul>
-                    </div>
-                </details>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. FOOTER -->
-    <footer class="border-t border-white/10 mt-10 py-8 bg-black/30">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <h4 class="text-white font-bold text-lg tracking-wider mb-2">VisualMath.Lim</h4>
-            <p class="text-gray-500 text-sm mb-4">&copy; 2026 Hak Cipta Dilindungi.</p>
-            <p class="text-xs text-gray-600 max-w-xl mx-auto">
-                Disclaimer: Materi dan soal di platform ini disusun secara mandiri berdasarkan kisi-kisi dan standar ujian Kemendikdasmen sebagai sarana latihan dan prediksi simulasi siswa.
-            </p>
-        </div>
-    </footer>
-
-</body>
-</html>
+                        <a href="bilangan.html" target="_blank" class="inline-block mb-3 text-brand-yellow hover:text-yellow-300 text-sm font-semibold bg-brand-yellow/10 px-3 py-1.5 rounded border border-brand-yellow/20">
+                            <i class="fa-solid fa-gauge-high mr-2"></i>Dashboard Utama Bilangan
+                        </a>
+                        <ul class="space-y-2 mt-2">
+                            <li><a href="bilangan1.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Asli TKA 2025</a></li>
+                            <li><a href="bilangan2.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS TKA</a></li>
+                            <li><a href="bilangan3.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
+                            <li><a href="bilangan4.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS Kemendikdasmen</a></li>
