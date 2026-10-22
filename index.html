@@ -37,17 +37,6 @@
             }
         }
     </script>
-
-    <style>
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
-        details[open] summary ~ * { animation: fadeIn 0.3s ease-in-out; }
-        details[open] summary .fa-chevron-down { transform: rotate(180deg); }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
 </head>
 <body class="bg-brand-navy text-gray-200 font-sans antialiased selection:bg-brand-cyan selection:text-brand-navy">
 
@@ -80,209 +69,128 @@
                 Platform latihan terarah, tryout berwaktu, dan bedah soal resmi Kemendikdasmen. Bersiaplah untuk menembus skor maksimal.
             </p>
             <a href="#arena-tryout" class="inline-flex items-center justify-center px-8 py-4 text-base md:text-lg font-bold text-black bg-brand-yellow rounded-full hover:bg-yellow-400 hover:scale-105 hover:shadow-glow-yellow transition-all duration-300">
-                Mulai Tryout Sekarang <i class="fa-solid fa-bolt ml-2"></i>
+                Akses Dashboard <i class="fa-solid fa-arrow-down ml-2"></i>
             </a>
         </div>
     </section>
 
-    <!-- SECTION 1: ARENA TRYOUT -->
+    <!-- SECTION 1: ARENA TRYOUT (MEGA CARD DASHBOARD) -->
     <section id="arena-tryout" class="py-16 px-4 sm:px-6 lg:px-8 bg-black/20 border-t border-b border-white/5">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-12">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-8">
                 <h2 class="text-3xl font-bold text-white mb-2">Arena Tryout TKA</h2>
-                <p class="text-brand-cyan">Uji kemampuanmu dengan 25 soal berwaktu</p>
+                <p class="text-brand-cyan">Uji kemampuanmu dengan simulasi waktu nyata</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Tautan Langsung ke File tryout.html -->
+            <a href="tryout.html" class="group block bg-white/5 border border-brand-yellow/30 rounded-3xl p-8 md:p-10 hover:bg-white/10 hover:border-brand-yellow hover:shadow-glow-yellow transition-all duration-500 text-center relative overflow-hidden">
+                <!-- Efek cahaya latar saat di-hover -->
+                <div class="absolute inset-0 bg-gradient-to-b from-brand-yellow/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                <div class="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-brand-cyan hover:shadow-glow-cyan transition-all duration-300 flex flex-col justify-between h-full">
-                    <div class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl">
-                        Wajib Coba 🔥
-                    </div>
-                    <div>
-                        <div class="text-brand-cyan text-sm font-semibold mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-hourglass-half"></i> ⏱️ 25 Soal | Waktu Terukur
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-brand-cyan transition-colors">Paket 1</h3>
-                        <p class="text-gray-400 text-sm mb-6">Tryout Soal Asli TKA 2025</p>
-                    </div>
-                    <a href="tryout-paket-1.html" class="block w-full text-center bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors mt-auto">
-                        Mulai Tes
-                    </a>
+                <div class="absolute top-0 right-0 bg-red-500 text-white text-xs md:text-sm font-bold px-5 py-2 rounded-bl-2xl">
+                    Wajib Coba 🔥
                 </div>
-
-                <div class="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-brand-cyan hover:shadow-glow-cyan transition-all duration-300 flex flex-col justify-between h-full">
-                    <div>
-                        <div class="text-brand-cyan text-sm font-semibold mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-hourglass-half"></i> ⏱️ 25 Soal | Waktu Terukur
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-brand-cyan transition-colors">Paket 2</h3>
-                        <p class="text-gray-400 text-sm mb-6">Tryout Tantangan HOTS</p>
+                
+                <div class="relative z-10">
+                    <div class="w-20 h-20 mx-auto rounded-full bg-brand-yellow/20 border border-brand-yellow/50 flex items-center justify-center text-brand-yellow mb-6 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
+                        <i class="fa-solid fa-stopwatch text-4xl"></i>
                     </div>
-                    <a href="tryout-paket-2.html" class="block w-full text-center bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors mt-auto">
-                        Mulai Tes
-                    </a>
+                    
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4 group-hover:text-brand-yellow transition-colors">
+                        Dashboard Tryout Utama
+                    </h3>
+                    
+                    <p class="text-gray-300 mb-8 max-w-lg mx-auto text-sm md:text-base">
+                        Masuk untuk mengakses 4 Paket Tryout (Soal Asli TKA 2025, Tantangan HOTS, dan Simulasi Resmi Kemendikdasmen).
+                    </p>
+                    
+                    <span class="inline-flex items-center justify-center bg-brand-yellow text-black font-bold py-3.5 px-8 rounded-full group-hover:bg-yellow-400 group-hover:scale-105 transition-all duration-300 shadow-lg shadow-yellow-500/20">
+                        Masuk ke Arena <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </span>
                 </div>
-
-                <div class="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-brand-cyan hover:shadow-glow-cyan transition-all duration-300 flex flex-col justify-between h-full">
-                    <div>
-                        <div class="text-brand-cyan text-sm font-semibold mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-hourglass-half"></i> ⏱️ 25 Soal | Waktu Terukur
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-brand-cyan transition-colors">Paket 3</h3>
-                        <p class="text-gray-400 text-sm mb-6">Tryout Simulasi Resmi Kemendikdasmen</p>
-                    </div>
-                    <a href="tryout-paket-3.html" class="block w-full text-center bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors mt-auto">
-                        Mulai Tes
-                    </a>
-                </div>
-
-                <div class="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-brand-cyan hover:shadow-glow-cyan transition-all duration-300 flex flex-col justify-between h-full">
-                    <div>
-                        <div class="text-brand-cyan text-sm font-semibold mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-hourglass-half"></i> ⏱️ 25 Soal | Waktu Terukur
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-brand-cyan transition-colors">Paket 4</h3>
-                        <p class="text-gray-400 text-sm mb-6">Tryout Prediksi Ekstra</p>
-                    </div>
-                    <a href="tryout-paket-4.html" class="block w-full text-center bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors mt-auto">
-                        Mulai Tes
-                    </a>
-                </div>
-
-            </div>
+            </a>
         </div>
     </section>
 
-    <!-- SECTION 2: LATIHAN FOKUS -->
+    <!-- SECTION 2: LATIHAN FOKUS (Direct Dashboard Links) -->
     <section class="py-20 px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-white mb-2">Latihan Fokus Materi</h2>
-                <p class="text-gray-400">Pilih elemen materi dan tajamkan kemampuan dasarmu</p>
+                <p class="text-gray-400">Pilih elemen materi untuk masuk ke dashboard latihan</p>
             </div>
 
             <div class="space-y-4">
                 
                 <!-- 1. Bilangan -->
-                <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
-                    <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan">
-                                <i class="fa-solid fa-calculator"></i>
-                            </div>
-                            1. Bilangan
+                <a href="bilangan.html" class="group flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 hover:border-brand-cyan/50 hover:shadow-glow-cyan transition-all duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan group-hover:scale-110 transition-transform duration-300">
+                            <i class="fa-solid fa-calculator text-xl"></i>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
-                    </summary>
-                    <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <a href="bilangan.html" target="_blank" class="inline-block mb-3 text-brand-yellow hover:text-yellow-300 text-sm font-semibold bg-brand-yellow/10 px-3 py-1.5 rounded border border-brand-yellow/20">
-                            <i class="fa-solid fa-gauge-high mr-2"></i>Dashboard Utama Bilangan
-                        </a>
-                        <ul class="space-y-2 mt-2">
-                            <li><a href="bilangan1.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Asli TKA 2025</a></li>
-                            <li><a href="bilangan2.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS TKA</a></li>
-                            <li><a href="bilangan3.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="bilangan4.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS Kemendikdasmen</a></li>
-                        </ul>
+                        <div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-brand-cyan transition-colors">1. Bilangan</h3>
+                            <p class="text-sm text-gray-400 mt-0.5">Buka Dashboard Latihan & Prediksi</p>
+                        </div>
                     </div>
-                </details>
+                    <i class="fa-solid fa-arrow-right text-gray-500 group-hover:text-brand-cyan group-hover:translate-x-1 transition-all duration-300"></i>
+                </a>
 
                 <!-- 2. Aljabar -->
-                <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
-                    <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan">
-                                <i class="fa-solid fa-square-root-variable"></i>
-                            </div>
-                            2. Aljabar
+                <a href="aljabar.html" class="group flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 hover:border-brand-cyan/50 hover:shadow-glow-cyan transition-all duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan group-hover:scale-110 transition-transform duration-300">
+                            <i class="fa-solid fa-square-root-variable text-xl"></i>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
-                    </summary>
-                    <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <a href="aljabar.html" target="_blank" class="inline-block mb-3 text-brand-yellow hover:text-yellow-300 text-sm font-semibold bg-brand-yellow/10 px-3 py-1.5 rounded border border-brand-yellow/20">
-                            <i class="fa-solid fa-gauge-high mr-2"></i>Dashboard Utama Aljabar
-                        </a>
-                        <ul class="space-y-2 mt-2">
-                            <li><a href="aljabar1.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Asli TKA 2025</a></li>
-                            <li><a href="aljabar2.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS TKA</a></li>
-                            <li><a href="aljabar3.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="aljabar4.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS Kemendikdasmen</a></li>
-                        </ul>
+                        <div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-brand-cyan transition-colors">2. Aljabar</h3>
+                            <p class="text-sm text-gray-400 mt-0.5">Buka Dashboard Latihan & Prediksi</p>
+                        </div>
                     </div>
-                </details>
+                    <i class="fa-solid fa-arrow-right text-gray-500 group-hover:text-brand-cyan group-hover:translate-x-1 transition-all duration-300"></i>
+                </a>
 
                 <!-- 3. Geometri dan Pengukuran -->
-                <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
-                    <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan">
-                                <i class="fa-solid fa-shapes"></i>
-                            </div>
-                            3. Geometri & Pengukuran
+                <a href="geometri.html" class="group flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 hover:border-brand-cyan/50 hover:shadow-glow-cyan transition-all duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan group-hover:scale-110 transition-transform duration-300">
+                            <i class="fa-solid fa-shapes text-xl"></i>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
-                    </summary>
-                    <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <a href="geometri.html" target="_blank" class="inline-block mb-3 text-brand-yellow hover:text-yellow-300 text-sm font-semibold bg-brand-yellow/10 px-3 py-1.5 rounded border border-brand-yellow/20">
-                            <i class="fa-solid fa-gauge-high mr-2"></i>Dashboard Utama Geometri
-                        </a>
-                        <ul class="space-y-2 mt-2">
-                            <li><a href="geometri1.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Asli TKA 2025</a></li>
-                            <li><a href="geometri2.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS TKA</a></li>
-                            <li><a href="geometri3.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="geometri4.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS Kemendikdasmen</a></li>
-                        </ul>
+                        <div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-brand-cyan transition-colors">3. Geometri & Pengukuran</h3>
+                            <p class="text-sm text-gray-400 mt-0.5">Buka Dashboard Latihan & Prediksi</p>
+                        </div>
                     </div>
-                </details>
+                    <i class="fa-solid fa-arrow-right text-gray-500 group-hover:text-brand-cyan group-hover:translate-x-1 transition-all duration-300"></i>
+                </a>
 
                 <!-- 4. Data dan Peluang -->
-                <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
-                    <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan">
-                                <i class="fa-solid fa-chart-pie"></i>
-                            </div>
-                            4. Data & Peluang
+                <a href="data-peluang.html" class="group flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 hover:border-brand-cyan/50 hover:shadow-glow-cyan transition-all duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan group-hover:scale-110 transition-transform duration-300">
+                            <i class="fa-solid fa-chart-pie text-xl"></i>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
-                    </summary>
-                    <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <a href="data-peluang.html" target="_blank" class="inline-block mb-3 text-brand-yellow hover:text-yellow-300 text-sm font-semibold bg-brand-yellow/10 px-3 py-1.5 rounded border border-brand-yellow/20">
-                            <i class="fa-solid fa-gauge-high mr-2"></i>Dashboard Utama Data & Peluang
-                        </a>
-                        <ul class="space-y-2 mt-2">
-                            <li><a href="data-peluang1.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Asli TKA 2025</a></li>
-                            <li><a href="data-peluang2.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS TKA</a></li>
-                            <li><a href="data-peluang3.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="data-peluang4.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS Kemendikdasmen</a></li>
-                        </ul>
+                        <div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-brand-cyan transition-colors">4. Data & Peluang</h3>
+                            <p class="text-sm text-gray-400 mt-0.5">Buka Dashboard Latihan & Prediksi</p>
+                        </div>
                     </div>
-                </details>
+                    <i class="fa-solid fa-arrow-right text-gray-500 group-hover:text-brand-cyan group-hover:translate-x-1 transition-all duration-300"></i>
+                </a>
 
                 <!-- 5. Trigonometri -->
-                <details class="group bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-brand-cyan/50 transition-colors">
-                    <summary class="flex justify-between items-center font-semibold cursor-pointer p-5 text-lg text-white group-hover:text-brand-cyan transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan">
-                                <i class="fa-solid fa-ruler-combined"></i>
-                            </div>
-                            5. Trigonometri
+                <a href="trigonometri.html" class="group flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 hover:border-brand-cyan/50 hover:shadow-glow-cyan transition-all duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-lg bg-brand-cyan/10 flex items-center justify-center text-brand-cyan group-hover:scale-110 transition-transform duration-300">
+                            <i class="fa-solid fa-ruler-combined text-xl"></i>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300 group-open:text-brand-cyan"></i>
-                    </summary>
-                    <div class="p-5 pt-2 border-t border-white/5 bg-black/10">
-                        <a href="trigonometri.html" target="_blank" class="inline-block mb-3 text-brand-yellow hover:text-yellow-300 text-sm font-semibold bg-brand-yellow/10 px-3 py-1.5 rounded border border-brand-yellow/20">
-                            <i class="fa-solid fa-gauge-high mr-2"></i>Dashboard Utama Trigonometri
-                        </a>
-                        <ul class="space-y-2 mt-2">
-                            <li><a href="trigonometri1.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Asli TKA 2025</a></li>
-                            <li><a href="trigonometri2.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS TKA</a></li>
-                            <li><a href="trigonometri3.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Simulasi Resmi Kemendikdasmen</a></li>
-                            <li><a href="trigonometri4.html" target="_blank" class="flex items-center text-gray-300 hover:text-brand-cyan hover:translate-x-2 transition-all p-2 rounded hover:bg-white/5"><i class="fa-solid fa-angle-right mr-3 text-brand-cyan/50"></i>Soal Tantangan HOTS Kemendikdasmen</a></li>
-                        </ul>
+                        <div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-brand-cyan transition-colors">5. Trigonometri</h3>
+                            <p class="text-sm text-gray-400 mt-0.5">Buka Dashboard Latihan & Prediksi</p>
+                        </div>
                     </div>
-                </details>
+                    <i class="fa-solid fa-arrow-right text-gray-500 group-hover:text-brand-cyan group-hover:translate-x-1 transition-all duration-300"></i>
+                </a>
 
             </div>
         </div>
