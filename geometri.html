@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Geometri dan Pengukuran - VisualMath.Lim</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome CDN untuk Ikon UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Konfigurasi Custom Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#022050',
+                        cyan: '#00d6d8',
+                        yellow: '#ffd300'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-navy text-white min-h-screen flex flex-col font-sans selection:bg-cyan selection:text-navy">
+
+    <!-- 1. Navbar -->
+    <nav class="sticky top-0 z-50 w-full bg-navy/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Brand (Logo diambil dari root folder sesuai instruksi) -->
+                <div class="flex items-center gap-3">
+                    <img src="logo.png" alt="Logo VisualMath.Lim" class="h-8 w-8 object-contain bg-white/5 rounded p-0.5" 
+                         onerror="this.outerHTML='<div class=\'w-8 h-8 rounded bg-cyan flex items-center justify-center text-navy font-bold text-xl\'><i class=\'fa-solid fa-shapes\'></i></div>'">
+                    <span class="font-bold text-xl tracking-tight text-white">VisualMath<span class="text-cyan">.Lim</span></span>
+                </div>
+                
+                <!-- Tombol Menu Utama Outline -->
+                <div>
+                    <a href="index.html" class="inline-flex items-center justify-center px-4 py-2 border border-cyan text-cyan text-sm font-semibold rounded-full hover:bg-cyan hover:text-navy transition-all duration-300">
+                        <i class="fa-solid fa-house mr-2"></i>
+                        <span class="hidden sm:inline">Menu Utama (Home)</span>
+                        <span class="sm:hidden">Home</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. Header -->
+    <header class="w-full max-w-4xl mx-auto px-4 pt-12 pb-8 text-center">
+        <div class="inline-block mb-3 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-medium tracking-wider text-cyan uppercase">
+            Materi Pembelajaran TKA SMA
+        </div>
+        <h1 class="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
+            Dashboard <span class="text-cyan">Geometri dan Pengukuran</span>
+        </h1>
+        <p class="text-base md:text-lg text-gray-300 max-w-2xl mx-auto">
+            Matangkan kemampuan spasial, analisis bangun ruang, dan logika ukuran Anda untuk meraih skor maksimal pada Tes Kemampuan Akademik (TKA) Matematika SMA.
+        </p>
+    </header>
+
+    <!-- 3. Konten (Menu Card Glassmorphism) -->
+    <main class="flex-grow w-full max-w-5xl mx-auto px-4 pb-16">
+        <!-- CSS Grid: 1 Kolom untuk Mobile, 2 Kolom untuk Laptop -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Card A: Soal Asli TKA 2025 -->
+            <a href="geometri1.html" class="group relative flex flex-col justify-between bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:border-cyan hover:shadow-[0_0_20px_rgba(0,214,216,0.3)] hover:-translate-y-1">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-cyan/10 text-cyan flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-cube"></i>
+                    </div>
+                    <!-- Badge Bright Yellow dengan teks Hitam -->
+                    <span class="bg-yellow text-black text-xs font-bold px-3 py-1 rounded-full shadow-sm">TKA 2025</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold mb-2 text-white group-hover:text-cyan transition-colors">Soal Asli TKA 2025</h2>
+                    <p class="text-sm text-gray-400 mb-6 line-clamp-2">
+                        Evaluasi pemahaman dasar dan hafalan rumus Anda melalui himpunan soal asli TKA SMA 2025 pada topik geometri.
+                    </p>
+                </div>
+                <div class="flex items-center text-cyan font-medium text-sm mt-auto">
+                    Mulai Kerjakan <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition-transform duration-300"></i>
+                </div>
+            </a>
+
+            <!-- Card B: Soal Tantangan HOTS TKA -->
+            <a href="geometri2.html" class="group relative flex flex-col justify-between bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:border-cyan hover:shadow-[0_0_20px_rgba(0,214,216,0.3)] hover:-translate-y-1">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-cyan/10 text-cyan flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-fire-flame-curved"></i>
+                    </div>
+                    <span class="bg-yellow text-black text-xs font-bold px-3 py-1 rounded-full shadow-sm">HOTS TKA SMA</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold mb-2 text-white group-hover:text-cyan transition-colors">Soal Tantangan HOTS TKA</h2>
+                    <p class="text-sm text-gray-400 mb-6 line-clamp-2">
+                        Uji nalar spasial tingkat tinggi dengan ragam soal geometri kompleks yang menuntut trik dan metode penyelesaian analitis.
+                    </p>
+                </div>
+                <div class="flex items-center text-cyan font-medium text-sm mt-auto">
+                    Mulai Kerjakan <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition-transform duration-300"></i>
+                </div>
+            </a>
+
+            <!-- Card C: Simulasi Resmi Kemendikdasmen -->
+            <a href="geometri3.html" class="group relative flex flex-col justify-between bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:border-cyan hover:shadow-[0_0_20px_rgba(0,214,216,0.3)] hover:-translate-y-1">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-cyan/10 text-cyan flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-ruler-combined"></i>
+                    </div>
+                    <span class="bg-yellow text-black text-xs font-bold px-3 py-1 rounded-full shadow-sm">Simulasi Resmi</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold mb-2 text-white group-hover:text-cyan transition-colors">Simulasi Resmi Kemendikdasmen</h2>
+                    <p class="text-sm text-gray-400 mb-6 line-clamp-2">
+                        Paket uji coba komprehensif mengacu pada kisi-kisi resmi dan standar evaluasi terbaru dari kementerian untuk tingkat SMA.
+                    </p>
+                </div>
+                <div class="flex items-center text-cyan font-medium text-sm mt-auto">
+                    Mulai Kerjakan <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition-transform duration-300"></i>
+                </div>
+            </a>
+
+            <!-- Card D: Soal Tantangan HOTS Kemendikdasmen -->
+            <a href="geometri4.html" class="group relative flex flex-col justify-between bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:border-cyan hover:shadow-[0_0_20px_rgba(0,214,216,0.3)] hover:-translate-y-1">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-cyan/10 text-cyan flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-draw-polygon"></i>
+                    </div>
+                    <span class="bg-yellow text-black text-xs font-bold px-3 py-1 rounded-full shadow-sm">HOTS Nasional</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold mb-2 text-white group-hover:text-cyan transition-colors">Soal Tantangan HOTS Kemendikdasmen</h2>
+                    <p class="text-sm text-gray-400 mb-6 line-clamp-2">
+                        Asah ketajaman logika pengukuran bangun datar dan bangun ruang dengan tingkat kesulitan analisis teratas (Nasional).
+                    </p>
+                </div>
+                <div class="flex items-center text-cyan font-medium text-sm mt-auto">
+                    Mulai Kerjakan <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition-transform duration-300"></i>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- 4. Footer -->
+    <footer class="w-full border-t border-white/10 mt-auto bg-navy/50 py-6 text-center">
+        <p class="text-sm text-gray-400">
+            &copy; 2026 VisualMath.Lim. Aplikasi EdTech Khusus Persiapan TKA SMA.
+        </p>
+    </footer>
+
+</body>
+</html>
