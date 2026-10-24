@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualMath.Lim - Latihan Prediksi Geometri dan Pengukuran</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+body{background:#022050;color:#fff}
+mjx-container{color:inherit;max-width:100%}mjx-container[display='true']{display:block;overflow-x:auto;overflow-y:visible;padding:.6em .25em;margin:.4em 0!important}.pb{overflow:visible;line-height:1.9}
+.qt table{border-collapse:collapse;margin:.5rem 0}.qt td,.qt th{border:1px solid #4b6a9b;padding:.25rem .6rem}.qt th{background:#0a3a7a}
+.nav-scroll::-webkit-scrollbar{height:6px}.nav-scroll::-webkit-scrollbar-thumb{background:#00d6d8;border-radius:9px}
+</style>
+</head>
+<body class="min-h-screen">
+<header class="sticky top-0 z-20 bg-[#011a42] border-b border-[#00d6d8]/40 px-4 py-2 flex flex-wrap items-center justify-between gap-2">
+  <div class="flex items-center gap-3">
+    <a href="index.html" title="Home" class="text-[#00d6d8] hover:text-white"><i class="fa-solid fa-house"></i></a>
+    <h1 class="font-bold text-sm sm:text-base">VisualMath.Lim - Latihan Geometri dan Pengukuran TKA SMA Kelas 12</h1>
+  </div>
+  <div class="flex items-center gap-3">
+    <span class="font-mono text-lg text-[#ffd300]"><i class="fa-solid fa-stopwatch mr-1"></i><span id="clock">00:00</span></span>
+    <a href="geometri.html" class="flex items-center gap-2 text-sm border border-[#00d6d8] rounded-lg px-3 py-1 hover:bg-[#00d6d8] hover:text-black transition">
+      <img src="logo.png" alt="" class="h-7 w-7 object-contain" onerror="this.style.display='none'">Kembali ke Dashboard Geometri dan Pengukuran</a>
+  </div>
+</header>
+<div id="app" class="max-w-7xl mx-auto p-3 sm:p-4"></div>
+
+<script>
+/* ===== Helper SVG ===== */
+const IMG='max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block';
+const Y='#ffd300',C='#00d6d8',O='#fb923c',R='#f87171',W='#e5e7eb';
+const fig=(w,h,s)=>`<svg class="${IMG}" viewBox="0 0 ${w} ${h}" style="width:${Math.min(w*1.7,440)}px" font-family="sans-serif" font-size="11" fill="${W}">${s}</svg>`;
+const L=(a,b,c,d,col=W,da='')=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${col}" stroke-width="2" stroke-dasharray="${da}"/>`;
+const T=(x,y,t,col=W,a='middle')=>`<text x="${x}" y="${y}" fill="${col}" text-anchor="${a}">${t}</text>`;
+const P=(pts,f='none',col=W)=>`<polygon points="${pts}" fill="${f}" stroke="${col}" stroke-width="2"/>`;
+const Rc=(x,y,w,h,f='none',col=W)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}" stroke="${col}" stroke-width="2"/>`;
+const cube=(n,x='')=>{const p=[[40,160],[120,160],[160,130],[80,130],[40,80],[120,80],[160,50],[80,50]];
+ const e=(i,j,d='')=>L(...p[i],...p[j],W,d);
+ const lab=p.map((q,i)=>T(q[0]+(i%4==0||i%4==3?-9:9),q[1]+(i<4?12:-5),n[i])).join('');
+ return fig(200,180,[[0,1],[1,2],[0,4],[1,5],[2,6],[4,5],[5,6],[4,7],[6,7]].map(a=>e(...a)).join('')+[[0,3],[2,3],[3,7]].map(a=>e(...a,'4')).join('')+x+lab);};
+
+/* ===== Gambar soal (dibuat dengan kode) ===== */
+const imgs={
+1:()=>fig(200,150,P('100,10 20,130 180,130')+L(60,70,140,70,O)+T(100,8,'A')+T(12,142,'B')+T(188,142,'C')+T(48,68,'D')+T(152,68,'E')+T(100,34,'50°',Y)+T(40,124,'60°',Y)),
+3:()=>cube('ABCDEFGH',L(120,160,80,130,C,'4')+L(80,130,160,50,C,'4')+L(160,50,120,160,C,'4')+L(40,80,160,130,R)),
+6:()=>fig(200,150,P('30,40 30,120 137,120')+Rc(30,108,12,12)+L(30,120,68,69,R)+T(22,40,'A')+T(22,132,'B')+T(145,128,'C')+T(78,66,'D',Y)+T(14,82,'12')+T(84,138,'16')),
+7:()=>fig(200,130,`<path d="M60 35 H140 A30 30 0 0 1 140 95 H60 A30 30 0 0 1 60 35 Z" fill="none" stroke="${W}" stroke-width="2"/>`+T(100,28,'70 m')+L(140,35,140,95,C,'4')+T(176,68,'28 m',C)+T(100,70,'lintasan'))
+};
+imgs[2]=imgs[9]=()=>cube('ABCDEFGH');
+
+/* ===== Data Soal Prediksi ===== */
+const questions=[
+{id:1,type:'ms',image:imgs[1](),
+question_text:String.raw`Pada segitiga $ABC$, titik $D$ pada $AB$ dan titik $E$ pada $AC$ sehingga $DE\parallel BC$. Diketahui $\angle A=50^\circ$ dan $\angle B=60^\circ$. Pernyataan manakah yang benar? (Jawaban benar lebih dari satu.)`,
+options:{A:String.raw`$\angle ADE=60^\circ$`,B:String.raw`$\angle AED=60^\circ$`,C:String.raw`$\angle DEC=110^\circ$`,D:String.raw`$\angle BDE=60^\circ$`,E:String.raw`$\angle BDE+\angle DEC=230^\circ$`},correct_answer:['A','C','E'],
+pembahasan:String.raw`$\angle C=180^\circ-50^\circ-60^\circ=70^\circ$. Karena $DE\parallel BC$, sudut sehadap sama besar.
+$$\begin{aligned}\angle ADE&=\angle B=60^\circ\ (\text{A benar})\\\angle AED&=\angle C=70^\circ\ (\text{B salah})\\\angle DEC&=180^\circ-70^\circ=110^\circ\ (\text{C benar})\\\angle BDE&=180^\circ-60^\circ=120^\circ\ (\text{D salah})\\\angle BDE+\angle DEC&=120^\circ+110^\circ=230^\circ\ (\text{E benar})\end{aligned}$$
+Jebakan: tertukar sudut sehadap ($\angle AED$ dengan $\angle B$) dan lupa sudut tumpul $=180^\circ-$ sudut lancip.`,
+cara_cepat:String.raw`🔥 Sehadap = sama; berpelurus = $180^\circ$. Sudut tumpul di $D$ dan $E$ adalah $180^\circ-60^\circ=120^\circ$ dan $180^\circ-70^\circ=110^\circ$, jumlahnya $230^\circ$.`},
+{id:2,type:'ms',image:imgs[2](),
+question_text:String.raw`Perhatikan kubus ABCD.EFGH. Pernyataan manakah yang benar? (Jawaban benar lebih dari satu.)`,
+options:{A:String.raw`$AC\parallel EG$`,B:String.raw`$AH\parallel BG$`,C:String.raw`$AF$ dan $CH$ berpotongan`,D:String.raw`$BD$ tegak lurus bidang $ACGE$`,E:String.raw`$AH$ tegak lurus $BG$`},correct_answer:['A','B','D'],
+pembahasan:String.raw`$ACGE$ dan $ABGH$ adalah persegi panjang, sehingga $AC\parallel EG$ dan $AH\parallel BG$ (A, B benar).
+$AF$ (di bidang $ABFE$) dan $CH$ (di bidang $CDHG$) tidak sejajar dan tidak bertemu → <b>bersilangan</b> (C salah).
+$BD\perp AC$ (diagonal persegi) dan $BD\perp AE$ (rusuk tegak) → $BD\perp$ bidang $ACGE$ (D benar).
+$AH\parallel BG$, jadi tidak tegak lurus (E salah).`,
+cara_cepat:String.raw`🔥 Diagonal sisi pada sisi berhadapan yang searah = sejajar. Garis yang tegak lurus dua garis berpotongan di suatu bidang = tegak lurus bidang itu.`},
+{id:3,type:'mc',image:imgs[3](),
+question_text:String.raw`Diketahui kubus ABCD.EFGH dengan panjang rusuk 6 cm. Jarak titik $E$ ke bidang $BDG$ adalah ….`,
+options:{A:String.raw`$2\sqrt3$ cm`,B:String.raw`$3\sqrt3$ cm`,C:String.raw`$4\sqrt3$ cm`,D:String.raw`$6\sqrt2$ cm`,E:String.raw`$6\sqrt3$ cm`},correct_answer:'C',
+pembahasan:String.raw`Diagonal ruang $EC$ tegak lurus bidang $BDG$ dan ditembus bidang itu di titik $P$ dengan $EP:PC=2:1$.
+$$\begin{aligned}EC&=6\sqrt3\\EP&=\tfrac23\cdot6\sqrt3=4\sqrt3\text{ cm}\end{aligned}$$
+Jebakan: $2\sqrt3$ adalah jarak titik $C$ (atau $A$) ke bidang $BDG$, bukan titik $E$.`,
+cara_cepat:String.raw`🔥 Bidang $BDG$ membagi diagonal ruang $EC$ menjadi $2:1$ (dari $E$). Jarak $E$ $=\tfrac23a\sqrt3=4\sqrt3$.`},
+{id:4,type:'mc',image:'',
+question_text:String.raw`Titik $P(3,-2)$ ditranslasi oleh $T=\begin{pmatrix}-1\\4\end{pmatrix}$, kemudian dirotasi $90^\circ$ berlawanan arah jarum jam dengan pusat $O(0,0)$, lalu dicerminkan terhadap garis $x=1$. Koordinat bayangan akhir titik $P$ adalah ….`,
+options:{A:'$(-2,2)$',B:'$(3,2)$',C:'$(4,2)$',D:'$(0,2)$',E:'$(0,-2)$'},correct_answer:'C',
+pembahasan:String.raw`$$\begin{aligned}P(3,-2)&\xrightarrow{T}(3-1,\,-2+4)=(2,2)\\(2,2)&\xrightarrow{R_{90^\circ}}(-y,\,x)=(-2,2)\\(-2,2)&\xrightarrow{x=1}(2\cdot1-x,\,y)=(4,2)\end{aligned}$$
+Jebakan: $(-2,2)$ lupa refleksi; $(3,2)$ memakai $k-x$; $(0,2)$ memakai $2k+x$; $(0,-2)$ rotasi searah jarum jam.`,
+cara_cepat:String.raw`🔥 Setelah rotasi, $x=-2$ berjarak 3 di kiri garis $x=1$ → bayangan berjarak 3 di kanan: $1+3=4$. Ordinat tetap $2$.`},
+{id:5,type:'mc',image:'',
+question_text:String.raw`Segitiga $ABC$ memiliki titik $A(1,2)$, $B(4,2)$, dan $C(1,6)$. Segitiga didilatasi dengan pusat $O(0,0)$ faktor skala $-2$, lalu hasilnya dicerminkan terhadap sumbu $x$. Luas bayangan akhir adalah ….`,
+options:{A:'12 satuan luas',B:'18 satuan luas',C:'24 satuan luas',D:'36 satuan luas',E:'48 satuan luas'},correct_answer:'C',
+pembahasan:String.raw`$AB=3$ dan $AC=4$ dengan siku-siku di $A$:
+$$L_{ABC}=\tfrac12\cdot3\cdot4=6$$
+Dilatasi faktor $k$ mengalikan luas dengan $k^2$; refleksi tidak mengubah luas.
+$$L'=(-2)^2\cdot6=24$$
+Jebakan: memakai $k$ (bukan $k^2$) → 12; memakai $k^3$ → 48.`,
+cara_cepat:String.raw`🔥 Luas bayangan $=k^2\times$ luas awal $=4\times6=24$. Tanda negatif dan refleksi tidak berpengaruh.`},
+{id:6,type:'mc',image:imgs[6](),
+question_text:String.raw`Segitiga $ABC$ siku-siku di $B$ dengan $AB=12$ cm dan $BC=16$ cm. Titik $D$ pada $AC$ sehingga $BD\perp AC$. Keliling segitiga $BCD$ adalah ….`,
+options:{A:'36 cm',B:'38,4 cm',C:'40 cm',D:'42,4 cm',E:'48 cm'},correct_answer:'B',
+pembahasan:String.raw`$AC=\sqrt{12^2+16^2}=20$. Segitiga $BCD\sim ABC$ (sudut $C$ bersama, siku-siku di $D$ dan $B$) dengan $BC\leftrightarrow AC$:
+$$\text{rasio}=\frac{BC}{AC}=\frac{16}{20}=\frac45$$
+$$K_{BCD}=\tfrac45\times(12+16+20)=\tfrac45\times48=38{,}4\text{ cm}$$
+Cek: $BD=\frac{12\cdot16}{20}=9{,}6$ dan $CD=\frac{16^2}{20}=12{,}8$, maka $16+9{,}6+12{,}8=38{,}4$.
+Jebakan: 48 adalah keliling segitiga besar.`,
+cara_cepat:String.raw`🔥 Tripel 12-16-20 (3-4-5). Keliling segitiga kecil $=48\times\tfrac45=38{,}4$.`},
+{id:7,type:'mc',image:imgs[7](),
+question_text:String.raw`Lintasan lari berbentuk persegi panjang dengan dua setengah lingkaran di sisi pendeknya. Panjang sisi lurus 70 m dan diameter setengah lingkaran 28 m. Budi berlari 5 putaran penuh. Jarak yang ditempuh Budi adalah …. (gunakan $\pi=\frac{22}{7}$)`,
+options:{A:'790 m',B:'920 m',C:'1.140 m',D:'1.580 m',E:'1.700 m'},correct_answer:'C',
+pembahasan:String.raw`Dua setengah lingkaran membentuk satu lingkaran berdiameter 28 m.
+$$\begin{aligned}K&=2(70)+\pi d=140+\tfrac{22}{7}\cdot28\\&=140+88=228\text{ m}\end{aligned}$$
+$$5\times228=1.140\text{ m}$$
+Jebakan: hanya satu setengah lingkaran (920 m), hanya satu sisi lurus (790 m), atau $d$ dianggap $r$ (1.580 m).`,
+cara_cepat:String.raw`🔥 Dua setengah lingkaran = 1 lingkaran. $5\times(140+88)=1.140$.`},
+{id:8,type:'mc',image:'',
+question_text:String.raw`Sebuah kemasan berbentuk balok beralas persegi $14\times14$ cm dengan tinggi 20 cm. Di atas balok dipasang penutup berbentuk setengah tabung berjari-jari 7 cm dan panjang 14 cm (sumbu tabung sejajar sisi alas). Volume kemasan adalah …. (gunakan $\pi=\frac{22}{7}$)`,
+options:{A:'4.459 cm³',B:'4.998 cm³',C:'5.488 cm³',D:'6.076 cm³',E:'6.468 cm³'},correct_answer:'B',
+pembahasan:String.raw`$$\begin{aligned}V_{balok}&=14\cdot14\cdot20=3.920\\V_{\frac12\text{ tabung}}&=\tfrac12\cdot\tfrac{22}{7}\cdot7^2\cdot14=1.078\end{aligned}$$
+$$V=3.920+1.078=4.998\text{ cm}^3$$
+Jebakan: memakai tabung penuh (6.076) atau lupa faktor $\tfrac12$.`,
+cara_cepat:String.raw`🔥 $\tfrac12\pi r^2t=\tfrac12\cdot22\cdot7\cdot14=1.078$. Tambahkan $3.920$.`},
+{id:9,type:'tf',image:imgs[9](),
+question_text:String.raw`Balok ABCD.EFGH memiliki $AB=8$ cm, $BC=6$ cm, dan $AE=24$ cm (gambar hanya ilustrasi). Tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan.`,
+options:['Panjang diagonal bidang $AC$ adalah 10 cm.','Jarak titik $E$ ke garis $AC$ adalah 26 cm.','Jarak titik $B$ ke bidang $ACGE$ adalah 4,8 cm.'],correct_answer:[true,false,true],
+pembahasan:String.raw`$$AC=\sqrt{8^2+6^2}=10\text{ cm}\ (\text{A benar})$$
+$EA\perp$ bidang alas sehingga $EA\perp AC$: jarak $E$ ke $AC$ adalah $EA=24$ cm. (26 adalah $EC$.) → <b>Salah</b>.
+Jarak $B$ ke bidang $ACGE$ sama dengan jarak $B$ ke $AC$ pada alas:
+$$\frac{AB\cdot BC}{AC}=\frac{8\cdot6}{10}=4{,}8\text{ cm}\ (\text{benar})$$`,
+cara_cepat:String.raw`🔥 Jarak titik ke garis = panjang ruas yang tegak lurus garis itu. Tripel 6-8-10 dan 10-24-26.`},
+{id:10,type:'mc',image:'',
+question_text:String.raw`Segitiga $ABC$ siku-siku di $B$. Berapakah luas segitiga $ABC$? Putuskan apakah Pernyataan (1) dan (2) berikut cukup untuk menjawab pertanyaan tersebut!<br>(1) $AC=13$ cm.<br>(2) Keliling segitiga $ABC$ adalah 30 cm.`,
+options:{A:'Pernyataan (1) SAJA cukup untuk menjawab pertanyaan, tetapi Pernyataan (2) SAJA tidak cukup.',B:'Pernyataan (2) SAJA cukup untuk menjawab pertanyaan, tetapi Pernyataan (1) SAJA tidak cukup.',C:'DUA pernyataan BERSAMA-SAMA cukup untuk menjawab pertanyaan, tetapi SATU pernyataan SAJA tidak cukup.',D:'Pernyataan (1) SAJA cukup untuk menjawab pertanyaan dan Pernyataan (2) SAJA cukup.',E:'Pernyataan (1) dan Pernyataan (2) tidak cukup.'},correct_answer:'C',
+pembahasan:String.raw`Misal $AB=a$, $BC=b$, $AC=c$ dengan $a^2+b^2=c^2$.
+<b>(1)</b> $c=13$: pasangan $(5,12)$ luas 30, tetapi $a,b$ lain juga mungkin → tidak cukup.
+<b>(2)</b> $a+b+c=30$: $c=13$ memberi luas 30, sedangkan $c=12{,}5$ memberi $ab=75$ → luas $37{,}5$ → tidak cukup.
+<b>(1)+(2):</b>
+$$\begin{aligned}a+b&=30-13=17\\ab&=\frac{(a+b)^2-c^2}{2}=\frac{289-169}{2}=60\\L&=\tfrac12ab=30\end{aligned}$$
+Luas pasti → bersama-sama cukup.`,
+cara_cepat:String.raw`🔥 "Cukup" = satu jawaban pasti. Dua persamaan ($a+b$ dan $a^2+b^2$) memberi $ab$ → luas $\tfrac12ab=30$.`}
+];
+const N=questions.length;
+
+/* ===== State & util ===== */
+let cur=0,ans={},sec=0,timer=null;
+const $=id=>document.getElementById(id);
+const isAns=q=>q.type==='ms'?(ans[q.id]||[]).length>0:q.type==='tf'?q.options.every((_,i)=>(ans[q.id]||{})[i]!==undefined):ans[q.id]!==undefined;
+const nAns=()=>questions.filter(isAns).length;
+const isOk=q=>q.type==='ms'?[...(ans[q.id]||[])].sort().join()===[...q.correct_answer].sort().join():q.type==='tf'?q.options.every((_,i)=>ans[q.id][i]===q.correct_answer[i]):ans[q.id]===q.correct_answer;
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const typeset=el=>{if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([el]).catch(()=>{})};
+const lines=t=>t.split('\n').filter(Boolean).map(l=>`<p class="my-2 pb">${l}</p>`).join('');
+const OPT='block w-full p-3 mb-2 rounded-lg border border-[#00d6d8]/30 cursor-pointer transition hover:border-[#00d6d8] hover:shadow-[0_0_10px_#00d6d8]';
+const SEL='bg-[#00d6d8]/25 !border-[#00d6d8]';
+
+function startTimer(){timer=setInterval(()=>{sec++;$('clock').textContent=fmt(sec)},1000)}
+function pick(id,k){ans[id]=k;update()}
+function pickMS(id,k){const a=ans[id]=ans[id]||[],i=a.indexOf(k);i<0?a.push(k):a.splice(i,1);update()}
+function pickTF(id,i,v){(ans[id]=ans[id]||{})[i]=v;update()}
+function go(i){cur=Math.max(0,Math.min(N-1,i));update()}
+
+/* ===== State 1: Mengerjakan ===== */
+function buildShell(){
+ $('app').innerHTML=`<main class="grid lg:grid-cols-4 gap-4">
+  <section class="lg:col-span-3 min-w-0"><div id="card"></div></section>
+  <aside class="lg:col-span-1 lg:sticky lg:top-20 self-start bg-[#011a42] border border-[#00d6d8]/30 rounded-xl p-3">
+   <h2 class="font-bold mb-2 text-[#00d6d8] hidden lg:block">Navigasi Soal</h2>
+   <div id="navgrid" class="nav-scroll flex lg:grid lg:grid-cols-5 gap-2 overflow-x-auto lg:overflow-visible pb-2"></div>
+   <p id="prog" class="text-sm mt-2"></p>
+   <button id="fin" onclick="finish()" class="w-full mt-3 py-2 rounded-lg font-bold bg-[#ffd300] text-black disabled:opacity-40 disabled:cursor-not-allowed"><i class="fa-solid fa-flag-checkered mr-1"></i>Selesai &amp; Lihat Pembahasan</button>
+   <p class="text-xs text-gray-300 mt-2"><i class="fa-solid fa-circle-info text-[#00d6d8]"></i> Kerjakan <b>semua ${N} soal</b>. Jika masih ada soal yang belum dijawab, latihan tidak dapat diselesaikan dan tombol pembahasan tidak aktif. Kotak kuning = sudah dijawab.</p>
+  </aside></main>`;
+}
+function update(){
+ const q=questions[cur];let o='';
+ if(q.type!=='tf')o=Object.entries(q.options).map(([k,t])=>{const ms=q.type==='ms',s=ms?(ans[q.id]||[]).includes(k):ans[q.id]===k;return `<label class="${OPT} ${s?SEL:''}"><input type="${ms?'checkbox':'radio'}" name="o" class="hidden" onchange="${ms?'pickMS':'pick'}(${q.id},'${k}')"><b class="mr-2 text-[#00d6d8]">${k}.</b>${t}</label>`}).join('');
+ else o=q.options.map((t,i)=>{const a=(ans[q.id]||{})[i];return `<div class="p-3 mb-2 rounded-lg border border-[#00d6d8]/30"><p class="mb-2"><b class="text-[#00d6d8] mr-2">${'ABC'[i]}.</b>${t}</p><div class="flex gap-2">${[true,false].map(v=>`<label class="flex-1 text-center p-2 rounded-lg border border-[#00d6d8]/30 cursor-pointer hover:border-[#00d6d8] ${a===v?SEL:''}"><input type="radio" class="hidden" onchange="pickTF(${q.id},${i},${v})">${v?'Benar':'Salah'}</label>`).join('')}</div></div>`}).join('');
+ $('card').innerHTML=`<div class="bg-[#011a42] border border-[#00d6d8]/30 rounded-xl p-4 sm:p-6">
+  <p class="text-sm text-[#00d6d8] mb-2">Soal ${cur+1} dari ${N}${q.type==='tf'?' · Benar / Salah':q.type==='ms'?' · Pilih lebih dari satu jawaban':''}</p>
+  <div class="qt leading-relaxed overflow-x-auto">${q.question_text}</div>${q.image}<div class="mt-2">${o}</div>
+  <div class="flex justify-between mt-4 gap-2">
+   <button onclick="go(${cur-1})" ${cur===0?'disabled':''} class="px-4 py-2 rounded-lg border border-[#00d6d8] hover:bg-[#00d6d8] hover:text-black disabled:opacity-30"><i class="fa-solid fa-arrow-left mr-1"></i>Sebelumnya</button>
+   ${cur===N-1?`<button onclick="finish()" class="px-4 py-2 rounded-lg font-bold bg-[#ffd300] text-black">Selesai &amp; Lihat Pembahasan</button>`:`<button onclick="go(${cur+1})" class="px-4 py-2 rounded-lg border border-[#00d6d8] hover:bg-[#00d6d8] hover:text-black">Selanjutnya<i class="fa-solid fa-arrow-right ml-1"></i></button>`}
+  </div></div>`;
+ $('navgrid').innerHTML=questions.map((x,i)=>`<button onclick="go(${i})" class="shrink-0 w-11 h-11 rounded-lg font-bold ${isAns(x)?'bg-[#ffd300] text-black':'bg-[#0a3a7a] text-white'} ${i===cur?'ring-2 ring-[#00d6d8]':''} hover:shadow-[0_0_8px_#00d6d8]">${i+1}</button>`).join('');
+ const n=nAns();$('prog').textContent=`Terjawab: ${n} / ${N}`;$('fin').disabled=n<N;
+ typeset($('card'));
+}
+function finish(){
+ if(nAns()<N){alert(`Masih ada ${N-nAns()} soal yang belum dijawab. Kerjakan semua soal terlebih dahulu.`);return}
+ clearInterval(timer);review();window.scrollTo(0,0);
+}
+
+/* ===== State 2: Pembahasan & Evaluasi ===== */
+function review(){
+ const ben=questions.filter(isOk).length,sal=N-ben,skor=Math.round(ben/N*100);
+ const mark=(ok)=>ok?'<span class="text-green-400"><i class="fa-solid fa-circle-check"></i> Benar</span>':'<span class="text-red-400"><i class="fa-solid fa-circle-xmark"></i> Salah</span>';
+ const stat=(l,v,c)=>`<div class="bg-[#022050] rounded-lg p-3 text-center"><div class="text-xs text-gray-300">${l}</div><div class="text-2xl font-bold ${c}">${v}</div></div>`;
+ let h=`<div class="bg-[#011a42] border-2 border-[#00d6d8] rounded-xl p-4 mb-4"><h2 class="text-xl font-bold mb-3 text-[#00d6d8]"><i class="fa-solid fa-trophy mr-2"></i>Ringkasan Hasil</h2>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">${stat('Skor Akhir',skor,'text-[#ffd300]')}${stat('Total Benar',ben,'text-green-400')}${stat('Total Salah',sal,'text-red-400')}${stat('Waktu Pengerjaan',fmt(sec),'text-[#00d6d8]')}</div>
+  <div class="mt-3 flex gap-2 flex-wrap"><button onclick="location.reload()" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold"><i class="fa-solid fa-rotate-right mr-1"></i>Ulangi Latihan</button><a href="geometri.html" class="px-4 py-2 rounded-lg border border-[#00d6d8]">Kembali ke Dashboard</a></div></div>`;
+ questions.forEach((q,n)=>{
+  let a='';
+  if(q.type!=='tf'){const A=x=>[].concat(x||[]);a=Object.entries(q.options).map(([k,t])=>{const key=A(q.correct_answer).includes(k),mine=A(ans[q.id]).includes(k);
+   return `<div class="p-2 mb-1 rounded-lg border ${key?'border-green-400 bg-green-500/20':mine?'border-red-400 bg-red-500/20':'border-gray-600'}"><b class="mr-2">${k}.</b>${t} ${mine?'<span class="text-xs ml-2">(jawaban Anda)</span>':''}${key?' <i class="fa-solid fa-check text-green-400"></i>':''}</div>`}).join('')+`<p class="mt-2">Jawaban Anda: <b>${A(ans[q.id]).join(', ')}</b> — ${mark(isOk(q))} · Kunci: <b class="text-[#ffd300]">${A(q.correct_answer).join(', ')}</b></p>`}
+  else{a=q.options.map((t,i)=>{const m=ans[q.id][i],k=q.correct_answer[i],bn=v=>v?'Benar':'Salah';
+   return `<div class="p-2 mb-1 rounded-lg border ${m===k?'border-green-400 bg-green-500/20':'border-red-400 bg-red-500/20'}"><b class="mr-2">${'ABC'[i]}.</b>${t}<div class="text-sm mt-1">Anda: <b>${bn(m)}</b> ${m===k?'<i class="fa-solid fa-check text-green-400"></i>':'<i class="fa-solid fa-xmark text-red-400"></i>'} · Kunci: <b class="text-[#ffd300]">${bn(k)}</b></div></div>`}).join('')+`<p class="mt-2">${mark(isOk(q))}</p>`}
+  h+=`<article class="bg-[#011a42] border border-[#00d6d8]/30 rounded-xl p-4 sm:p-6 mb-5">
+   <p class="text-sm text-[#00d6d8] mb-2">Soal ${n+1}</p><div class="qt leading-relaxed overflow-x-auto">${q.question_text}</div>${q.image}${a}
+   <div class="mt-4 rounded-lg border border-gray-500 bg-[#022050] p-3"><h3 class="font-bold mb-1"><i class="fa-solid fa-book-open mr-2 text-[#ffd300]"></i>Pembahasan Lengkap</h3>${q.extra?q.extra():''}${lines(q.pembahasan)}</div>
+   <div class="mt-3 rounded-lg border border-[#00d6d8] bg-[#00d6d8]/10 p-3"><h3 class="font-bold mb-1 text-[#00d6d8]">🔥 Cara Cepat / Trik</h3>${lines(q.cara_cepat)}</div></article>`;
+ });
+ $('app').innerHTML=h;typeset($('app'));
+}
+
+buildShell();update();startTimer();
+</script>
+</body>
+</html>
