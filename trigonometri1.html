@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan Trigonometri TKA SMA Kelas 12 - VisualMath.Lim</title>
+<link rel="icon" href="logo.png">
+
+<!--
+  VisualMath.Lim - Engine Latihan Fokus Materi (trigonometri1.html)
+  Struktur situs : index.html (Home) | trigonometri.html (Dashboard) | logo.png | trigonometri1.html (file ini)
+
+  HASIL VERIFIKASI SOAL (sebelum dibuat):
+  - cos(a) = 3/5, DC = 4  ->  AD = 3, AC = 5 (tripel 3-4-5)
+  - AB = DC = 4 (tanda garis kembar), BD = sqrt(16-9) = sqrt(7)
+  - sin(b) = 3/4, cos(b) = sqrt7/4, tan(b) = 3sqrt7/7
+  - Pernyataan 1 SALAH, 2 SALAH, 3 BENAR  -> kunci pada soal 1 = D
+  - Proporsi gambar sesuai data (AD/AB = 0,75 ; BD/AB = 0,66 ; DC/AB = 1)
+-->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    },
+    chtml: { displayAlign: 'left', displayIndent: '0.5em', scale: 1.05 },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+  };
+</script>
+<script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #022050; color: #fff; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; }
+  #navGrid::-webkit-scrollbar { height: 6px; }
+  #navGrid::-webkit-scrollbar-thumb { background: #00d6d8; border-radius: 9999px; }
+  #navGrid::-webkit-scrollbar-track { background: rgba(255,255,255,.08); border-radius: 9999px; }
+  mjx-container { max-width: 100%; }
+  mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; margin: .6em 0 !important; padding: .2em 0; }
+  .math-block { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+  .opt-text { overflow-x: auto; overflow-y: hidden; }
+  .question-text ol { list-style: decimal; padding-left: 1.5rem; margin: .75rem 0; }
+  .question-text li { margin: .25rem 0; }
+</style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ================= NAVBAR ================= -->
+<header class="sticky top-0 z-40 bg-[#011538]/95 backdrop-blur border-b border-[#00d6d8]/30">
+  <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-2 min-w-0">
+      <a href="index.html" title="Home (index.html)"
+         class="shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border border-[#00d6d8]/40 text-[#00d6d8] hover:bg-[#00d6d8] hover:text-black transition">
+        <i class="fa-solid fa-house"></i>
+      </a>
+      <h1 class="text-xs sm:text-base lg:text-lg font-bold leading-tight">
+        <span class="text-[#00d6d8]">VisualMath.Lim</span> - Latihan Trigonometri TKA SMA Kelas 12
+      </h1>
+    </div>
+    <a href="trigonometri.html"
+       class="shrink-0 flex items-center gap-2 border border-[#00d6d8]/50 rounded-lg px-2 py-1 max-w-[9.5rem] sm:max-w-none hover:bg-[#00d6d8]/15 hover:shadow-[0_0_14px_#00d6d880] transition">
+      <img src="logo.png" alt="Logo VisualMath.Lim" class="h-8 w-8 sm:h-9 sm:w-9 object-contain" onerror="this.style.display='none'">
+      <span class="text-[11px] sm:text-sm font-semibold leading-tight text-left">Kembali ke Dashboard Trigonometri</span>
+    </a>
+  </div>
+</header>
+
+<main id="app" class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6"></main>
+
+<noscript>
+  <p class="text-center p-6">Aktifkan JavaScript untuk menggunakan latihan ini.</p>
+</noscript>
+
+<script id="app-script">
+'use strict';
+
+/* =====================================================================
+   1. GAMBAR (dibuat dengan kode SVG, tidak perlu upload gambar)
+   ===================================================================== */
+function figureSVG(mode) {
+  const bahas = mode === 'bahas';
+  const H = bahas ? 325 : 290;
+  const ink = '#022050', angA = '#d97706', angB = '#0891b2', dim = '#0f4c81';
+
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 ${H}" width="660" height="${Math.round(660 * H / 440)}" font-family="Arial, Helvetica, sans-serif">`;
+  s += `<rect width="440" height="${H}" rx="12" fill="#f8fbff"/>`;
+  s += `<polygon points="190,130 84.2,250 350,250" fill="#dff6f7"/>`;
+
+  // sisi segitiga
+  s += `<g stroke="${ink}" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <line x1="190" y1="130" x2="84.2" y2="250"/>
+    <line x1="84.2" y1="250" x2="350" y2="250"/>
+    <line x1="350" y1="250" x2="190" y2="130"/>
+    <line x1="190" y1="130" x2="190" y2="250"/>
+  </g>`;
+
+  // siku-siku di D
+  s += `<path d="M190 238 H202 V250" fill="none" stroke="${ink}" stroke-width="1.8"/>`;
+
+  // busur sudut alpha (di A) dan beta (di B)
+  s += `<path d="M190 158 A28 28 0 0 0 212.4 146.8" fill="none" stroke="${angA}" stroke-width="2.4"/>`;
+  s += `<path d="M112.2 250 A28 28 0 0 0 102.7 229" fill="none" stroke="${angB}" stroke-width="2.4"/>`;
+  s += `<text x="208" y="176" font-size="17" font-weight="bold" fill="${angA}">α</text>`;
+  s += `<text x="121" y="240" font-size="17" font-weight="bold" fill="${angB}">β</text>`;
+
+  // tanda panjang sama: AB (dua garis) dan DC (dua garis)
+  s += `<g stroke="${ink}" stroke-width="2">
+    <line x1="129.2" y1="188.4" x2="139.7" y2="197.6"/>
+    <line x1="134.4" y1="182.4" x2="144.9" y2="191.6"/>
+    <line x1="266" y1="243" x2="266" y2="257"/>
+    <line x1="274" y1="243" x2="274" y2="257"/>
+  </g>`;
+
+  // titik sudut
+  s += `<g fill="${ink}">
+    <circle cx="190" cy="130" r="3.5"/><circle cx="84.2" cy="250" r="3.5"/>
+    <circle cx="350" cy="250" r="3.5"/><circle cx="190" cy="250" r="3.5"/>
+  </g>`;
+  s += `<g font-size="17" font-weight="bold" fill="${ink}">
+    <text x="190" y="120" text-anchor="middle">A</text>
+    <text x="72" y="268" text-anchor="middle">B</text>
+    <text x="194" y="271">D</text>
+    <text x="358" y="268">C</text>
+  </g>`;
+
+  s += `<text x="112" y="178" text-anchor="end" font-size="15" font-weight="bold" fill="${dim}">${bahas ? 'AB = 4 cm' : '4 cm'}</text>`;
+
+  if (bahas) {
+    s += `<g font-size="14" font-weight="bold" fill="${dim}">
+      <text x="182" y="212" text-anchor="end">AD = 3</text>
+      <text x="284" y="186">AC = 5</text>
+      <text x="137" y="272" text-anchor="middle">BD = √7</text>
+      <text x="272" y="272" text-anchor="middle">DC = 4 cm</text>
+    </g>`;
+    s += `<g stroke="${ink}" stroke-width="1.5">
+      <line x1="84.2" y1="296" x2="350" y2="296"/>
+      <line x1="84.2" y1="289" x2="84.2" y2="303"/>
+      <line x1="350" y1="289" x2="350" y2="303"/>
+    </g>`;
+    s += `<text x="217" y="317" text-anchor="middle" font-size="14" font-weight="bold" fill="${dim}">BC = 4 + √7 cm</text>`;
+  }
+  s += `</svg>`;
+  return s;
+}
+
+function figureURI(mode) {
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(figureSVG(mode));
+}
+
+const IMG_CLASS = 'max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block';
+
+function imgTag(image) {
+  if (!image) return '';
+  const src = image.startsWith('fig:') ? figureURI(image.slice(4)) : image;
+  return `<div class="flex justify-center"><img src="${src}" alt="Gambar segitiga ABC dengan garis tinggi AD" class="${IMG_CLASS}"></div>`;
+}
+
+/* =====================================================================
+   2. DATA SOAL
+   Catatan: soal 1 = soal asli TKA 2025 (dari file). Soal 2-5 adalah soal
+   latihan turunan dari gambar yang sama (nilai sudah diverifikasi).
+   ===================================================================== */
+const GIVEN = String.raw`Perhatikan gambar. Diketahui $AB = DC = 4$ cm, $AD \perp BC$, dan $\cos\alpha = \frac{3}{5}$ dengan $\alpha = \angle DAC$ serta $\beta = \angle ABD$.`;
+
+const BASE_STEPS = String.raw`
+<strong>Langkah 1: cari sisi segitiga $ADC$ dari $\cos\alpha$.</strong> Segitiga $ADC$ siku-siku di $D$, dengan $\alpha$ di titik $A$.
+
+$$\cos\alpha=\frac{AD}{AC}=\frac{3}{5}$$
+
+Misalkan $AD=3k$ dan $AC=5k$. Cari $DC$ dengan Pythagoras:
+
+$$\begin{aligned}
+DC^2 &= AC^2 - AD^2\\
+&= (5k)^2-(3k)^2\\
+&= 25k^2-9k^2\\
+&= 16k^2\\
+DC &= 4k
+\end{aligned}$$
+
+<strong>Langkah 2: tentukan nilai $k$.</strong> Dari gambar $DC=4$ cm, sehingga
+
+$$4k=4 \;\Rightarrow\; k=1$$
+
+Jadi $AD=3$ cm dan $AC=5$ cm.
+
+<strong>Langkah 3: cari $BD$ dari segitiga $ABD$.</strong> Segitiga $ABD$ siku-siku di $D$, dengan $AB=4$ dan $AD=3$.
+
+$$\begin{aligned}
+BD^2 &= AB^2-AD^2\\
+&= 4^2-3^2\\
+&= 16-9\\
+&= 7\\
+BD &= \sqrt{7}
+\end{aligned}$$
+`;
+
+const questions = [
+  {
+    id: 1,
+    question_text: String.raw`<p>Perhatikan gambar berikut.</p>
+<p class="mt-2">Diketahui $\cos\alpha = \frac{3}{5}$, dengan $\alpha$ adalah sudut $\angle DAC$ dan $\beta$ adalah sudut $\angle ABD$. Tentukan <strong>Benar</strong> atau <strong>Salah</strong> pada setiap pernyataan berikut:</p>
+<ol>
+  <li>$\sin\beta = \dfrac{\sqrt{7}}{4}$</li>
+  <li>$\cos\beta = \dfrac{\sqrt{7}}{5}$</li>
+  <li>$\tan\beta = \dfrac{3\sqrt{7}}{7}$</li>
+</ol>
+<p>Kombinasi penilaian pernyataan (1), (2), (3) yang tepat adalah ...</p>`,
+    image: 'fig:soal',
+    options: {
+      A: '(1) Benar, (2) Benar, (3) Benar',
+      B: '(1) Benar, (2) Salah, (3) Benar',
+      C: '(1) Salah, (2) Benar, (3) Salah',
+      D: '(1) Salah, (2) Salah, (3) Benar',
+      E: '(1) Salah, (2) Salah, (3) Salah'
+    },
+    correct_answer: 'D',
+    pembahasan_image: 'fig:bahas',
+    pembahasan: BASE_STEPS + String.raw`
+
+<strong>Langkah 4: hitung perbandingan trigonometri sudut $\beta$.</strong> Di segitiga $ABD$: sisi depan $\beta$ adalah $AD=3$, sisi samping adalah $BD=\sqrt7$, dan sisi miring adalah $AB=4$.
+
+$$\begin{aligned}
+\sin\beta &= \frac{AD}{AB}=\frac{3}{4}\\
+\cos\beta &= \frac{BD}{AB}=\frac{\sqrt{7}}{4}\\
+\tan\beta &= \frac{AD}{BD}=\frac{3}{\sqrt{7}}\\
+&= \frac{3}{\sqrt{7}}\times\frac{\sqrt{7}}{\sqrt{7}}\\
+&= \frac{3\sqrt{7}}{7}
+\end{aligned}$$
+
+<strong>Langkah 5: cocokkan dengan pernyataan.</strong>
+
+$$\begin{array}{|c|c|c|}
+\hline
+\text{Pernyataan} & \text{Hasil hitung} & \text{Kesimpulan}\\
+\hline
+\sin\beta=\frac{\sqrt{7}}{4} & \sin\beta=\frac{3}{4} & \text{Salah}\\
+\hline
+\cos\beta=\frac{\sqrt{7}}{5} & \cos\beta=\frac{\sqrt{7}}{4} & \text{Salah}\\
+\hline
+\tan\beta=\frac{3\sqrt{7}}{7} & \tan\beta=\frac{3\sqrt{7}}{7} & \text{Benar}\\
+\hline
+\end{array}$$
+
+Jadi pernyataan (1) Salah, (2) Salah, (3) Benar, sehingga jawaban yang tepat adalah <strong>D</strong>.`,
+    cara_cepat: String.raw`
+<strong>1.</strong> Pakai tripel Pythagoras 3-4-5 untuk segitiga $ADC$.
+
+<strong>2.</strong> Karena $\cos\alpha=\frac{3}{5}$ dan $DC=4$, maka $AD=3$ langsung terlihat.
+
+<strong>3.</strong> Untuk segitiga $ABD$, sisi miring $4$ dan sisi tegak $3$, jadi $BD=\sqrt{16-9}=\sqrt{7}$.
+
+<strong>4.</strong> Penyebut $\sin\beta$ dan $\cos\beta$ pasti $4$ (sisi miring $AB$), bukan $5$, sehingga pernyataan (2) langsung salah. Pernyataan (1) salah karena pembilang $\sin\beta$ adalah $3$, bukan $\sqrt7$.
+
+<strong>5.</strong> Sementara $\tan\beta=\frac{3}{\sqrt{7}}=\frac{3\sqrt{7}}{7}$ sehingga pernyataan (3) benar. Jawaban: <strong>D</strong>.
+
+<strong>Catatan pembacaan gambar:</strong> tanda garis kembar pada $AB$ dan $DC$ dibaca sebagai panjang sama, dan $\alpha$ adalah sudut di $A$ sebelah kanan garis $AD$.`
+  },
+  {
+    id: 2,
+    question_text: `<p>${GIVEN}</p><p class="mt-2">Nilai $\\sin\\beta$ adalah ...</p>`,
+    image: 'fig:soal',
+    options: {
+      A: String.raw`$\dfrac{\sqrt{7}}{4}$`,
+      B: String.raw`$\dfrac{3}{4}$`,
+      C: String.raw`$\dfrac{3}{5}$`,
+      D: String.raw`$\dfrac{4}{5}$`,
+      E: String.raw`$\dfrac{3\sqrt{7}}{7}$`
+    },
+    correct_answer: 'B',
+    pembahasan_image: 'fig:bahas',
+    pembahasan: BASE_STEPS + String.raw`
+
+<strong>Langkah 4: hitung $\sin\beta$.</strong> Sinus = sisi depan : sisi miring pada segitiga $ABD$.
+
+$$\sin\beta=\frac{AD}{AB}=\frac{3}{4}$$
+
+Jawaban yang tepat adalah <strong>B</strong>.`,
+    cara_cepat: String.raw`
+Pada segitiga $ABD$, sisi tegak $AD=3$ (dari tripel 3-4-5) dan sisi miring $AB=4$.
+
+Sinus = depan : miring, maka $\sin\beta=\frac{3}{4}$. Tidak perlu mencari $BD$. Jawaban: <strong>B</strong>.
+
+Waspadai pilihan $\frac{\sqrt7}{4}$, itu adalah $\cos\beta$, bukan $\sin\beta$.`
+  },
+  {
+    id: 3,
+    question_text: `<p>${GIVEN}</p><p class="mt-2">Panjang $BD$ adalah ... cm.</p>`,
+    image: 'fig:soal',
+    options: {
+      A: '$2$',
+      B: '$3$',
+      C: String.raw`$\sqrt{7}$`,
+      D: '$5$',
+      E: '$7$'
+    },
+    correct_answer: 'C',
+    pembahasan_image: 'fig:bahas',
+    pembahasan: BASE_STEPS + String.raw`
+
+Jadi panjang $BD=\sqrt{7}$ cm, yaitu pilihan <strong>C</strong>.`,
+    cara_cepat: String.raw`
+Dari tripel 3-4-5: $AD=3$. Di segitiga $ABD$ dengan $AB=4$:
+
+$$BD=\sqrt{4^2-3^2}=\sqrt{16-9}=\sqrt{7}$$
+
+Hati-hati, $7$ adalah $BD^2$, bukan $BD$. Jawaban: <strong>C</strong>.`
+  },
+  {
+    id: 4,
+    question_text: `<p>${GIVEN}</p><p class="mt-2">Nilai dari $\\sin\\alpha \\cdot \\cos\\beta$ adalah ...</p>`,
+    image: 'fig:soal',
+    options: {
+      A: String.raw`$\dfrac{3}{5}$`,
+      B: String.raw`$\dfrac{4}{5}$`,
+      C: String.raw`$\dfrac{\sqrt{7}}{4}$`,
+      D: String.raw`$\dfrac{3\sqrt{7}}{20}$`,
+      E: String.raw`$\dfrac{\sqrt{7}}{5}$`
+    },
+    correct_answer: 'E',
+    pembahasan_image: 'fig:bahas',
+    pembahasan: BASE_STEPS + String.raw`
+
+<strong>Langkah 4: hitung $\sin\alpha$ dan $\cos\beta$.</strong>
+
+$$\begin{aligned}
+\sin\alpha &= \frac{DC}{AC}=\frac{4}{5}\\
+\cos\beta &= \frac{BD}{AB}=\frac{\sqrt{7}}{4}
+\end{aligned}$$
+
+<strong>Langkah 5: kalikan.</strong>
+
+$$\sin\alpha\cdot\cos\beta=\frac{4}{5}\cdot\frac{\sqrt{7}}{4}=\frac{\sqrt{7}}{5}$$
+
+Jawaban yang tepat adalah <strong>E</strong>.`,
+    cara_cepat: String.raw`
+$\sin\alpha=\frac{4}{5}$ (tripel 3-4-5) dan $\cos\beta=\frac{\sqrt7}{4}$.
+
+Angka $4$ saling mencoret: $\frac{4}{5}\cdot\frac{\sqrt7}{4}=\frac{\sqrt7}{5}$. Jawaban: <strong>E</strong>.
+
+Pilihan $\frac{3\sqrt7}{20}$ adalah jebakan dari $\cos\alpha\cdot\cos\beta$.`
+  },
+  {
+    id: 5,
+    question_text: `<p>${GIVEN}</p><p class="mt-2">Luas segitiga $ABC$ adalah ... cm$^2$.</p>`,
+    image: 'fig:soal',
+    options: {
+      A: String.raw`$\dfrac{12+3\sqrt{7}}{2}$`,
+      B: '$6$',
+      C: '$12$',
+      D: String.raw`$6+3\sqrt{7}$`,
+      E: String.raw`$12+3\sqrt{7}$`
+    },
+    correct_answer: 'A',
+    pembahasan_image: 'fig:bahas',
+    pembahasan: BASE_STEPS + String.raw`
+
+<strong>Langkah 4: tentukan alas dan tinggi segitiga $ABC$.</strong> Alas $BC=BD+DC$ dan tinggi $AD$ (karena $AD\perp BC$).
+
+$$BC=\sqrt{7}+4,\qquad AD=3$$
+
+<strong>Langkah 5: hitung luas.</strong>
+
+$$\begin{aligned}
+L &= \frac{1}{2}\times BC\times AD\\
+&= \frac{1}{2}\times(4+\sqrt{7})\times 3\\
+&= \frac{12+3\sqrt{7}}{2}\ \text{cm}^2
+\end{aligned}$$
+
+Jawaban yang tepat adalah <strong>A</strong>.`,
+    cara_cepat: String.raw`
+Tinggi $AD=3$ (tripel 3-4-5) dan alas $BC=4+\sqrt7$.
+
+$$L=\tfrac{1}{2}\cdot 3\cdot(4+\sqrt7)=\frac{12+3\sqrt7}{2}$$
+
+Jangan lupa faktor $\frac12$ (pilihan E) dan jangan hanya memakai $DC$ sebagai alas (pilihan B). Jawaban: <strong>A</strong>.`
+  }
+];
+
+/* =====================================================================
+   3. STATE & UTILITAS
+   ===================================================================== */
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+const app = document.getElementById('app');
+
+const state = {
+  current: 0,
+  answers: {},        // { id: 'A'..'E' }
+  startTime: Date.now(),
+  elapsed: 0,
+  timer: null,
+  finished: false
+};
+
+const CARD = 'bg-[#0a2a62] border border-[#00d6d8]/25 rounded-2xl shadow-lg';
+const BTN_Y = 'inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-3 rounded-xl bg-[#ffd300] text-black font-bold hover:brightness-110 hover:shadow-[0_0_14px_#ffd300aa] transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:brightness-100';
+const BTN_C = 'inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-3 rounded-xl border border-[#00d6d8] text-[#00d6d8] font-bold hover:bg-[#00d6d8] hover:text-black transition';
+
+const OPT_BASE = 'opt flex items-start gap-3 w-full p-3 sm:p-4 rounded-xl border cursor-pointer transition text-left';
+const OPT_SEL = 'bg-[#00d6d8]/25 border-[#00d6d8] shadow-[0_0_12px_rgba(0,214,216,.35)]';
+const OPT_UNSEL = 'bg-white/5 border-white/15 hover:border-[#00d6d8] hover:bg-[#00d6d8]/10';
+
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+/* Ubah string pembahasan (teks + LaTeX) menjadi HTML: paragraf dipisah baris kosong */
+function fmt(text) {
+  return text.trim().split(/\n\s*\n/).map(p => {
+    p = p.trim().replace(/&/g, '&amp;');
+    return p.startsWith('$$')
+      ? `<div class="math-block">${p}</div>`
+      : `<p class="mb-2 leading-relaxed">${p}</p>`;
+  }).join('');
+}
+
+/* Render ulang rumus MathJax pada elemen tertentu */
+function typeset(el) {
+  const run = () => {
+    if (window.MathJax && MathJax.startup && MathJax.typesetPromise) {
+      MathJax.startup.promise = MathJax.startup.promise
+        .then(() => MathJax.typesetPromise([el]))
+        .catch(err => console.error('MathJax:', err));
+      return true;
+    }
+    return false;
+  };
+  if (!run()) {
+    let tries = 0;
+    const iv = setInterval(() => { if (run() || ++tries > 150) clearInterval(iv); }, 200);
+  }
+}
+
+const answeredCount = () => questions.filter(q => state.answers[q.id]).length;
+
+/* =====================================================================
+   4. STOPWATCH (menghitung naik, tidak memaksa submit)
+   ===================================================================== */
+function startTimer() {
+  state.startTime = Date.now();
+  state.elapsed = 0;
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    const el = document.getElementById('stopwatch');
+    if (el) el.textContent = fmtTime(state.elapsed);
+  }, 500);
+}
+
+function stopTimer() {
+  clearInterval(state.timer);
+  state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+}
+
+/* =====================================================================
+   5. STATE 1: MENGERJAKAN LATIHAN
+   ===================================================================== */
+function renderPractice() {
+  app.innerHTML = `
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
+
+    <!-- Area soal (75% di laptop) -->
+    <section class="lg:col-span-3 min-w-0 order-1">
+      <div class="${CARD} p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <span id="qBadge" class="px-3 py-1 rounded-full bg-[#00d6d8]/15 text-[#00d6d8] font-semibold text-sm"></span>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-white/70"><i class="fa-solid fa-circle-check text-[#ffd300]"></i> <span id="answeredInfo"></span></span>
+            <span class="font-mono text-lg sm:text-xl font-bold text-[#00d6d8] bg-black/30 px-3 py-1 rounded-lg" title="Stopwatch">
+              <i class="fa-regular fa-clock mr-1"></i><span id="stopwatch">${fmtTime(state.elapsed)}</span>
+            </span>
+          </div>
+        </div>
+
+        <div id="qBody"></div>
+
+        <div class="flex items-center justify-between gap-3 mt-6 pt-4 border-t border-white/10">
+          <button id="btnPrev" class="${BTN_Y}" data-act="prev"><i class="fa-solid fa-arrow-left"></i> Sebelumnya</button>
+          <button id="btnNext" class="${BTN_Y}" data-act="next">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigasi kotak nomor (25% di laptop, strip horizontal di mobile) -->
+    <aside class="lg:col-span-1 order-2">
+      <div class="${CARD} p-4 lg:sticky lg:top-20">
+        <h2 class="font-bold text-[#00d6d8] mb-3"><i class="fa-solid fa-table-cells mr-1"></i> Navigasi Soal</h2>
+        <div id="navGrid" class="flex lg:grid lg:grid-cols-5 gap-2 overflow-x-auto lg:overflow-visible pb-3 lg:pb-0 snap-x"></div>
+
+        <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/70 mt-3">
+          <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#ffd300] inline-block"></span> Terjawab</span>
+          <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded border border-white/40 inline-block"></span> Belum</span>
+          <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded ring-2 ring-[#00d6d8] inline-block"></span> Sedang dibuka</span>
+        </div>
+
+        <button id="btnFinish" class="${BTN_Y} w-full mt-4" data-act="finish">
+          <i class="fa-solid fa-flag-checkered"></i> Selesai &amp; Lihat Pembahasan
+        </button>
+        <p class="text-xs text-white/70 mt-3 leading-relaxed">
+          <i class="fa-solid fa-circle-info text-[#00d6d8]"></i>
+          <strong>Wajib dikerjakan semua.</strong> Jika masih ada soal yang belum dijawab, latihan tidak bisa diselesaikan dan pembahasan belum bisa dibuka.
+          Stopwatch hanya mengukur kecepatanmu dan tidak memaksa selesai.
+        </p>
+      </div>
+    </aside>
+  </div>`;
+
+  showQuestion(state.current, false);
+}
+
+function showQuestion(i, scroll = true) {
+  state.current = Math.max(0, Math.min(questions.length - 1, i));
+  const q = questions[state.current];
+  const n = state.current + 1;
+
+  const opts = LETTERS.map(L => `
+    <label data-opt="${L}" class="${OPT_BASE} ${OPT_UNSEL}">
+      <input type="radio" name="q${q.id}" value="${L}" class="sr-only">
+      <span class="optkey shrink-0 w-8 h-8 rounded-full border border-white/40 flex items-center justify-center font-bold">${L}</span>
+      <span class="opt-text flex-1 min-w-0 pt-0.5">${q.options[L]}</span>
+    </label>`).join('');
+
+  document.getElementById('qBody').innerHTML = `
+    <div class="question-text text-base sm:text-lg leading-relaxed">${q.question_text}</div>
+    ${imgTag(q.image)}
+    <div class="space-y-3 mt-4" role="radiogroup" aria-label="Pilihan jawaban">${opts}</div>`;
+
+  document.getElementById('qBadge').textContent = `Soal ${n} dari ${questions.length}`;
+
+  const prev = document.getElementById('btnPrev');
+  const next = document.getElementById('btnNext');
+  prev.disabled = state.current === 0;
+  if (state.current === questions.length - 1) {
+    next.dataset.act = 'finish';
+    next.innerHTML = '<i class="fa-solid fa-flag-checkered"></i> Selesai &amp; Lihat Pembahasan';
+  } else {
+    next.dataset.act = 'next';
+    next.innerHTML = 'Selanjutnya <i class="fa-solid fa-arrow-right"></i>';
+  }
+
+  refreshSelection();
+  refreshNav();
+  typeset(document.getElementById('qBody'));
+  if (scroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function refreshSelection() {
+  const q = questions[state.current];
+  const chosen = state.answers[q.id];
+  document.querySelectorAll('#qBody .opt').forEach(el => {
+    const sel = el.dataset.opt === chosen;
+    el.className = `${OPT_BASE} ${sel ? OPT_SEL : OPT_UNSEL}`;
+    const key = el.querySelector('.optkey');
+    key.className = 'optkey shrink-0 w-8 h-8 rounded-full border flex items-center justify-center font-bold ' +
+      (sel ? 'bg-[#00d6d8] text-black border-[#00d6d8]' : 'border-white/40');
+    el.querySelector('input').checked = sel;
+  });
+}
+
+function refreshNav() {
+  const grid = document.getElementById('navGrid');
+  if (!grid) return;
+  grid.innerHTML = questions.map((q, i) => {
+    const answered = !!state.answers[q.id];
+    const current = i === state.current;
+    let cls = 'snap-start shrink-0 w-12 h-12 lg:w-full lg:h-auto lg:aspect-square rounded-lg font-bold border-2 transition flex items-center justify-center ';
+    cls += answered
+      ? 'bg-[#ffd300] text-black border-[#ffd300] '
+      : 'bg-transparent text-white border-white/30 hover:border-[#00d6d8] hover:text-[#00d6d8] ';
+    if (current) cls += 'ring-2 ring-[#00d6d8] ring-offset-2 ring-offset-[#0a2a62] ';
+    return `<button data-act="goto" data-i="${i}" class="${cls}" aria-label="Soal ${i + 1}${answered ? ' (terjawab)' : ''}"${current ? ' aria-current="true"' : ''}>${i + 1}</button>`;
+  }).join('');
+
+  const info = document.getElementById('answeredInfo');
+  if (info) info.textContent = `${answeredCount()}/${questions.length} terjawab`;
+
+  const fin = document.getElementById('btnFinish');
+  if (fin) {
+    const all = answeredCount() === questions.length;
+    fin.classList.toggle('opacity-60', !all);
+    fin.setAttribute('aria-disabled', String(!all));
+  }
+}
+
+function selectAnswer(letter) {
+  const q = questions[state.current];
+  state.answers[q.id] = letter;
+  refreshSelection();
+  refreshNav();
+}
+
+/* Selesai hanya jika semua soal terjawab */
+function tryFinish() {
+  const missing = questions.map((q, i) => (state.answers[q.id] ? -1 : i)).filter(i => i >= 0);
+  if (missing.length) { showMissingModal(missing); return; }
+  finishPractice();
+}
+
+function showMissingModal(missing) {
+  closeModal();
+  const m = document.createElement('div');
+  m.id = 'modal';
+  m.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70';
+  m.innerHTML = `
+    <div class="max-w-md w-full ${CARD} p-5 !border-[#ffd300]/60" role="dialog" aria-modal="true">
+      <div class="flex items-start gap-3">
+        <i class="fa-solid fa-triangle-exclamation text-[#ffd300] text-2xl mt-1"></i>
+        <div>
+          <h3 class="font-bold text-lg">Latihan belum bisa diselesaikan</h3>
+          <p class="text-sm text-white/80 mt-1 leading-relaxed">
+            Semua soal wajib dikerjakan. Selama masih ada soal yang kosong, tombol pembahasan tidak bisa dipakai.
+            Soal yang belum dijawab (klik untuk menuju soal):
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 my-4">
+        ${missing.map(i => `<button data-act="jump" data-i="${i}" class="w-11 h-11 rounded-lg border-2 border-[#00d6d8] text-[#00d6d8] font-bold hover:bg-[#00d6d8] hover:text-black transition">${i + 1}</button>`).join('')}
+      </div>
+      <button data-act="closeModal" class="${BTN_Y} w-full">Lanjut Mengerjakan</button>
+    </div>`;
+  document.body.appendChild(m);
+}
+
+function closeModal() {
+  const m = document.getElementById('modal');
+  if (m) m.remove();
+}
+
+function finishPractice() {
+  stopTimer();
+  state.finished = true;
+  closeModal();
+  renderResult();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* =====================================================================
+   6. STATE 2: PEMBAHASAN & EVALUASI
+   ===================================================================== */
+function renderResult() {
+  const total = questions.length;
+  const benar = questions.filter(q => state.answers[q.id] === q.correct_answer).length;
+  const salah = total - benar;
+  const skor = Math.round((benar / total) * 100);
+  const mnt = Math.floor(state.elapsed / 60);
+  const dtk = state.elapsed % 60;
+  const pesan = skor >= 80 ? 'Luar biasa! Pertahankan ritme belajarmu.'
+              : skor >= 60 ? 'Bagus! Pelajari pembahasan untuk soal yang masih salah.'
+              : 'Jangan menyerah! Baca pembahasan dan coba lagi dengan trik cepatnya.';
+
+  app.innerHTML = `
+  <section class="bg-gradient-to-br from-[#0a2a62] to-[#022050] border border-[#00d6d8]/40 rounded-2xl p-5 sm:p-6 shadow-[0_0_24px_rgba(0,214,216,.18)]">
+    <h2 class="text-xl sm:text-2xl font-extrabold"><i class="fa-solid fa-trophy text-[#ffd300] mr-2"></i>Ringkasan Hasil Latihan</h2>
+    <p class="text-white/75 text-sm mt-1">${pesan}</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+      <div class="rounded-xl bg-[#ffd300] text-black p-4 text-center">
+        <div class="text-xs font-semibold uppercase tracking-wide">Skor Akhir</div>
+        <div class="text-4xl font-extrabold">${skor}</div>
+      </div>
+      <div class="rounded-xl bg-emerald-500/15 border border-emerald-400/60 p-4 text-center">
+        <div class="text-xs font-semibold uppercase tracking-wide text-emerald-300">Total Benar</div>
+        <div class="text-3xl font-extrabold text-emerald-300">${benar}</div>
+      </div>
+      <div class="rounded-xl bg-red-500/15 border border-red-400/60 p-4 text-center">
+        <div class="text-xs font-semibold uppercase tracking-wide text-red-300">Total Salah</div>
+        <div class="text-3xl font-extrabold text-red-300">${salah}</div>
+      </div>
+      <div class="rounded-xl bg-[#00d6d8]/10 border border-[#00d6d8]/50 p-4 text-center">
+        <div class="text-xs font-semibold uppercase tracking-wide text-[#00d6d8]">Waktu Pengerjaan</div>
+        <div class="text-2xl font-extrabold font-mono">${fmtTime(state.elapsed)}</div>
+        <div class="text-xs text-white/70">${mnt} menit ${dtk} detik</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="space-y-6 mt-6">
+    ${questions.map((q, i) => reviewCard(q, i)).join('')}
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-3 justify-center mt-8">
+    <button class="${BTN_Y}" data-act="restart"><i class="fa-solid fa-rotate-right"></i> Ulangi Latihan</button>
+    <a href="trigonometri.html" class="${BTN_C}"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard Trigonometri</a>
+  </div>`;
+
+  typeset(app);
+}
+
+function reviewOptions(q) {
+  const user = state.answers[q.id];
+  return LETTERS.map(L => {
+    const isKey = L === q.correct_answer;
+    const isUser = L === user;
+    let cls = 'bg-white/5 border-white/15';
+    let keyCls = 'border-white/40';
+    const tags = [];
+    if (isKey) {
+      cls = 'bg-emerald-500/15 border-emerald-400';
+      keyCls = 'bg-emerald-400 text-black border-emerald-400';
+      tags.push('<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-400 text-black"><i class="fa-solid fa-key"></i> Kunci</span>');
+    }
+    if (isUser && !isKey) {
+      cls = 'bg-red-500/15 border-red-400';
+      keyCls = 'bg-red-400 text-black border-red-400';
+      tags.push('<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-400 text-black"><i class="fa-solid fa-xmark"></i> Jawabanmu</span>');
+    }
+    if (isUser && isKey) {
+      tags.push('<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#ffd300] text-black"><i class="fa-solid fa-check"></i> Jawabanmu</span>');
+    }
+    return `
+      <div class="flex items-start gap-3 w-full p-3 rounded-xl border ${cls}">
+        <span class="shrink-0 w-8 h-8 rounded-full border flex items-center justify-center font-bold ${keyCls}">${L}</span>
+        <span class="opt-text flex-1 min-w-0 pt-0.5">${q.options[L]}</span>
+        <span class="shrink-0 flex flex-col gap-1 items-end">${tags.join('')}</span>
+      </div>`;
+  }).join('');
+}
+
+function reviewCard(q, i) {
+  const user = state.answers[q.id];
+  const ok = user === q.correct_answer;
+  return `
+  <article class="${CARD} p-4 sm:p-6">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <span class="px-3 py-1 rounded-full bg-[#00d6d8]/15 text-[#00d6d8] font-semibold text-sm">Soal ${i + 1}</span>
+      <span class="px-3 py-1 rounded-full text-sm font-bold ${ok ? 'bg-emerald-400 text-black' : 'bg-red-400 text-black'}">
+        <i class="fa-solid ${ok ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> ${ok ? 'Benar' : 'Salah'}
+      </span>
+    </div>
+
+    <div class="question-text text-base sm:text-lg leading-relaxed">${q.question_text}</div>
+    ${imgTag(q.image)}
+
+    <div class="space-y-2 mt-3">${reviewOptions(q)}</div>
+
+    <p class="mt-3 text-sm sm:text-base">
+      Jawabanmu: <strong class="${ok ? 'text-emerald-300' : 'text-red-300'}">${user || '-'}</strong>
+      <span class="mx-1 text-white/40">|</span>
+      Kunci jawaban: <strong class="text-emerald-300">${q.correct_answer}</strong>
+    </p>
+
+    <!-- Pembahasan Lengkap -->
+    <div class="mt-5 rounded-xl border border-white/20 bg-white/5 p-4">
+      <h3 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open mr-1"></i> Pembahasan Lengkap</h3>
+      ${imgTag(q.pembahasan_image)}
+      <div class="text-sm sm:text-base">${fmt(q.pembahasan)}</div>
+    </div>
+
+    <!-- Cara Cepat / Trik -->
+    <div class="mt-4 rounded-xl border border-[#00d6d8]/50 bg-[#00d6d8]/10 p-4">
+      <h3 class="font-bold text-[#00d6d8] mb-2">🔥 Cara Cepat / Trik</h3>
+      <div class="text-sm sm:text-base">${fmt(q.cara_cepat)}</div>
+    </div>
+  </article>`;
+}
+
+function restart() {
+  state.current = 0;
+  state.answers = {};
+  state.finished = false;
+  state.elapsed = 0;
+  renderPractice();
+  startTimer();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* =====================================================================
+   7. EVENT
+   ===================================================================== */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]');
+  if (!t || t.disabled) return;
+  const act = t.dataset.act;
+  if (act === 'prev') showQuestion(state.current - 1);
+  else if (act === 'next') showQuestion(state.current + 1);
+  else if (act === 'goto') showQuestion(Number(t.dataset.i));
+  else if (act === 'finish') tryFinish();
+  else if (act === 'jump') { closeModal(); showQuestion(Number(t.dataset.i)); }
+  else if (act === 'closeModal') closeModal();
+  else if (act === 'restart') restart();
+});
+
+document.addEventListener('change', e => {
+  if (state.finished) return;
+  if (e.target.matches('#qBody input[type="radio"]')) selectAnswer(e.target.value);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); return; }
+  if (state.finished || document.getElementById('modal') || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'ArrowRight') showQuestion(state.current + 1);
+  else if (e.key === 'ArrowLeft') showQuestion(state.current - 1);
+  else if (LETTERS.includes(e.key.toUpperCase()) && e.key.length === 1) selectAnswer(e.key.toUpperCase());
+});
+
+/* =====================================================================
+   8. START
+   ===================================================================== */
+renderPractice();
+startTimer();
+</script>
+</body>
+</html>
