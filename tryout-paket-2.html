@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tryout Paket 2 | VisualMath.Lim</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{navy:'#022050',cyan:'#00d6d8',gold:'#ffd300'}}}}</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;padding:2px 0}
+.qt{border-collapse:collapse;margin:8px 0}.qt td,.qt th{border:1px solid rgba(255,255,255,.35);padding:4px 10px}
+#nav::-webkit-scrollbar{height:6px}#nav::-webkit-scrollbar-thumb{background:#00d6d8;border-radius:6px}
+</style>
+</head>
+<body class="bg-navy text-white min-h-screen">
+
+<header class="sticky top-0 z-30 bg-navy/95 backdrop-blur border-b border-cyan/30">
+  <div class="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-2 min-w-0">
+      <img src="logo.png" alt="Logo" class="h-9 w-9 object-contain" onerror="this.style.display='none'">
+      <div class="min-w-0">
+        <div class="font-bold leading-tight truncate">VisualMath.Lim</div>
+        <nav class="text-xs text-cyan flex gap-1 flex-wrap">
+          <a href="index.html" class="hover:underline"><i class="fa-solid fa-house"></i> Home</a><span>/</span>
+          <a href="tryout.html" class="hover:underline">Dashboard Tryout</a>
+        </nav>
+      </div>
+    </div>
+    <div id="timerBox" class="font-mono text-lg md:text-2xl font-bold text-gold border border-gold/60 rounded-lg px-3 py-1"><i class="fa-regular fa-clock mr-1"></i><span id="timer">01:00:00</span></div>
+    <button id="endBtn" onclick="endExam()" class="bg-red-600 hover:bg-red-500 rounded-lg px-3 py-2 text-sm font-bold whitespace-nowrap">Akhiri Ujian</button>
+  </div>
+</header>
+
+<main id="examView" class="max-w-7xl mx-auto p-3 md:p-5 grid grid-cols-1 lg:grid-cols-4 gap-5">
+  <section class="lg:col-span-3 min-w-0">
+    <div id="qArea" class="bg-white/5 border border-white/15 rounded-2xl p-4 md:p-6"></div>
+    <div id="ctrl" class="flex justify-between gap-3 mt-4"></div>
+  </section>
+  <aside class="lg:col-span-1 min-w-0">
+    <div class="bg-white/5 border border-white/15 rounded-2xl p-3 lg:sticky lg:top-24">
+      <div class="text-sm text-cyan font-bold mb-2">Navigasi Soal</div>
+      <div id="nav" class="flex lg:grid lg:grid-cols-5 gap-2 overflow-x-auto lg:overflow-visible pb-2"></div>
+      <div class="text-xs text-white/70 mt-2 flex gap-3"><span><i class="fa-solid fa-square text-gold"></i> Terjawab</span><span><i class="fa-solid fa-square text-white/30"></i> Belum</span></div>
+    </div>
+  </aside>
+</main>
+
+<main id="resultView" class="hidden max-w-4xl mx-auto p-3 md:p-5"></main>
+
+<div id="modal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"><div class="bg-navy border-2 border-cyan rounded-2xl p-6 max-w-sm w-full text-center"><p id="modalMsg" class="mb-5"></p><div class="flex gap-3 justify-center"><button onclick="closeModal()" class="px-4 py-2 rounded-lg border border-cyan text-cyan font-bold">Batal</button><button onclick="closeModal();finish()" class="px-4 py-2 rounded-lg bg-gold text-black font-bold">Ya, Akhiri</button></div></div></div>
+
+<script>
+/* ---------- Gambar dikode (SVG) ---------- */
+const svg = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+const mk = (w, h, b) => svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" font-family="Arial" font-size="13"><rect width="${w}" height="${h}" fill="#fff"/>${b}</svg>`);
+const ln = (a, b, c, d, col = '#000', w = 2, da = '') => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${col}" stroke-width="${w}" ${da ? `stroke-dasharray="${da}"` : ''}/>`;
+const tx = (x, y, t, col = '#000', sz = 13, an = 'start', b = 'bold') => `<text x="${x}" y="${y}" fill="${col}" font-size="${sz}" text-anchor="${an}" font-weight="${b}">${t}</text>`;
+const pg = (pts, fill, st = '#000', w = 2) => `<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="${fill}" stroke="${st}" stroke-width="${w}"/>`;
+const ci = (x, y, r, f, s = '#000', w = 1.5) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" stroke="${s}" stroke-width="${w}"/>`;
+const dot = (x, y, n, dx, dy, c = '#c0392b') => ci(x, y, 3.5, c, c) + tx(x + dx, y + dy, n);
+const rt = (x, y, sx, sy) => `<path d="M${x + sx * 10},${y} L${x + sx * 10},${y + sy * 10} L${x},${y + sy * 10}" fill="none" stroke="#000"/>`;
+
+const arcP = (x, y, r, deg) => { const t = deg * Math.PI / 180; return `<path d="M${x + r},${y} A${r},${r} 0 0 0 ${x + r * Math.cos(t)},${y - r * Math.sin(t)} L${x},${y} Z" fill="#9bb7e8" fill-opacity=".8" stroke="#1f4e9c" stroke-width="1.5"/>`; };
+const img08 = () => {
+  const X = x => 40 + (x + 1) * 35, Y = y => 185 - (y + 1) * 35; let g = '';
+  for (let i = -1; i <= 8; i++) g += ln(X(i), 5, X(i), 190, '#ddd', 1) + tx(X(i), Y(0) + 14, i, '#555', 10, 'middle', 'normal');
+  for (let j = -1; j <= 4; j++) g += ln(35, Y(j), 355, Y(j), '#ddd', 1);
+  return mk(360, 200, g + ln(35, Y(0), 355, Y(0), '#000', 1.5) + ln(X(0), 5, X(0), 190, '#000', 1.5) +
+    pg([[X(0), Y(0)], [X(6), Y(0)], [X(4), Y(3)], [X(0), Y(3)]], '#9bb7e8', '#1f4e9c', 2) +
+    dot(X(0), Y(0), 'O(0,0)', -40, 20) + dot(X(6), Y(0), 'P(6,0)', 4, -8) + dot(X(4), Y(3), 'Q(4,3)', 6, -6) + dot(X(0), Y(3), 'R(0,3)', -42, -4));
+};
+const img10 = () => {
+  const dir = Math.atan2(90, 60) * 180 / Math.PI, up = 180 - dir;
+  return mk(360, 230, ln(20, 70, 340, 70) + ln(20, 160, 340, 160) + ln(117, 20, 243, 210) +
+    arcP(150, 70, 30, up) + arcP(210, 160, 30, up) + tx(346, 74, 'k', '#000', 15) + tx(346, 164, 'l', '#000', 15) + tx(238, 222, 't', '#000', 15) +
+    tx(186, 52, '∠P = (4x + 15)°', '#1f4e9c', 13) + tx(246, 150, '∠Q = (6x − 25)°', '#1f4e9c', 13));
+};
+const img11 = () => {
+  const c = (x, y, z) => [30 + x * 40 + y * 10, 215 - z * 40 - y * 8];
+  const e = (a, b, d) => ln(...c(...a), ...c(...b), '#000', d ? 1.5 : 2, d ? '5,4' : '');
+  const A = [0, 0, 0], B = [4, 0, 0], C = [4, 4, 0], D = [0, 4, 0], E = [0, 0, 4], F = [4, 0, 4], G = [4, 4, 4], H = [0, 4, 4], P = [4, 4, 2], Q = [0, 2, 4];
+  return mk(290, 250, [[A, B], [B, C], [A, E], [B, F], [C, G], [E, F], [F, G], [E, H], [H, G]].map(s => e(...s)).join('') + [[A, D], [D, C], [D, H]].map(s => e(...s, 1)).join('') +
+    ln(...c(...P), ...c(...Q), '#d62828', 2.5, '6,4') + dot(...c(...P), 'P', 6, 4, '#d62828') + dot(...c(...Q), 'Q', -14, -2, '#d62828') +
+    [['A', A, -14, 14], ['B', B, 2, 16], ['C', C, 6, 6], ['D', D, -2, -6], ['E', E, -14, 0], ['F', F, -14, -2], ['G', G, 6, -2], ['H', H, -2, -8]].map(([n, p, dx, dy]) => tx(c(...p)[0] + dx, c(...p)[1] + dy, n)).join('') +
+    tx(110, 240, 'rusuk = 8 cm', '#000', 12, 'middle'));
+};
+const img12 = () => mk(310, 195,
+  pg([[20, 150], [270, 150], [110, 30], [20, 30]], '#fde3c8') + pg([[20, 150], [270, 150], [170, 75], [20, 75]], '#bcd4f5') + ln(20, 75, 170, 75, '#1f4e9c', 2, '5,4') +
+  rt(20, 150, 1, -1) + rt(20, 75, 1, -1) + rt(20, 30, 1, 1) +
+  tx(6, 164, 'K') + tx(274, 164, 'L') + tx(176, 72, 'M') + tx(4, 72, 'N') + tx(4, 26, 'O') + tx(112, 24, 'P') +
+  tx(65, 18, 'OP = 18 cm', '#000', 12, 'middle') + tx(145, 180, 'KL = 50 cm', '#000', 12, 'middle') + tx(146, 46, 'MP = 15 cm', '#000', 12, 'start'));
+const img16 = () => mk(300, 340,
+  `<path d="M40,300 L40,100 A70,70 0 0 1 180,100 L180,300 Z" fill="#cfe3f7" stroke="#000" stroke-width="3"/>` + ln(40, 100, 180, 100, '#888', 1, '5,4') +
+  ln(40, 322, 180, 322, '#000', 1.5) + tx(110, 338, '28 cm', '#000', 13, 'middle') + ln(205, 100, 205, 300, '#000', 1.5) + tx(212, 205, '40 cm') + ln(110, 100, 110, 30, '#888', 1) + tx(116, 68, 'r = 14', '#444', 11));
+const img20 = () => mk(330, 215,
+  ln(8, 170, 320, 170) + `<rect x="252" y="31" width="16" height="139" fill="#bdbdbd" stroke="#000"/>` + ln(20, 170, 260, 31, '#1f4e9c', 2) + ln(180, 170, 260, 31, '#1f4e9c', 2) +
+  arcP(20, 170, 40, 30).replace('#9bb7e8', '#f5b7b1') + arcP(180, 170, 30, 60).replace('#9bb7e8', '#f5b7b1') + tx(66, 164, '30°', '#c0392b', 12) + tx(204, 160, '60°', '#c0392b', 12) +
+  dot(20, 170, 'A', -4, 18) + dot(180, 170, 'B', -4, 18) + tx(260, 24, 'T', '#000', 13, 'middle') + ln(20, 192, 180, 192, '#000', 1.5) + tx(100, 207, '40 m', '#000', 12, 'middle') + tx(274, 105, 'h = ?'));
+const img21 = () => {
+  const S = [['Cabang X', '#1b8a3a', [40, 45, 45, 50, 60, 70]], ['Cabang Y', '#d62828', [55, 50, 60, 65, 65, 65]], ['Cabang Z', '#1f4e9c', [30, 35, 40, 38, 45, 55]]];
+  const X = i => 70 + i * 70, Y = v => 240 - (v - 25) * 4; let g = '';
+  for (let v = 25; v <= 75; v += 10) g += ln(60, Y(v), 430, Y(v), '#ddd', 1) + tx(52, Y(v) + 4, v, '#444', 11, 'end', 'normal');
+  [2020, 2021, 2022, 2023, 2024, 2025].forEach((y, i) => g += tx(X(i), 260, y, '#444', 11, 'middle', 'normal'));
+  S.forEach(([n, c, d], k) => g += `<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${d.map((v, i) => X(i) + ',' + Y(v)).join(' ')}"/>` + d.map((v, i) => ci(X(i), Y(v), 3.5, c, c)).join('') + ci(110 + k * 110, 20, 6, c, c) + tx(120 + k * 110, 25, n));
+  return mk(470, 290, g + tx(250, 282, 'Banyak pengunjung (ribu orang) per tahun', '#000', 12, 'middle'));
+};
+
+/* ---------- Data soal: 25 soal prediksi TKA ---------- */
+const questions = [
+  // ---------------------------------------------------------------- BILANGAN
+  {
+    id: 1,
+    text: String.raw`Nilai $x$ yang memenuhi persamaan
+$$\dfrac{4^{x+1}\times 8^{x-1}}{16^{x}}=32$$
+adalah ....`,
+    image: "",
+    options: [String.raw`$4$`, String.raw`$5$`, String.raw`$6$`, String.raw`$7$`, String.raw`$8$`],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> samakan basis menjadi 2, lalu pakai sifat eksponen
+$(a^m)^n=a^{mn}$, $a^m\cdot a^n=a^{m+n}$, dan $\dfrac{a^m}{a^n}=a^{m-n}$.</p>
+$$\begin{aligned}
+\frac{(2^2)^{x+1}\times(2^3)^{x-1}}{(2^4)^{x}} &= 2^5\\
+\frac{2^{2x+2}\times 2^{3x-3}}{2^{4x}} &= 2^5\\
+\frac{2^{5x-1}}{2^{4x}} &= 2^5\\
+2^{x-1} &= 2^5\\
+x-1 &= 5\\
+x &= 6
+\end{aligned}$$
+<p><b>Jebakan:</b> menulis $3(x-1)$ menjadi $3x-1$ menghasilkan $x=4$; langsung menyamakan $2^{x}=2^{5}$ menghasilkan $x=5$.</p>`,
+    cara_cepat: String.raw`<p>Jadikan semua basis 2, lalu <b>jumlahkan koefisien eksponen saja</b>:
+$(2x+2)+(3x-3)-4x=x-1$.</p>
+<p>Karena hasilnya $2^5$, maka $x-1=5\Rightarrow x=6$. Cek cepat: $2^{14}\cdot2^{15}/2^{24}=2^5$ (benar).</p>`
+  },
+  {
+    id: 2,
+    text: String.raw`Operasi $\star$ didefinisikan sebagai
+$$a\star b=\dfrac{a^2+ab+b^2}{a+b}$$
+untuk setiap bilangan real tidak negatif $a$ dan $b$ dengan $a+b\neq 0$. Jika $a\star 2=3$, maka nilai $(a\star 4)-(a\star 0)$ adalah ....`,
+    image: "",
+    options: [String.raw`$\dfrac{2}{3}$`, String.raw`$\dfrac{4}{3}$`, String.raw`$2$`, String.raw`$\dfrac{8}{3}$`, String.raw`$\dfrac{14}{3}$`],
+    correct: 3,
+    pembahasan: String.raw`<p><b>Konsep:</b> substitusi ke definisi operasi, selesaikan persamaan kuadrat, lalu syarat "tidak negatif" menyaring akar.</p>
+$$\begin{aligned}
+\frac{a^2+2a+4}{a+2} &= 3\\
+a^2+2a+4 &= 3a+6\\
+a^2-a-2 &= 0\\
+(a-2)(a+1) &= 0
+\end{aligned}$$
+<p>Karena $a\ge 0$, maka $a=2$.</p>
+$$\begin{aligned}
+a\star 4 &= \frac{4+8+16}{6}=\frac{28}{6}=\frac{14}{3}\\
+a\star 0 &= \frac{a^2}{a}=a=2\\
+(a\star 4)-(a\star 0) &= \frac{14}{3}-2=\frac{8}{3}
+\end{aligned}$$
+<p><b>Jebakan:</b> $\frac{14}{3}$ hanya menghitung $a\star4$; $2$ hanya menghitung $a\star0$; memakai $a=-1$ melanggar syarat tidak negatif.</p>`,
+    cara_cepat: String.raw`<p>Persamaan $a^2-a-2=0$ langsung difaktorkan (cari dua bilangan hasil kali $-2$, jumlah $-1$) $\Rightarrow a=2$.</p>
+<p>Ingat $a\star0=a$, jadi tidak perlu dihitung panjang. Tinggal $\frac{28}{6}-2=\frac{8}{3}$.</p>`
+  },
+  {
+    id: 3,
+    text: String.raw`Diberikan tiga himpunan berikut.
+$$A=\{x\mid x\le 20,\ x\ \text{kelipatan }3,\ x\in\text{bilangan asli}\}$$
+$$B=\{x\mid x<20,\ x\in\text{bilangan prima}\}$$
+$$C=\{x\mid x<12,\ x\in\text{bilangan cacah ganjil}\}$$
+Banyak anggota himpunan $(A\cup B)-C$ adalah ....`,
+    image: "",
+    options: [String.raw`$7$`, String.raw`$8$`, String.raw`$9$`, String.raw`$10$`, String.raw`$13$`],
+    correct: 1,
+    pembahasan: String.raw`<p><b>Konsep:</b> gabungan, selisih himpunan, dan kata kunci "cacah" (dimulai dari 0) serta "asli" (dimulai dari 1).</p>
+$$\begin{aligned}
+A &= \{3,6,9,12,15,18\}\\
+B &= \{2,3,5,7,11,13,17,19\}\\
+C &= \{1,3,5,7,9,11\}\\
+A\cup B &= \{2,3,5,6,7,9,11,12,13,15,17,18,19\}\quad(13\text{ anggota})\\
+(A\cup B)-C &= \{2,6,12,13,15,17,18,19\}
+\end{aligned}$$
+<p>Banyak anggota $=8$.</p>
+<p><b>Jebakan:</b> angka $3$ ada di $A$ dan $B$ sehingga hanya dihitung sekali; $1\in C$ tetapi $1\notin A\cup B$, jadi tidak ikut mengurangi (mengurangi 6 anggota $C$ memberi hasil 7 yang salah).</p>`,
+    cara_cepat: String.raw`<p>$n(A\cup B)=6+8-1=13$ (kurangi irisan $\{3\}$).</p>
+<p>Anggota $C$ yang benar-benar ada di $A\cup B$: $3,5,7,9,11$ yaitu 5 buah (angka 1 tidak ada). Jadi $13-5=8$.</p>`
+  },
+
+  // ----------------------------------------------------------------- ALJABAR
+  {
+    id: 4,
+    text: String.raw`Dua peneliti memodelkan peningkatan suhu akibat pemanasan global dengan fungsi linear. Model peneliti I: $y=0{,}02x-39{,}9$ dan model peneliti II: $y=0{,}025x-49{,}9$, dengan $x$ menyatakan tahun dan $y$ peningkatan suhu dalam $^\circ$C. Model II memprediksi peningkatan suhu yang <b>lebih besar</b> daripada model I mulai tahun ....`,
+    image: "",
+    options: [String.raw`Tahun $2001$`, String.raw`Tahun $2000$`, String.raw`Tahun $2002$`, String.raw`Tahun $2010$`, String.raw`Tahun $2025$`],
+    correct: 0,
+    pembahasan: String.raw`<p><b>Konsep:</b> perbandingan dua fungsi linear dengan pertidaksamaan "model II $>$ model I".</p>
+$$\begin{aligned}
+0{,}025x-49{,}9 &> 0{,}02x-39{,}9\\
+0{,}005x &> 10\\
+x &> \frac{10}{0{,}005}\\
+x &> 2000
+\end{aligned}$$
+<p>Karena tahun berupa bilangan bulat, nilai terkecil yang memenuhi adalah $2001$.</p>
+<p><b>Jebakan:</b> pada tahun $2000$ kedua model sama-sama $0{,}1^\circ$C (sama, bukan lebih besar).</p>`,
+    cara_cepat: String.raw`<p>Titik potong = selisih konstanta $\div$ selisih gradien $=\dfrac{10}{0{,}005}=2000$.</p>
+<p>Gradien II lebih besar, jadi sesudah titik potong II lebih tinggi. "Lebih besar mulai" artinya tahun berikutnya: $2001$.</p>`
+  },
+  {
+    id: 5,
+    text: String.raw`Bimbel Cerdas memberi potongan biaya kepada 40 pendaftar pertama, sedangkan pendaftar lain membayar harga normal. Biaya setelah potongan adalah $y=0{,}85x$ dengan $x$ biaya mula-mula. Siswa berprestasi mendapat tambahan potongan dari biaya yang harus dibayar:
+$$g(y)=\begin{cases}0{,}75y, & \text{nilai rapor di atas }90\\ 0{,}85y, & \text{nilai rapor }80\text{ sampai }90\end{cases}$$
+Dika adalah pendaftar ke-40 dan membayar Rp340.000,00. Setelah itu datang empat siswa lain:
+<table class="qt">
+<tr><th>Nama</th><th>Nilai Rapor</th><th>Uang yang dimiliki (Rp)</th></tr>
+<tr><td>Ega</td><td>92</td><td>300.000</td></tr>
+<tr><td>Fani</td><td>90</td><td>335.000</td></tr>
+<tr><td>Gina</td><td>95</td><td>299.000</td></tr>
+<tr><td>Hadi</td><td>85</td><td>340.000</td></tr>
+</table>
+Siapakah siswa yang uangnya cukup untuk mendaftar?`,
+    image: "",
+    options: [String.raw`Ega dan Hadi`, String.raw`Fani dan Hadi`, String.raw`Ega, Fani, dan Hadi`, String.raw`Hadi saja`, String.raw`Keempat siswa`],
+    correct: 0,
+    pembahasan: String.raw`<p><b>Konsep:</b> fungsi komposisi/bertahap. Cari harga normal dari data Dika, lalu terapkan potongan rapor pada harga normal (pendaftar ke-41 dst. tidak dapat potongan 15%).</p>
+$$\begin{aligned}
+340.000 &= 0{,}85x\\
+x &= \frac{340.000}{0{,}85}=400.000
+\end{aligned}$$
+<table class="qt">
+<tr><th>Nama</th><th>Faktor</th><th>Biaya</th><th>Uang</th><th>Cukup?</th></tr>
+<tr><td>Ega (92)</td><td>0,75</td><td>300.000</td><td>300.000</td><td>Ya</td></tr>
+<tr><td>Fani (90)</td><td>0,85</td><td>340.000</td><td>335.000</td><td>Tidak</td></tr>
+<tr><td>Gina (95)</td><td>0,75</td><td>300.000</td><td>299.000</td><td>Tidak</td></tr>
+<tr><td>Hadi (85)</td><td>0,85</td><td>340.000</td><td>340.000</td><td>Ya</td></tr>
+</table>
+<p><b>Jebakan:</b> (1) memakai Rp340.000 sebagai harga dasar membuat keempatnya "cukup"; (2) menukar faktor $0{,}75$ dan $0{,}85$ memberi Fani dan Hadi; (3) nilai tepat $90$ termasuk kelompok $80$ sampai $90$, bukan "di atas 90".</p>`,
+    cara_cepat: String.raw`<p>Harga normal $=340.000\div0{,}85=400.000$.</p>
+<p>Biaya terkecil $=0{,}75\times400.000=300.000$ dan terbesar $=0{,}85\times400.000=340.000$. Cukup cek tiap orang ke faktor rapornya: hanya Ega ($300.000$) dan Hadi ($340.000$) yang uangnya pas atau lebih.</p>`
+  },
+  {
+    id: 6,
+    text: String.raw`Sebuah gedung pertunjukan memiliki susunan kursi yang membentuk barisan aritmetika. Baris paling depan terdiri atas 20 kursi, baris kedua 24 kursi, dan seterusnya bertambah dengan pola yang sama. Jika seluruh kursi berjumlah 504, banyak kursi pada baris paling belakang adalah ....`,
+    image: "",
+    options: [String.raw`$42$`, String.raw`$52$`, String.raw`$56$`, String.raw`$60$`, String.raw`$64$`],
+    correct: 4,
+    pembahasan: String.raw`<p><b>Konsep:</b> deret aritmetika $S_n=\dfrac{n}{2}\big(2a+(n-1)b\big)$ lalu suku terakhir $U_n=a+(n-1)b$.</p>
+<p>Diketahui $a=20$ dan $b=24-20=4$.</p>
+$$\begin{aligned}
+S_n &= \frac{n}{2}\big(40+4(n-1)\big)=504\\
+n(18+2n) &= 504\\
+2n^2+18n-504 &= 0\\
+n^2+9n-252 &= 0\\
+(n+21)(n-12) &= 0\ \Rightarrow\ n=12
+\end{aligned}$$
+$$\begin{aligned}
+U_{12} &= 20+(12-1)(4)\\
+&= 20+44=64
+\end{aligned}$$
+<p><b>Jebakan:</b> $42=504\div12$ adalah rata-rata kursi per baris; $60=U_{11}$ dan $56=U_{10}$ muncul jika salah menghitung $n$ atau memakai $a+nb$.</p>`,
+    cara_cepat: String.raw`<p>Cek $n$ dengan rumus ringkas $S_n=n(18+2n)$: $n=12\Rightarrow12\times42=504$ (pas).</p>
+<p>Suku terakhir $=20+11\times4=64$. Cek: $S=\frac{12}{2}(20+64)=504$.</p>`
+  },
+  {
+    id: 7,
+    text: String.raw`Harga sebuah mesin pada awal tahun pertama adalah Rp64.000.000,00. Setiap tahun nilainya menyusut $25\%$ dari nilai tahun sebelumnya. Mesin dikategorikan <i>layak jual</i> jika nilainya di bawah Rp30.000.000,00 dan dikategorikan <i>dihapusbukukan</i> jika nilainya kurang dari Rp15.000.000,00. Banyak tahun (dihitung pada awal tahun) saat mesin sudah layak jual tetapi belum dihapusbukukan adalah ....`,
+    image: "",
+    options: [String.raw`$2$ tahun`, String.raw`$3$ tahun`, String.raw`$4$ tahun`, String.raw`$5$ tahun`, String.raw`$6$ tahun`],
+    correct: 1,
+    pembahasan: String.raw`<p><b>Konsep:</b> barisan geometri dengan $a=64$ (juta) dan rasio $r=100\%-25\%=0{,}75$, sehingga $U_n=64(0{,}75)^{n-1}$.</p>
+$$\begin{aligned}
+U_1 &= 64\\
+U_2 &= 48\\
+U_3 &= 36\\
+U_4 &= 27\\
+U_5 &= 20{,}25\\
+U_6 &= 15{,}1875\\
+U_7 &= 11{,}390625
+\end{aligned}$$
+<p>Syarat: $15\le U_n<30$.</p>
+<table class="qt">
+<tr><th>Tahun ke-</th><th>Nilai (juta)</th><th>Status</th></tr>
+<tr><td>3</td><td>36</td><td>Belum layak jual</td></tr>
+<tr><td>4</td><td>27</td><td>Layak jual</td></tr>
+<tr><td>5</td><td>20,25</td><td>Layak jual</td></tr>
+<tr><td>6</td><td>15,1875</td><td>Layak jual (masih di atas 15)</td></tr>
+<tr><td>7</td><td>11,39</td><td>Dihapusbukukan</td></tr>
+</table>
+<p>Tahun ke-4, 5, 6 $\Rightarrow$ <b>3 tahun</b>.</p>
+<p><b>Jebakan:</b> membulatkan $15{,}1875$ menjadi "sekitar 15" lalu menganggapnya sudah dihapusbukukan memberi jawaban 2.</p>`,
+    cara_cepat: String.raw`<p>Kalikan $0{,}75$ berulang dari 64: $64\to48\to36\to27\to20{,}25\to15{,}19\to11{,}4$.</p>
+<p>Hitung yang ada di antara 15 dan 30: $27,\ 20{,}25,\ 15{,}19$ $\Rightarrow$ 3 buah.</p>`
+  },
+  {
+    id: 8,
+    text: String.raw`Perhatikan daerah penyelesaian pada gambar. Daerah yang diarsir berbentuk segiempat dengan titik sudut $O(0,0)$, $P(6,0)$, $Q(4,3)$, dan $R(0,3)$. Nilai maksimum bentuk objektif $z=2x+3y$ pada daerah tersebut adalah ....`,
+    image: img08(),
+    options: [String.raw`$9$`, String.raw`$12$`, String.raw`$15$`, String.raw`$17$`, String.raw`$18$`],
+    correct: 3,
+    pembahasan: String.raw`<p><b>Konsep:</b> program linear. Nilai maksimum fungsi objektif selalu terjadi di salah satu titik sudut daerah penyelesaian.</p>
+<p>(Sebagai pengecekan, garis $PQ$ melalui $P(6,0)$ dan $Q(4,3)$ berpersamaan $3x+2y=18$; batas lain: $y\le3$, $x\ge0$, $y\ge0$.)</p>
+$$\begin{aligned}
+O(0,0)&:\ z=2(0)+3(0)=0\\
+P(6,0)&:\ z=2(6)+3(0)=12\\
+Q(4,3)&:\ z=2(4)+3(3)=17\\
+R(0,3)&:\ z=2(0)+3(3)=9
+\end{aligned}$$
+<p>Nilai maksimum $=17$ di titik $Q(4,3)$.</p>
+<p><b>Jebakan:</b> berhenti di $P$ karena $x$ terbesar ($12$), atau mengira $18$ (ruas kanan persamaan garis) adalah nilai $z$.</p>`,
+    cara_cepat: String.raw`<p>Bobot $y$ ($3$) lebih besar dari bobot $x$ ($2$), jadi titik optimum cenderung di titik sudut yang $y$-nya tinggi dan $x$-nya masih besar, yaitu $Q(4,3)$.</p>
+<p>Langsung hitung $2(4)+3(3)=17$.</p>`
+  },
+  {
+    id: 9,
+    text: String.raw`Toko ATK "Pelita" menjual tiga paket alat tulis berisi pensil, pulpen, dan buku tulis.
+<table class="qt">
+<tr><th>Paket</th><th>Pensil</th><th>Pulpen</th><th>Buku</th><th>Harga (Rp)</th></tr>
+<tr><td>I</td><td>2</td><td>3</td><td>1</td><td>18.000</td></tr>
+<tr><td>II</td><td>1</td><td>2</td><td>3</td><td>23.000</td></tr>
+<tr><td>III</td><td>3</td><td>1</td><td>2</td><td>19.000</td></tr>
+</table>
+Jika Rani membeli 3 pensil, 2 pulpen, dan 4 buku secara satuan, biaya yang harus ia bayar adalah ....`,
+    image: "",
+    options: [String.raw`Rp28.000,00`, String.raw`Rp30.000,00`, String.raw`Rp32.000,00`, String.raw`Rp34.000,00`, String.raw`Rp36.000,00`],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> sistem persamaan linear tiga variabel (SPLTV). Misal $p$ = pensil, $q$ = pulpen, $r$ = buku (dalam ribuan rupiah).</p>
+$$\begin{cases}
+2p+3q+r=18 & (1)\\
+p+2q+3r=23 & (2)\\
+3p+q+2r=19 & (3)
+\end{cases}$$
+$$\begin{aligned}
+(1)\ \Rightarrow\ r &= 18-2p-3q\\
+(2):\ p+2q+54-6p-9q &= 23\ \Rightarrow\ 5p+7q=31\\
+(3):\ 3p+q+36-4p-6q &= 19\ \Rightarrow\ p+5q=17\\
+p &= 17-5q\\
+5(17-5q)+7q &= 31\\
+85-18q &= 31\ \Rightarrow\ q=3\\
+p=2,\quad r &= 18-4-9=5
+\end{aligned}$$
+$$\begin{aligned}
+3p+2q+4r &= 3(2)+2(3)+4(5)\\
+&= 6+6+20=32
+\end{aligned}$$
+<p>Biaya $=$ Rp32.000,00.</p>`,
+    cara_cepat: String.raw`<p>Jumlahkan ketiga paket: $6p+6q+6r=60$ sehingga $p+q+r=10$ (ribu).</p>
+<p>Kurangkan ke tiap paket: Paket I $\to p+2q=8$, Paket II $\to q+2r=13$, Paket III $\to 2p+r=9$. Dari $p=8-2q$ dan $r=\frac{13-q}{2}$ masuk ke $2p+r=9$ didapat $q=3,\ p=2,\ r=5$. Hasil: $6+6+20=32$.</p>`
+  },
+
+  // ------------------------------------------------- GEOMETRI DAN PENGUKURAN
+  {
+    id: 10,
+    text: String.raw`Perhatikan gambar. Garis $k$ sejajar dengan garis $l$, dan keduanya dipotong oleh garis $t$. Besar $\angle P=(4x+15)^\circ$ dan $\angle Q=(6x-25)^\circ$ merupakan dua sudut yang sehadap. Besar $\angle P$ adalah ....`,
+    image: img10(),
+    options: [String.raw`$75^\circ$`, String.raw`$85^\circ$`, String.raw`$89^\circ$`, String.raw`$91^\circ$`, String.raw`$95^\circ$`],
+    correct: 4,
+    pembahasan: String.raw`<p><b>Konsep:</b> dua garis sejajar dipotong garis lain, maka <b>sudut sehadap besarnya sama</b>.</p>
+$$\begin{aligned}
+\angle P &= \angle Q\\
+4x+15 &= 6x-25\\
+40 &= 2x\\
+x &= 20\\
+\angle P &= 4(20)+15=95^\circ
+\end{aligned}$$
+<p><b>Jebakan:</b> menganggap kedua sudut berpelurus ($4x+15+6x-25=180$, $x=19$) memberi $\angle P=91^\circ$ atau $\angle Q=89^\circ$; $85^\circ$ adalah pelurus dari $\angle P$.</p>`,
+    cara_cepat: String.raw`<p>Sehadap $\Rightarrow$ sama: pindahkan suku, $6x-4x=15+25\Rightarrow x=20$.</p>
+<p>Langsung $4(20)+15=95$. Cek: $6(20)-25=95$ (sama).</p>`
+  },
+  {
+    id: 11,
+    text: String.raw`Perhatikan kubus $ABCD.EFGH$ dengan panjang rusuk $8$ cm. Titik $P$ terletak di tengah rusuk $CG$ dan titik $Q$ terletak di tengah rusuk $EH$. Panjang ruas garis $PQ$ adalah ....`,
+    image: img11(),
+    options: [String.raw`$4\sqrt{3}$ cm`, String.raw`$4\sqrt{5}$ cm`, String.raw`$4\sqrt{6}$ cm`, String.raw`$12$ cm`, String.raw`$8\sqrt{3}$ cm`],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> bangun ruang pada koordinat. Letakkan $A(0,0,0)$, $B(8,0,0)$, $D(0,8,0)$, $E(0,0,8)$. Maka $C(8,8,0)$, $G(8,8,8)$, $H(0,8,8)$.</p>
+$$\begin{aligned}
+P &= \text{tengah }CG=(8,8,4)\\
+Q &= \text{tengah }EH=(0,4,8)\\
+PQ &= \sqrt{(8-0)^2+(8-4)^2+(4-8)^2}\\
+&= \sqrt{64+16+16}\\
+&= \sqrt{96}=4\sqrt{6}
+\end{aligned}$$
+<p><b>Jebakan:</b> lupa selisih tinggi ($4$): $\sqrt{64+16}=4\sqrt5$; atau memakai diagonal bidang $8\sqrt2$ dan tinggi $4$ sehingga hasil $12$.</p>`,
+    cara_cepat: String.raw`<p>Hitung tiga selisih koordinat: $8,\ 4,\ 4$. Jarak $=\sqrt{8^2+4^2+4^2}=\sqrt{96}=4\sqrt6$.</p>
+<p>Tidak perlu menggambar segitiga siku-siku bertahap.</p>`
+  },
+  {
+    id: 12,
+    text: String.raw`Perhatikan gambar. Trapesium siku-siku $KLMN$ dan trapesium siku-siku $NMPO$ sebangun dengan urutan titik sudut yang bersesuaian $K\leftrightarrow N$, $L\leftrightarrow M$, $M\leftrightarrow P$, $N\leftrightarrow O$. Diketahui $KL=50$ cm, $OP=18$ cm, dan $MP=15$ cm. Luas trapesium besar $KLPO$ adalah ....`,
+    image: img12(),
+    options: [String.raw`$510\ \text{cm}^2$`, String.raw`$816\ \text{cm}^2$`, String.raw`$1.020\ \text{cm}^2$`, String.raw`$1.200\ \text{cm}^2$`, String.raw`$1.632\ \text{cm}^2$`],
+    correct: 1,
+    pembahasan: String.raw`<p><b>Konsep:</b> kesebangunan (sisi bersesuaian berbanding sama), Pythagoras, dan luas trapesium $\frac12(a+b)t$.</p>
+<p>Langkah 1: sisi sejajar tengah $NM$.</p>
+$$\begin{aligned}
+\frac{KL}{NM}&=\frac{NM}{OP}\\
+NM^2 &= 50\times18=900\\
+NM &= 30
+\end{aligned}$$
+<p>Langkah 2: tinggi trapesium atas $NMPO$ ($NO$) dengan Pythagoras. Selisih sisi sejajar $=30-18=12$.</p>
+$$\begin{aligned}
+NO &= \sqrt{MP^2-12^2}=\sqrt{225-144}=9
+\end{aligned}$$
+<p>Langkah 3: tinggi trapesium bawah dari skala $\dfrac{KL}{NM}=\dfrac{5}{3}$.</p>
+$$\begin{aligned}
+KN &= 9\times\frac{5}{3}=15\\
+KO &= KN+NO=15+9=24
+\end{aligned}$$
+$$\begin{aligned}
+L_{KLPO} &= \frac{1}{2}(50+18)(24)\\
+&= 34\times24=816
+\end{aligned}$$
+<p><b>Jebakan:</b> $510$ memakai tinggi $KN$ saja; $1.020$ memakai $NM$ sebagai tinggi; $1.632$ lupa faktor $\frac12$.</p>`,
+    cara_cepat: String.raw`<p>$NM=\sqrt{50\times18}=30$. Atas: selisih $12$, sisi miring $15$ $\Rightarrow$ tripel $(9,12,15)$, jadi $NO=9$.</p>
+<p>Skala $5:3\Rightarrow KN=15$, tinggi total $24$. Luas $=34\times24=816$.</p>`
+  },
+  {
+    id: 13,
+    text: String.raw`Sebuah lahan berbentuk trapesium siku-siku dengan sisi sejajar $44$ m dan $20$ m serta tinggi $32$ m. Di sepanjang tepi lahan dipasang lampu taman dengan jarak antarlampu $4$ m, dan terdapat lampu di setiap sudut lahan. Banyak lampu yang dibutuhkan adalah ....`,
+    image: "",
+    options: [String.raw`$34$`, String.raw`$35$`, String.raw`$38$`, String.raw`$40$`, String.raw`$136$`],
+    correct: 0,
+    pembahasan: String.raw`<p><b>Konsep:</b> Pythagoras untuk sisi miring, keliling, lalu banyak titik pada lintasan tertutup $=$ keliling $\div$ jarak.</p>
+$$\begin{aligned}
+\text{selisih sisi sejajar} &= 44-20=24\\
+\text{sisi miring} &= \sqrt{24^2+32^2}\\
+&= \sqrt{576+1024}=\sqrt{1600}=40\\
+\text{keliling} &= 44+20+32+40=136
+\end{aligned}$$
+$$\text{banyak lampu}=\frac{136}{4}=34$$
+<p><b>Jebakan:</b> pada lintasan tertutup tidak ada "$+1$" (jawaban $35$); menghitung sisi miring $56$ ($24+32$) memberi $38$; lupa membagi jarak memberi $136$.</p>`,
+    cara_cepat: String.raw`<p>$24:32:40=3:4:5$ (kali 8), jadi sisi miring $=40$.</p>
+<p>Keliling $136$, bagi $4$ $=34$. Karena melingkar, jumlah lampu sama dengan jumlah selang.</p>`
+  },
+  {
+    id: 14,
+    text: String.raw`Titik $Q$ direfleksikan terhadap garis $y=-1$, kemudian hasilnya dirotasi $90^\circ$ searah jarum jam dengan pusat $O(0,0)$. Jika bayangan akhirnya adalah $Q'(2,5)$, koordinat titik $Q$ adalah ....`,
+    image: "",
+    options: [String.raw`$(-5,-6)$`, String.raw`$(-5,2)$`, String.raw`$(5,-4)$`, String.raw`$(-5,4)$`, String.raw`$(-5,-4)$`],
+    correct: 4,
+    pembahasan: String.raw`<p><b>Konsep:</b></p>
+<p>Refleksi terhadap $y=k$: $(x,y)\to(x,\,2k-y)$, untuk $k=-1$: $(x,y)\to(x,\,-2-y)$.</p>
+<p>Rotasi $90^\circ$ searah jarum jam pusat $O$: $(x,y)\to(y,\,-x)$.</p>
+<p>Misal $Q=(a,b)$.</p>
+$$\begin{aligned}
+(a,b)&\xrightarrow{\ \text{refleksi}\ }(a,\,-2-b)\\
+(a,\,-2-b)&\xrightarrow{\ \text{rotasi}\ }(-2-b,\,-a)=(2,5)
+\end{aligned}$$
+$$\begin{aligned}
+-2-b &= 2\ \Rightarrow\ b=-4\\
+-a &= 5\ \Rightarrow\ a=-5
+\end{aligned}$$
+<p>Cek maju: $(-5,-4)\to(-5,\,2)\to(2,\,5)$ benar.</p>
+<p><b>Jebakan:</b> $(-5,2)$ adalah titik setelah refleksi (lupa membalik refleksi); $(5,-4)$ salah tanda saat membalik rotasi; $(-5,4)$ memakai refleksi terhadap sumbu-$x$.</p>`,
+    cara_cepat: String.raw`<p>Kerjakan mundur. Balik rotasi: dari $(2,5)$ titik sebelum rotasi adalah $(-5,2)$ (karena $(x,y)\to(y,-x)$ memberi $(2,5)$ bila $(x,y)=(-5,2)$).</p>
+<p>Balik refleksi $y=-1$: $y=2$ berjarak $3$ di atas garis, jadi titik asal $3$ di bawah garis: $y=-1-3=-4$. Hasil $(-5,-4)$.</p>`
+  },
+  {
+    id: 15,
+    text: String.raw`Sebuah ruang pameran berbentuk balok dengan ukuran panjang $12$ m, lebar $9$ m, dan tinggi $8$ m. Dua kabel dipasang lurus melalui ruangan, masing-masing dari satu pojok lantai ke pojok langit-langit yang letaknya paling jauh (diagonal ruang). Panjang kabel yang diperlukan seluruhnya adalah ....`,
+    image: "",
+    options: [String.raw`$17$ m`, String.raw`$29$ m`, String.raw`$30$ m`, String.raw`$34$ m`, String.raw`$40$ m`],
+    correct: 3,
+    pembahasan: String.raw`<p><b>Konsep:</b> diagonal ruang balok $=\sqrt{p^2+l^2+t^2}$ (Pythagoras dua kali).</p>
+$$\begin{aligned}
+d &= \sqrt{12^2+9^2+8^2}\\
+&= \sqrt{144+81+64}\\
+&= \sqrt{289}=17\text{ m}
+\end{aligned}$$
+$$\text{Dua kabel}=2\times17=34\text{ m}$$
+<p><b>Jebakan:</b> hanya satu kabel ($17$); memakai diagonal lantai saja $\sqrt{144+81}=15$ lalu $2\times15=30$; menjumlah $12+9+8=29$; atau $(12+8)\times2=40$.</p>`,
+    cara_cepat: String.raw`<p>Cari tripel: $12,\ 9\to15$ (kelipatan 3 dari $4,3,5$), lalu $15$ dan $8$ membentuk tripel $(8,15,17)$. Jadi diagonal ruang $=17$.</p>
+<p>Dua kabel: $17\times2=34$.</p>`
+  },
+  {
+    id: 16,
+    text: String.raw`Sebuah jendela berbentuk gabungan persegi panjang dan setengah lingkaran di bagian atasnya. Lebar jendela $28$ cm (sama dengan diameter setengah lingkaran) dan tinggi bagian persegi panjang $40$ cm. Bingkai kayu dipasang mengelilingi tepi luar jendela, tanpa kayu pada garis pembatas antara persegi panjang dan setengah lingkaran. Panjang bingkai kayu yang diperlukan untuk $5$ jendela adalah .... (gunakan $\pi=\frac{22}{7}$)`,
+    image: img16(),
+    options: [String.raw`$152$ cm`, String.raw`$620$ cm`, String.raw`$760$ cm`, String.raw`$900$ cm`, String.raw`$980$ cm`],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> keliling gabungan bangun datar. Hanya sisi luar yang dihitung; keliling setengah lingkaran $=\pi r$ (dengan $r=14$).</p>
+$$\begin{aligned}
+\text{alas} &= 28\\
+\text{dua sisi tegak} &= 2\times40=80\\
+\text{setengah lingkaran} &= \frac{22}{7}\times14=44\\
+\text{satu jendela} &= 28+80+44=152
+\end{aligned}$$
+$$5\times152=760\text{ cm}$$
+<p><b>Jebakan:</b> $152$ baru satu jendela; $620$ lupa alas ($124\times5$); $900$ ikut menghitung garis pembatas $28$ ($180\times5$); $980$ memakai lingkaran penuh ($196\times5$).</p>`,
+    cara_cepat: String.raw`<p>Satu jendela $=28+80+44=152$.</p>
+<p>Kalikan $5$: $152\times5=760$ (kalikan $150\times5=750$ lalu tambah $2\times5=10$).</p>`
+  },
+  {
+    id: 17,
+    text: String.raw`Perhatikan permasalahan berikut.<br><br>Panjang salah satu diagonal suatu belah ketupat adalah $24$ cm. Berapakah keliling belah ketupat tersebut?<br><br>Putuskan apakah pernyataan (1) dan pernyataan (2) berikut cukup untuk menjawab permasalahan tersebut.
+<br>(1) Luas belah ketupat adalah $240\ \text{cm}^2$.
+<br>(2) Panjang salah satu sisi belah ketupat adalah $13$ cm.`,
+    image: "",
+    options: [
+      String.raw`Pernyataan (1) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (2) SAJA tidak cukup.`,
+      String.raw`Pernyataan (2) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (1) SAJA tidak cukup.`,
+      String.raw`DUA pernyataan BERSAMA-SAMA cukup untuk menjawab pertanyaan, tetapi SATU pernyataan SAJA tidak cukup.`,
+      String.raw`Pernyataan (1) SAJA cukup untuk menjawab pertanyaan dan pernyataan (2) SAJA cukup.`,
+      String.raw`Pernyataan (1) dan pernyataan (2) tidak cukup untuk menjawab pertanyaan.`
+    ],
+    correct: 3,
+    pembahasan: String.raw`<p><b>Konsep:</b> belah ketupat memiliki empat sisi sama panjang, kedua diagonalnya saling tegak lurus dan saling membagi dua, luas $=\frac12 d_1d_2$, keliling $=4s$. Soal kecukupan data: cukup berarti menghasilkan <b>satu nilai pasti</b>.</p>
+<p><b>Pernyataan (1) saja:</b></p>
+$$\begin{aligned}
+240 &= \frac12(24)(d_2)\\
+d_2 &= 20\\
+s &= \sqrt{12^2+10^2}=\sqrt{244}\\
+K &= 4\sqrt{244}=8\sqrt{61}
+\end{aligned}$$
+<p>Nilai tunggal, jadi (1) cukup.</p>
+<p><b>Pernyataan (2) saja:</b> semua sisi sama, sehingga $K=4\times13=52$ cm. Nilai tunggal, jadi (2) cukup.</p>
+<p>Kesimpulan: masing-masing pernyataan sudah cukup.</p>
+<p><b>Jebakan:</b> mengira (2) tidak cukup karena "diagonal lain belum diketahui" padahal pada belah ketupat keliling cukup dari satu sisi; atau mengira (1) tidak cukup karena tidak ada panjang sisi.</p>`,
+    cara_cepat: String.raw`<p>Belah ketupat: keliling $=4\times$ sisi, jadi yang dicari sebenarnya hanya <b>satu sisi</b>.</p>
+<p>(2) memberi sisi langsung. (1) memberi diagonal kedua lewat luas, lalu sisi lewat Pythagoras. Dua-duanya cukup.</p>`
+  },
+  {
+    id: 18,
+    text: String.raw`Sebuah kotak berukuran $30\ \text{cm}\times20\ \text{cm}\times10\ \text{cm}$ (panjang $\times$ lebar $\times$ tinggi) tidak boleh dibalik sehingga tingginya selalu $10$ cm, tetapi boleh diputar mendatar. Kotak-kotak tersebut dimuat ke dalam bak kontainer berukuran $120\ \text{cm}\times90\ \text{cm}\times75\ \text{cm}$. Banyak kotak paling banyak yang dapat dimuat adalah ....`,
+    image: "",
+    options: [String.raw`$126$ kotak`, String.raw`$128$ kotak`, String.raw`$135$ kotak`, String.raw`$144$ kotak`, String.raw`$150$ kotak`],
+    correct: 0,
+    pembahasan: String.raw`<p><b>Konsep:</b> pengepakan. Tinggi tetap $10$ cm, jadi hitung dulu banyak lapisan, lalu banyak kotak per lapisan (alas $30\times20$ boleh diputar).</p>
+$$\begin{aligned}
+\text{lapisan} &= \left\lfloor\frac{75}{10}\right\rfloor=7\quad(\text{sisa }5\text{ cm})\\
+\text{batas atas per lapisan} &= \frac{120\times90}{30\times20}=18
+\end{aligned}$$
+<p>Uji dua posisi:</p>
+$$\begin{aligned}
+30\parallel120,\ 20\parallel90 &: \ 4\times4=16\\
+20\parallel120,\ 30\parallel90 &: \ 6\times3=18\ \checkmark
+\end{aligned}$$
+$$\text{Total}=18\times7=126\text{ kotak}$$
+<p><b>Jebakan:</b> membagi volume $\dfrac{120\cdot90\cdot75}{30\cdot20\cdot10}=135$ (mengabaikan sisa tinggi $5$ cm); $144=18\times8$ (membulatkan lapisan ke atas); $128=16\times8$.</p>`,
+    cara_cepat: String.raw`<p>Tinggi $75\div10=7{,}5\to$ hanya <b>7 lapisan</b> (jangan dibulatkan ke atas, kotak tidak boleh dipotong).</p>
+<p>Alas: $\frac{10.800}{600}=18$ dan posisi $20\times6,\ 30\times3$ memang pas $18$. Jadi $18\times7=126$.</p>`
+  },
+  {
+    id: 19,
+    text: String.raw`Bu Rina membuat $15$ topi ulang tahun berbentuk kerucut tanpa alas dari karton. Setiap topi memiliki jari-jari alas $7$ cm dan tinggi $24$ cm. Karton dijual per lembar dengan harga Rp6.000,00 dan setiap lembar seluas $800\ \text{cm}^2$. Biaya minimal yang harus dikeluarkan Bu Rina untuk membeli karton adalah .... (gunakan $\pi=\frac{22}{7}$ dan anggap sisa potongan dapat dipakai lagi)`,
+    image: "",
+    options: [String.raw`Rp60.000,00`, String.raw`Rp66.000,00`, String.raw`Rp78.000,00`, String.raw`Rp84.000,00`, String.raw`Rp90.000,00`],
+    correct: 1,
+    pembahasan: String.raw`<p><b>Konsep:</b> kerucut tanpa alas hanya memiliki selimut: $L=\pi rs$ dengan garis pelukis $s=\sqrt{r^2+t^2}$. Karton dijual per lembar utuh sehingga jumlah lembar <b>dibulatkan ke atas</b>.</p>
+$$\begin{aligned}
+s &= \sqrt{7^2+24^2}=\sqrt{625}=25\\
+L_{1} &= \frac{22}{7}\times7\times25=550\ \text{cm}^2\\
+L_{15} &= 15\times550=8.250\ \text{cm}^2\\
+\text{lembar} &= \frac{8.250}{800}=10{,}3125\ \to\ 11
+\end{aligned}$$
+$$\text{Biaya}=11\times6.000=66.000$$
+<p><b>Jebakan:</b> memakai tinggi $24$ sebagai pengganti $s$ memberi $10$ lembar (Rp60.000); $s=7+24=31$ memberi $13$ lembar (Rp78.000); ikut menghitung alas memberi $14$ lembar (Rp84.000); membeli per topi memberi $15$ lembar (Rp90.000).</p>`,
+    cara_cepat: String.raw`<p>$7,\ 24,\ 25$ adalah tripel Pythagoras, jadi $s=25$ langsung.</p>
+<p>$\frac{22}{7}\times7=22\Rightarrow L=22\times25=550$. Total $8.250\div800\approx10{,}3\to11$ lembar $\Rightarrow 66.000$.</p>`
+  },
+
+  // ----------------------------------------------------------- TRIGONOMETRI
+  {
+    id: 20,
+    text: String.raw`Dari titik $A$ di tanah, sudut elevasi puncak sebuah menara adalah $30^\circ$. Setelah berjalan mendekati menara sejauh $40$ m ke titik $B$ (sejajar permukaan tanah), sudut elevasi puncak menara menjadi $60^\circ$. Tinggi menara tersebut adalah ....`,
+    image: img20(),
+    options: [String.raw`$10\sqrt{3}$ m`, String.raw`$20$ m`, String.raw`$20\sqrt{2}$ m`, String.raw`$30$ m`, String.raw`$20\sqrt{3}$ m`],
+    correct: 4,
+    pembahasan: String.raw`<p><b>Konsep:</b> sudut elevasi dengan perbandingan tangen, $\tan\theta=\dfrac{\text{tinggi}}{\text{jarak mendatar}}$. Nilai: $\tan30^\circ=\dfrac{1}{\sqrt3}$ dan $\tan60^\circ=\sqrt3$.</p>
+<p>Misal $h$ tinggi menara dan $x$ jarak $B$ ke kaki menara.</p>
+$$\begin{aligned}
+\text{dari }B:\quad \tan60^\circ &= \frac{h}{x}\ \Rightarrow\ h=x\sqrt3\\
+\text{dari }A:\quad \tan30^\circ &= \frac{h}{x+40}\ \Rightarrow\ h=\frac{x+40}{\sqrt3}
+\end{aligned}$$
+$$\begin{aligned}
+x\sqrt3 &= \frac{x+40}{\sqrt3}\\
+3x &= x+40\\
+x &= 20\\
+h &= 20\sqrt3
+\end{aligned}$$
+<p><b>Jebakan:</b> $20$ adalah jarak $x$, bukan tinggi; $10\sqrt3$ muncul bila salah membagi dua; $30$ dan $20\sqrt2$ adalah pengecoh hasil salah substitusi.</p>`,
+    cara_cepat: String.raw`<p>Pada segitiga $ABT$ ($T$ puncak menara): $\angle A=30^\circ$ dan $\angle ABT=180^\circ-60^\circ=120^\circ$, sehingga $\angle T=30^\circ$ dan segitiga sama kaki. Maka $BT=AB=40$.</p>
+<p>Tinggi $=BT\sin60^\circ=40\times\frac{\sqrt3}{2}=20\sqrt3$.</p>`
+  },
+
+  // ------------------------------------------------------- DATA DAN PELUANG
+  {
+    id: 21,
+    text: String.raw`Berikut data banyak pengunjung (dalam ribu orang) tiga cabang toko selama enam tahun.
+<table class="qt">
+<tr><th>Tahun</th><th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th></tr>
+<tr><td>Cabang X</td><td>40</td><td>45</td><td>45</td><td>50</td><td>60</td><td>70</td></tr>
+<tr><td>Cabang Y</td><td>55</td><td>50</td><td>60</td><td>65</td><td>65</td><td>65</td></tr>
+<tr><td>Cabang Z</td><td>30</td><td>35</td><td>40</td><td>38</td><td>45</td><td>55</td></tr>
+</table>
+Berdasarkan data tersebut, pernyataan yang <b>benar</b> adalah ....`,
+    image: img21(),
+    options: [
+      String.raw`Banyak pengunjung Cabang X selalu naik setiap tahun dari 2020 sampai 2025.`,
+      String.raw`Total pengunjung ketiga cabang pada tahun 2023 lebih sedikit daripada tahun 2022.`,
+      String.raw`Banyak pengunjung Cabang Y selalu lebih banyak daripada Cabang X pada setiap tahun.`,
+      String.raw`Rata-rata pengunjung Cabang X selama 2020 sampai 2025 lebih dari 55 ribu.`,
+      String.raw`Kenaikan terbesar Cabang Z dari satu tahun ke tahun berikutnya terjadi pada 2024 ke 2025.`
+    ],
+    correct: 4,
+    pembahasan: String.raw`<p><b>Konsep:</b> membaca data/grafik. Periksa setiap pernyataan satu per satu dengan angka, jangan hanya dengan kesan visual.</p>
+<table class="qt">
+<tr><th>Pernyataan</th><th>Pemeriksaan</th><th>Hasil</th></tr>
+<tr><td>A</td><td>X: $45\to45$ (2021 ke 2022) tetap, tidak naik</td><td>Salah</td></tr>
+<tr><td>B</td><td>2022: $45+60+40=145$; 2023: $50+65+38=153$ (naik)</td><td>Salah</td></tr>
+<tr><td>C</td><td>2025: Y $=65<$ X $=70$</td><td>Salah</td></tr>
+<tr><td>D</td><td>$\frac{40+45+45+50+60+70}{6}=\frac{310}{6}\approx51{,}7<55$</td><td>Salah</td></tr>
+<tr><td>E</td><td>Kenaikan Z: $+5,\ +5,\ -2,\ +7,\ +10$; terbesar $+10$ pada 2024 ke 2025</td><td>Benar</td></tr>
+</table>`,
+    cara_cepat: String.raw`<p>Cari "pengganggu": kata <b>selalu</b> (A, C) gugur begitu ada satu titik yang melanggar (X tetap di 2022, Y kalah di 2025).</p>
+<p>B salah karena hanya Z yang turun tipis ($-2$) sedangkan X dan Y naik. D salah karena rata-rata X kurang dari 55. Sisa E.</p>`
+  },
+  {
+    id: 22,
+    text: String.raw`Enam siswa $A,\ B,\ C,\ D,\ E,$ dan $F$ akan duduk berjajar pada satu baris kursi untuk berfoto. $A$ dan $B$ harus duduk berdampingan, sedangkan $C$ dan $D$ tidak boleh duduk berdampingan. Banyak susunan duduk yang mungkin adalah ....`,
+    image: "",
+    options: [String.raw`$144$`, String.raw`$192$`, String.raw`$240$`, String.raw`$480$`, String.raw`$720$`],
+    correct: 0,
+    pembahasan: String.raw`<p><b>Konsep:</b> permutasi dengan syarat berdampingan (anggap satu blok) dan syarat "tidak berdampingan" lewat komplemen: <b>semua $-$ yang dilarang</b>.</p>
+<p>Langkah 1: $A$ dan $B$ berdampingan. Anggap blok $[AB]$ (bisa $AB$ atau $BA$), sehingga ada $5$ unit.</p>
+$$2\times5!=2\times120=240$$
+<p>Langkah 2: dari $240$ itu, buang yang $C$ dan $D$ juga berdampingan. Ada dua blok $[AB]$ dan $[CD]$ ditambah $E$ dan $F$ $\Rightarrow$ $4$ unit.</p>
+$$2\times2\times4!=4\times24=96$$
+$$240-96=144$$
+<p><b>Jebakan:</b> $240$ mengabaikan syarat $C$ dan $D$; $192$ muncul bila blok $[CD]$ dihitung satu urutan saja ($240-48$); $720=6!$ mengabaikan semua syarat.</p>`,
+    cara_cepat: String.raw`<p>Hitung $A,B$ berdampingan: $2\times5!=240$.</p>
+<p>Kurangi kasus $C,D$ ikut berdampingan: $2\times2\times4!=96$. Hasil $240-96=144$.</p>`
+  },
+  {
+    id: 23,
+    text: String.raw`Rata-rata nilai ulangan Kelas XII-A yang terdiri atas $25$ siswa adalah $72$ dan rata-rata Kelas XII-B yang terdiri atas $15$ siswa adalah $80$. Kelas XII-C terdiri atas $20$ siswa. Jika rata-rata nilai gabungan ketiga kelas adalah $76$, maka rata-rata nilai Kelas XII-C adalah ....`,
+    image: "",
+    options: [String.raw`$74$`, String.raw`$76$`, String.raw`$78$`, String.raw`$80$`, String.raw`$82$`],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> rata-rata gabungan $=\dfrac{\text{jumlah seluruh nilai}}{\text{banyak seluruh siswa}}$. Rata-rata tiap kelas tidak boleh dirata-ratakan langsung karena jumlah siswanya berbeda.</p>
+$$\begin{aligned}
+\text{jumlah A} &= 25\times72=1.800\\
+\text{jumlah B} &= 15\times80=1.200\\
+\text{jumlah semua} &= 76\times(25+15+20)=76\times60=4.560\\
+\text{jumlah C} &= 4.560-1.800-1.200=1.560\\
+\text{rata-rata C} &= \frac{1.560}{20}=78
+\end{aligned}$$
+<p><b>Jebakan:</b> memakai rata-rata sederhana $\dfrac{72+80+x}{3}=76$ menghasilkan $x=76$.</p>`,
+    cara_cepat: String.raw`<p>Pakai selisih terhadap $76$ (pembobotan): A $=-4$ dikali $25=-100$; B $=+4$ dikali $15=+60$.</p>
+<p>Total sementara $-40$, maka C harus menyumbang $+40$ dari $20$ siswa: $+2$ per siswa. Rata-rata C $=76+2=78$.</p>`
+  },
+  {
+    id: 24,
+    text: String.raw`Sebuah kotak berisi $4$ bola merah, $3$ bola biru, dan $3$ bola kuning. Tiga bola diambil sekaligus secara acak. Peluang terambil paling sedikit satu bola merah adalah ....`,
+    image: "",
+    options: [String.raw`$\dfrac{1}{6}$`, String.raw`$\dfrac{1}{2}$`, String.raw`$\dfrac{4}{5}$`, String.raw`$\dfrac{5}{6}$`, String.raw`$\dfrac{29}{30}$`],
+    correct: 3,
+    pembahasan: String.raw`<p><b>Konsep:</b> kombinasi dan peluang kejadian komplemen: $P(\text{paling sedikit 1 merah})=1-P(\text{tidak ada merah})$.</p>
+$$\begin{aligned}
+n(S) &= C(10,3)=120\\
+n(\text{tanpa merah}) &= C(6,3)=20\\
+P(\text{tanpa merah}) &= \frac{20}{120}=\frac16\\
+P(\text{paling sedikit 1 merah}) &= 1-\frac16=\frac56
+\end{aligned}$$
+<p><b>Jebakan:</b> $\frac16$ adalah peluang komplemennya; $\frac12$ hanya kasus tepat 1 merah; $\frac45$ adalah kasus 1 atau 2 merah (lupa 3 merah); $\frac{29}{30}$ salah membaca menjadi "bukan semuanya merah".</p>`,
+    cara_cepat: String.raw`<p>"Paling sedikit satu" $\Rightarrow$ pakai komplemen.</p>
+<p>Tidak ada merah $=$ ambil 3 dari 6 bola nonmerah: $\dfrac{6\cdot5\cdot4}{10\cdot9\cdot8}=\dfrac{1}{6}$. Jadi $1-\frac16=\frac56$.</p>`
+  },
+  {
+    id: 25,
+    text: String.raw`Dua dadu bersisi enam dilempar bersamaan. Peluang jumlah mata dadu yang muncul merupakan bilangan prima atau kelipatan $3$ adalah ....`,
+    image: "",
+    options: [String.raw`$\dfrac{2}{3}$`, String.raw`$\dfrac{25}{36}$`, String.raw`$\dfrac{3}{4}$`, String.raw`$\dfrac{7}{9}$`, String.raw`$\dfrac{5}{6}$`],
+    correct: 1,
+    pembahasan: String.raw`<p><b>Konsep:</b> peluang kejadian majemuk (tidak saling lepas): $P(A\cup B)=P(A)+P(B)-P(A\cap B)$.</p>
+<p>Banyak cara tiap jumlah: $2{:}1,\ 3{:}2,\ 4{:}3,\ 5{:}4,\ 6{:}5,\ 7{:}6,\ 8{:}5,\ 9{:}4,\ 10{:}3,\ 11{:}2,\ 12{:}1$.</p>
+$$\begin{aligned}
+A\ (\text{prima: }2,3,5,7,11) &: 1+2+4+6+2=15\\
+B\ (\text{kelipatan }3:\ 3,6,9,12) &: 2+5+4+1=12\\
+A\cap B\ (\text{jumlah }3) &: 2
+\end{aligned}$$
+$$\begin{aligned}
+n(A\cup B) &= 15+12-2=25\\
+P(A\cup B) &= \frac{25}{36}
+\end{aligned}$$
+<p><b>Jebakan:</b> lupa mengurangi irisan memberi $\frac{27}{36}=\frac34$; salah menghitung irisan memberi $\frac{24}{36}=\frac23$.</p>`,
+    cara_cepat: String.raw`<p>Angka $3$ ada di dua golongan (prima dan kelipatan 3), jadi dihitung sekali saja: $15+12-2=25$.</p>
+<p>Peluang $=\dfrac{25}{36}$.</p>`
+  }
+];
+
+/* ---------- State ---------- */
+const TOTAL = 3600, L = 'ABCDE';
+let cur = 0, left = TOTAL, tick = null, done = false;
+const answers = Array(questions.length).fill(null);
+const $ = id => document.getElementById(id);
+const typeset = el => (window.MathJax && MathJax.typesetPromise) ? MathJax.typesetPromise([el]).catch(() => {}) : null;
+
+const qBlock = q => `<div class="flex flex-col gap-4 overflow-hidden break-words">
+  <div class="text-base md:text-lg leading-relaxed">${q.text}</div>
+  ${q.image ? `<img src="${q.image}" alt="Gambar soal ${q.id}" class="max-w-full h-auto object-contain block mx-auto rounded-lg border border-gray-600 bg-white/10 p-2 my-3">` : ''}
+</div>`;
+
+/* ---------- Mode mengerjakan ---------- */
+function renderExam() {
+  const q = questions[cur];
+  $('qArea').innerHTML = `<div class="text-cyan font-bold mb-3">Soal ${cur + 1} dari ${questions.length}</div>` + qBlock(q) +
+    `<div class="mt-5 flex flex-col gap-3">` + q.options.map((o, i) => {
+      const on = answers[cur] === i;
+      return `<button onclick="pick(${i})" class="w-full text-left flex items-center gap-3 p-3 rounded-xl border-2 transition ${on ? 'bg-cyan/20 border-cyan' : 'border-white/20 hover:border-cyan hover:shadow-[0_0_12px_#00d6d8]'}">
+        <span class="shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${on ? 'border-cyan' : 'border-white/50'}">${on ? '<span class="w-3 h-3 rounded-full bg-cyan"></span>' : ''}</span>
+        <span class="font-bold">${L[i]}.</span><span class="min-w-0 break-words overflow-x-auto">${o}</span></button>`;
+    }).join('') + `</div>`;
+  const last = cur === questions.length - 1;
+  $('ctrl').innerHTML = `<button onclick="go(${cur - 1})" ${cur === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-lg border border-cyan text-cyan font-bold disabled:opacity-30"><i class="fa-solid fa-arrow-left"></i> Sebelumnya</button>` +
+    (last ? `<button onclick="endExam()" class="px-4 py-2 rounded-lg bg-gold text-black font-bold">Submit &amp; Lihat Pembahasan</button>`
+          : `<button onclick="go(${cur + 1})" class="px-4 py-2 rounded-lg bg-gold text-black font-bold">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>`);
+  $('nav').innerHTML = questions.map((_, i) => `<button onclick="go(${i})" class="shrink-0 w-11 h-11 rounded-lg font-bold ${answers[i] !== null ? 'bg-gold text-black' : 'bg-white/10 text-white'} ${i === cur ? 'ring-2 ring-cyan' : ''}">${i + 1}</button>`).join('');
+  typeset($('qArea'));
+}
+function pick(i) { if (done) return; answers[cur] = i; renderExam(); }
+function go(i) { if (i < 0 || i >= questions.length) return; cur = i; renderExam(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+/* ---------- Timer ---------- */
+const fmt = s => [Math.floor(s / 3600), Math.floor(s % 3600 / 60), s % 60].map(n => String(n).padStart(2, '0')).join(':');
+function startTimer() {
+  tick = setInterval(() => {
+    left--; $('timer').textContent = fmt(Math.max(left, 0));
+    if (left <= 300) $('timerBox').classList.add('text-red-400', 'animate-pulse');
+    if (left <= 0) finish();
+  }, 1000);
+}
+function endExam() {
+  const blank = answers.filter(a => a === null).length;
+  $('modalMsg').textContent = blank ? `Masih ada ${blank} soal belum dijawab. Akhiri ujian sekarang?` : 'Akhiri ujian dan lihat pembahasan?';
+  $('modal').classList.remove('hidden');
+}
+function closeModal() { $('modal').classList.add('hidden'); }
+
+/* ---------- Mode pembahasan ---------- */
+function finish() {
+  if (done) return; done = true; clearInterval(tick);
+  ['examView', 'timerBox', 'endBtn'].forEach(id => $(id).classList.add('hidden'));
+  const benar = questions.filter((q, i) => answers[i] === q.correct).length;
+  const kosong = answers.filter(a => a === null).length;
+  const salah = questions.length - benar - kosong;
+  const skor = Math.round(benar / questions.length * 100);
+  const rv = $('resultView'); rv.classList.remove('hidden');
+  rv.innerHTML = `<div class="bg-gradient-to-br from-cyan/30 to-white/5 border border-cyan/50 rounded-2xl p-6 text-center shadow-[0_0_30px_rgba(0,214,216,.25)]">
+    <div class="text-cyan font-bold tracking-wide">HASIL TRYOUT PAKET 2</div>
+    <div class="text-6xl md:text-7xl font-extrabold text-gold my-2">${skor}</div>
+    <div class="grid grid-cols-3 gap-3 max-w-md mx-auto my-4 text-sm">
+      <div class="bg-white/10 rounded-xl p-3"><div class="text-2xl font-bold text-green-400">${benar}</div>Benar</div>
+      <div class="bg-white/10 rounded-xl p-3"><div class="text-2xl font-bold text-red-400">${salah}</div>Salah</div>
+      <div class="bg-white/10 rounded-xl p-3"><div class="text-2xl font-bold text-white/70">${kosong}</div>Kosong</div>
+    </div>
+    <a href="tryout.html" class="inline-block bg-gold text-black font-extrabold text-lg px-8 py-3 rounded-xl hover:scale-105 transition">Kembali ke Dashboard</a>
+  </div>` + questions.map((q, i) => {
+    const a = answers[i], ok = a === q.correct;
+    const tag = a === null ? ['Kosong', 'bg-white/20'] : ok ? ['Benar', 'bg-green-600'] : ['Salah', 'bg-red-600'];
+    return `<article class="mt-6 bg-white/5 border border-white/15 rounded-2xl p-4 md:p-6">
+      <div class="flex items-center justify-between mb-3"><div class="font-bold text-cyan">Soal ${i + 1}</div><span class="${tag[1]} text-xs font-bold px-3 py-1 rounded-full">${tag[0]}</span></div>
+      ${qBlock(q)}
+      <div class="grid md:grid-cols-2 gap-3 mt-4 text-sm">
+        <div class="rounded-xl p-3 border ${a === null ? 'border-white/30' : ok ? 'border-green-500 bg-green-500/10' : 'border-red-500 bg-red-500/10'}"><div class="font-bold mb-1">Jawabanmu: ${a === null ? '-' : L[a] + '.'}</div><div class="break-words">${a === null ? 'Tidak dijawab' : q.options[a]}</div></div>
+        <div class="rounded-xl p-3 border border-green-500 bg-green-500/10"><div class="font-bold mb-1">Kunci: ${L[q.correct]}.</div><div class="break-words">${q.options[q.correct]}</div></div>
+      </div>
+      <div class="mt-4 bg-white/5 border border-white/20 rounded-xl p-4 overflow-hidden break-words"><div class="font-bold text-gold mb-2"><i class="fa-solid fa-list-check"></i> Pembahasan Lengkap</div>${q.pembahasan}</div>
+      <div class="mt-3 bg-cyan/10 border border-cyan/40 rounded-xl p-4 overflow-hidden break-words"><div class="font-bold text-cyan mb-2">🔥 Cara Cepat</div>${q.cara_cepat}</div>
+    </article>`;
+  }).join('') + `<div class="text-center my-8"><a href="tryout.html" class="inline-block bg-gold text-black font-bold px-6 py-3 rounded-xl">Kembali ke Dashboard</a></div>`;
+  window.scrollTo({ top: 0 }); typeset(rv);
+}
+
+renderExam(); startTimer();
+</script>
+</body>
+</html>
