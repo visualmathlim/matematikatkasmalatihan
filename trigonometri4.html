@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualMath.Lim - Latihan HOTS Trigonometri</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['$$', '$$']] },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] },
+  startup: { typeset: false }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+  body { background:#022050; }
+  mjx-container[display="true"] { overflow-x:auto; overflow-y:hidden; max-width:100%; padding:4px 0; }
+  .opt:hover { border-color:#00d6d8; box-shadow:0 0 12px rgba(0,214,216,.35); }
+  .glow { box-shadow:0 0 0 2px #00d6d8, 0 0 14px rgba(0,214,216,.6); }
+  .scroll-x::-webkit-scrollbar { height:6px; }
+  .scroll-x::-webkit-scrollbar-thumb { background:#00d6d8; border-radius:9px; }
+  .prose-vm p { margin:.5rem 0; line-height:1.7; }
+</style>
+</head>
+<body class="text-white min-h-screen font-sans">
+
+<!-- NAVBAR -->
+<header class="sticky top-0 z-30 bg-[#011836]/95 backdrop-blur border-b border-[#00d6d8]/30">
+  <div class="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-2 min-w-0">
+      <a href="index.html" title="Home" class="text-[#00d6d8] hover:text-white"><i class="fa-solid fa-house"></i></a>
+      <h1 class="font-bold text-xs sm:text-base truncate">VisualMath.Lim - Latihan Trigonometri TKA SMA Kelas 12</h1>
+    </div>
+    <a href="trigonometri.html" class="shrink-0 flex items-center gap-2 border border-[#00d6d8] text-[#00d6d8] hover:bg-[#00d6d8] hover:text-black rounded-lg px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold transition">
+      <img src="logo.png" alt="Logo" class="h-6 w-6 object-contain" onerror="this.style.display='none'">
+      <span class="hidden sm:inline">Kembali ke Dashboard Trigonometri</span>
+      <span class="sm:hidden">Dashboard</span>
+    </a>
+  </div>
+</header>
+
+<main id="app" class="max-w-7xl mx-auto p-3 sm:p-4"></main>
+
+<script>
+/* ============ DATA SOAL HOTS (10 soal) ============ */
+const questions = [
+ {
+  "id": 1,
+  "question_text": "Diketahui \\(\\tan\\theta=\\dfrac{3}{4}\\) dan \\(\\theta\\) berada di kuadran III. Nilai \\(\\csc\\theta+\\sec\\theta\\) adalah \\(\\ldots\\)",
+  "image": "",
+  "options": {
+   "A": "\\(\\dfrac{35}{12}\\)",
+   "B": "\\(-\\dfrac{35}{12}\\)",
+   "C": "\\(-\\dfrac{5}{12}\\)",
+   "D": "\\(\\dfrac{5}{12}\\)",
+   "E": "\\(-\\dfrac{7}{12}\\)"
+  },
+  "correct_answer": "B",
+  "pembahasan_image": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20270%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%3E%3Cline%20x1%3D%2210%22%20y1%3D%22100%22%20x2%3D%22390%22%20y2%3D%22100%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22/%3E%3Cline%20x1%3D%22200%22%20y1%3D%2210%22%20x2%3D%22200%22%20y2%3D%22260%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%22386%22%20y%3D%2292%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3Ex%3C/text%3E%3Ctext%20x%3D%22208%22%20y%3D%2222%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3Ey%3C/text%3E%3Cpolygon%20points%3D%22200%2C100%2080%2C100%2080%2C190%22%20fill%3D%22%2300d6d8%22%20fill-opacity%3D%22.2%22/%3E%3Cline%20x1%3D%22200%22%20y1%3D%22100%22%20x2%3D%2280%22%20y2%3D%22190%22%20stroke%3D%22%23ff6b6b%22%20stroke-width%3D%223%22/%3E%3Cline%20x1%3D%2280%22%20y1%3D%22100%22%20x2%3D%2280%22%20y2%3D%22190%22%20stroke%3D%22%234ade80%22%20stroke-width%3D%223%22/%3E%3Cline%20x1%3D%2280%22%20y1%3D%22100%22%20x2%3D%22200%22%20y2%3D%22100%22%20stroke%3D%22%2300d6d8%22%20stroke-width%3D%223%22/%3E%3Crect%20x%3D%2280%22%20y%3D%22100%22%20width%3D%2210%22%20height%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%2280%22%20cy%3D%22190%22%20r%3D%224%22%20fill%3D%22%23ffd300%22/%3E%3Ctext%20x%3D%2280%22%20y%3D%22210%22%20fill%3D%22%23ffd300%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3EP%28%E2%88%924%2C%20%E2%88%923%29%3C/text%3E%3Ctext%20x%3D%22120%22%20y%3D%2292%22%20fill%3D%22%2300d6d8%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3Ex%20%3D%20%E2%88%924%3C/text%3E%3Ctext%20x%3D%2270%22%20y%3D%22148%22%20fill%3D%22%234ade80%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3Ey%20%3D%20%E2%88%923%3C/text%3E%3Ctext%20x%3D%22150%22%20y%3D%22160%22%20fill%3D%22%23ff6b6b%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3Er%20%3D%205%3C/text%3E%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%222%22%20points%3D%22175.0%2C100.0%20175.0%2C100.7%20175.0%2C101.3%20175.1%2C102.0%20175.1%2C102.7%20175.2%2C103.3%20175.3%2C104.0%20175.4%2C104.7%20175.6%2C105.3%20175.7%2C106.0%20175.9%2C106.6%20176.1%2C107.3%20176.3%2C107.9%20176.5%2C108.5%20176.7%2C109.2%20177.0%2C109.8%20177.3%2C110.4%20177.6%2C111.0%20177.9%2C111.6%20178.2%2C112.2%20178.5%2C112.8%20178.9%2C113.3%20179.2%2C113.9%20179.6%2C114.5%20180.0%2C115.0%22/%3E%3Ctext%20x%3D%22172%22%20y%3D%22124%22%20fill%3D%22%23ffd300%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3E%CE%B8%3C/text%3E%3Ctext%20x%3D%2212%22%20y%3D%22258%22%20fill%3D%22%23ffffff%22%20font-size%3D%2212%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3EKuadran%20III%3A%20sin%20dan%20cos%20negatif%3C/text%3E%3C/svg%3E",
+  "pembahasan": "<p><b>Langkah 1.</b> Di kuadran III, \\(\\sin\\theta\\) dan \\(\\cos\\theta\\) negatif, sedangkan \\(\\tan\\theta\\) positif.</p><p><b>Langkah 2.</b> \\(\\tan\\theta=\\frac{y}{x}=\\frac{3}{4}\\), maka \\(|y|=3\\), \\(|x|=4\\), \\(r=\\sqrt{3^2+4^2}=5\\). Di kuadran III: \\(x=-4\\), \\(y=-3\\).</p>$$\\sin\\theta=\\frac{y}{r}=-\\frac{3}{5},\\qquad \\cos\\theta=\\frac{x}{r}=-\\frac{4}{5}$$$$\\csc\\theta=\\frac{1}{\\sin\\theta}=-\\frac{5}{3},\\qquad \\sec\\theta=\\frac{1}{\\cos\\theta}=-\\frac{5}{4}$$$$\\begin{aligned}\\csc\\theta+\\sec\\theta &= -\\frac{5}{3}-\\frac{5}{4}\\\\ &= -\\frac{20}{12}-\\frac{15}{12}\\\\ &= -\\frac{35}{12}\\end{aligned}$$<p><b>Jawaban: B.</b></p>",
+  "cara_cepat": "<p>Kuadran III membuat \\(\\csc\\theta\\) dan \\(\\sec\\theta\\) sama-sama negatif, jadi jumlahnya <b>negatif</b>: coret A dan D.</p><p>Tripel 3-4-5: \\(\\csc\\theta=-\\frac{5}{3}\\), \\(\\sec\\theta=-\\frac{5}{4}\\). Jumlah \\(=-\\left(\\frac{5}{3}+\\frac{5}{4}\\right)=-\\frac{35}{12}\\).</p>"
+ },
+ {
+  "id": 2,
+  "question_text": "Seorang pengamat di titik \\(P\\) melihat puncak menara dengan sudut elevasi \\(30^\\circ\\). Ia berjalan mendekati menara sejauh 40 m ke titik \\(Q\\) (segaris dengan \\(P\\) dan kaki menara), sehingga sudut elevasinya menjadi \\(60^\\circ\\). Tinggi menara (abaikan tinggi pengamat) adalah \\(\\ldots\\)",
+  "image": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20440%20240%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%3E%3Cline%20x1%3D%2220%22%20y1%3D%22200%22%20x2%3D%22430%22%20y2%3D%22200%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22/%3E%3Crect%20x%3D%22380%22%20y%3D%2227%22%20width%3D%2220%22%20height%3D%22173%22%20fill%3D%22%2364748b%22/%3E%3Cline%20x1%3D%2290%22%20y1%3D%22200%22%20x2%3D%22390%22%20y2%3D%2227%22%20stroke%3D%22%2300d6d8%22%20stroke-width%3D%222%22/%3E%3Cline%20x1%3D%22290%22%20y1%3D%22200%22%20x2%3D%22390%22%20y2%3D%2227%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%222%22/%3E%3Crect%20x%3D%22378%22%20y%3D%22188%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%2290%22%20cy%3D%22200%22%20r%3D%224%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22290%22%20cy%3D%22200%22%20r%3D%224%22%20fill%3D%22%23ffffff%22/%3E%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%2300d6d8%22%20stroke-width%3D%222%22%20points%3D%22135.0%2C200.0%20135.0%2C199.0%20135.0%2C198.0%20134.9%2C197.1%20134.8%2C196.1%20134.7%2C195.1%20134.6%2C194.1%20134.5%2C193.2%20134.3%2C192.2%20134.1%2C191.2%20133.9%2C190.3%20133.7%2C189.3%20133.5%2C188.4%20133.2%2C187.4%20132.9%2C186.5%20132.6%2C185.5%20132.3%2C184.6%20131.9%2C183.7%20131.6%2C182.8%20131.2%2C181.9%20130.8%2C181.0%20130.4%2C180.1%20129.9%2C179.2%20129.5%2C178.4%20129.0%2C177.5%22/%3E%3Ctext%20x%3D%22140%22%20y%3D%22194%22%20fill%3D%22%2300d6d8%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3E30%C2%B0%3C/text%3E%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%222%22%20points%3D%22320.0%2C200.0%20320.0%2C198.7%20319.9%2C197.4%20319.7%2C196.1%20319.5%2C194.8%20319.3%2C193.5%20319.0%2C192.2%20318.6%2C191.0%20318.2%2C189.7%20317.7%2C188.5%20317.2%2C187.3%20316.6%2C186.1%20316.0%2C185.0%20315.3%2C183.9%20314.6%2C182.8%20313.8%2C181.7%20313.0%2C180.7%20312.1%2C179.7%20311.2%2C178.8%20310.3%2C177.9%20309.3%2C177.0%20308.3%2C176.2%20307.2%2C175.4%20306.1%2C174.7%20305.0%2C174.0%22/%3E%3Ctext%20x%3D%22326%22%20y%3D%22190%22%20fill%3D%22%23ffd300%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3E60%C2%B0%3C/text%3E%3Ctext%20x%3D%2290%22%20y%3D%22222%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3EP%3C/text%3E%3Ctext%20x%3D%22290%22%20y%3D%22222%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3EQ%3C/text%3E%3Ctext%20x%3D%22390%22%20y%3D%22222%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3Ekaki%20menara%3C/text%3E%3Ctext%20x%3D%22190%22%20y%3D%22222%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3E40%20m%3C/text%3E%3Ctext%20x%3D%22372%22%20y%3D%22120%22%20fill%3D%22%23ffd300%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3Eh%20%3D%20%3F%3C/text%3E%3C/svg%3E",
+  "options": {
+   "A": "\\(10\\sqrt{3}\\) m",
+   "B": "\\(20\\) m",
+   "C": "\\(20\\sqrt{2}\\) m",
+   "D": "\\(20\\sqrt{3}\\) m",
+   "E": "\\(40\\sqrt{3}\\) m"
+  },
+  "correct_answer": "D",
+  "pembahasan_image": "",
+  "pembahasan": "<p>Misalkan \\(d\\) = jarak \\(Q\\) ke kaki menara dan \\(h\\) = tinggi menara.</p>$$\\tan 60^\\circ=\\frac{h}{d}\\;\\Rightarrow\\; h=d\\sqrt{3}$$$$\\tan 30^\\circ=\\frac{h}{d+40}\\;\\Rightarrow\\; h=\\frac{d+40}{\\sqrt{3}}$$$$\\begin{aligned}d\\sqrt{3} &= \\frac{d+40}{\\sqrt{3}}\\\\ 3d &= d+40\\\\ d &= 20\\end{aligned}$$$$h=d\\sqrt{3}=20\\sqrt{3}\\text{ m}$$<p><b>Jawaban: D.</b></p>",
+  "cara_cepat": "<p>Sudut luar di \\(Q\\) adalah \\(60^\\circ\\) \\(=30^\\circ\\) (sudut \\(P\\)) \\(+\\) sudut di puncak, sehingga sudut puncak \\(=30^\\circ\\). Segitiga \\(P\\)-\\(Q\\)-puncak sama kaki: jarak \\(Q\\) ke puncak \\(=PQ=40\\) m.</p>$$h=40\\sin 60^\\circ=40\\cdot\\tfrac{1}{2}\\sqrt{3}=20\\sqrt{3}\\text{ m}$$"
+ },
+ {
+  "id": 3,
+  "question_text": "Diketahui \\(\\sin\\theta+\\cos\\theta=\\dfrac{1}{2}\\). Nilai \\(\\tan\\theta+\\cot\\theta\\) adalah \\(\\ldots\\)",
+  "image": "",
+  "options": {
+   "A": "\\(-\\dfrac{8}{3}\\)",
+   "B": "\\(\\dfrac{8}{3}\\)",
+   "C": "\\(-\\dfrac{3}{8}\\)",
+   "D": "\\(\\dfrac{3}{8}\\)",
+   "E": "\\(-\\dfrac{4}{3}\\)"
+  },
+  "correct_answer": "A",
+  "pembahasan_image": "",
+  "pembahasan": "<p>Kuadratkan kedua ruas untuk mendapatkan \\(\\sin\\theta\\cos\\theta\\):</p>$$\\begin{aligned}(\\sin\\theta+\\cos\\theta)^2 &= \\left(\\tfrac{1}{2}\\right)^2\\\\ 1+2\\sin\\theta\\cos\\theta &= \\tfrac{1}{4}\\\\ \\sin\\theta\\cos\\theta &= -\\tfrac{3}{8}\\end{aligned}$$<p>Ubah \\(\\tan\\theta+\\cot\\theta\\) ke sin dan cos:</p>$$\\begin{aligned}\\tan\\theta+\\cot\\theta &= \\frac{\\sin\\theta}{\\cos\\theta}+\\frac{\\cos\\theta}{\\sin\\theta}\\\\ &= \\frac{\\sin^2\\theta+\\cos^2\\theta}{\\sin\\theta\\cos\\theta}\\\\ &= \\frac{1}{-3/8} = -\\frac{8}{3}\\end{aligned}$$<p><b>Jawaban: A.</b></p>",
+  "cara_cepat": "<p>\\(\\tan\\theta+\\cot\\theta=\\dfrac{1}{\\sin\\theta\\cos\\theta}\\). Hasil kali \\(\\sin\\theta\\cos\\theta=\\dfrac{(1/2)^2-1}{2}=-\\dfrac{3}{8}\\), jadi hasilnya \\(-\\dfrac{8}{3}\\).</p>"
+ },
+ {
+  "id": 4,
+  "question_text": "Diketahui \\(\\sec\\theta+\\tan\\theta=2\\) dengan \\(\\theta\\) sudut lancip. Nilai \\(\\csc\\theta\\) adalah \\(\\ldots\\)",
+  "image": "",
+  "options": {
+   "A": "\\(\\dfrac{3}{5}\\)",
+   "B": "\\(\\dfrac{3}{4}\\)",
+   "C": "\\(\\dfrac{4}{3}\\)",
+   "D": "\\(\\dfrac{5}{4}\\)",
+   "E": "\\(\\dfrac{5}{3}\\)"
+  },
+  "correct_answer": "E",
+  "pembahasan_image": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20300%20220%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%3E%3Cpolygon%20points%3D%2260%2C190%20220%2C190%20220%2C70%22%20fill%3D%22%2300d6d8%22%20fill-opacity%3D%22.2%22/%3E%3Cline%20x1%3D%2260%22%20y1%3D%22190%22%20x2%3D%22220%22%20y2%3D%22190%22%20stroke%3D%22%2300d6d8%22%20stroke-width%3D%223%22/%3E%3Cline%20x1%3D%22220%22%20y1%3D%22190%22%20x2%3D%22220%22%20y2%3D%2270%22%20stroke%3D%22%234ade80%22%20stroke-width%3D%223%22/%3E%3Cline%20x1%3D%2260%22%20y1%3D%22190%22%20x2%3D%22220%22%20y2%3D%2270%22%20stroke%3D%22%23ff6b6b%22%20stroke-width%3D%223%22/%3E%3Crect%20x%3D%22208%22%20y%3D%22178%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22/%3E%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%222%22%20points%3D%2295.0%2C190.0%2095.0%2C189.1%2094.9%2C188.1%2094.9%2C187.2%2094.8%2C186.3%2094.7%2C185.3%2094.5%2C184.4%2094.4%2C183.5%2094.2%2C182.5%2094.0%2C181.6%2093.7%2C180.7%2093.5%2C179.8%2093.2%2C178.9%2092.9%2C178.0%2092.6%2C177.2%2092.2%2C176.3%2091.8%2C175.4%2091.4%2C174.6%2091.0%2C173.8%2090.6%2C172.9%2090.1%2C172.1%2089.6%2C171.3%2089.1%2C170.5%2088.6%2C169.8%2088.0%2C169.0%22/%3E%3Ctext%20x%3D%2298%22%20y%3D%22182%22%20fill%3D%22%23ffd300%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3E%CE%B8%3C/text%3E%3Ctext%20x%3D%22140%22%20y%3D%22210%22%20fill%3D%22%2300d6d8%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3E4%3C/text%3E%3Ctext%20x%3D%22232%22%20y%3D%22135%22%20fill%3D%22%234ade80%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3E3%3C/text%3E%3Ctext%20x%3D%22120%22%20y%3D%22120%22%20fill%3D%22%23ff6b6b%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3E5%3C/text%3E%3C/svg%3E",
+  "pembahasan": "<p>Gunakan identitas \\(\\sec^2\\theta-\\tan^2\\theta=1\\):</p>$$(\\sec\\theta+\\tan\\theta)(\\sec\\theta-\\tan\\theta)=1\\;\\Rightarrow\\;\\sec\\theta-\\tan\\theta=\\tfrac{1}{2}$$$$\\begin{aligned}\\sec\\theta &= \\frac{2+\\frac{1}{2}}{2}=\\frac{5}{4}\\\\ \\tan\\theta &= \\frac{2-\\frac{1}{2}}{2}=\\frac{3}{4}\\end{aligned}$$<p>\\(\\sec\\theta=\\frac{r}{x}=\\frac{5}{4}\\) dan \\(\\tan\\theta=\\frac{y}{x}=\\frac{3}{4}\\), sehingga \\(x=4\\), \\(y=3\\), \\(r=5\\).</p>$$\\sin\\theta=\\frac{3}{5}\\;\\Rightarrow\\;\\csc\\theta=\\frac{5}{3}$$<p><b>Jawaban: E.</b></p>",
+  "cara_cepat": "<p>Coba tripel 3-4-5: \\(\\sec\\theta=\\frac{5}{4}\\), \\(\\tan\\theta=\\frac{3}{4}\\), jumlahnya \\(\\frac{8}{4}=2\\) (cocok). Maka sisi depan 3, miring 5, sehingga \\(\\csc\\theta=\\frac{5}{3}\\).</p>"
+ },
+ {
+  "id": 5,
+  "question_text": "Garis \\(y=-2x\\) melalui titik asal. Sudut \\(\\theta\\) adalah sudut positif terkecil dari sumbu X positif ke bagian garis tersebut yang berada di kuadran II. Nilai \\(\\sec\\theta\\cdot\\csc\\theta\\) adalah \\(\\ldots\\)",
+  "image": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20360%20300%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%3E%3Cline%20x1%3D%2210%22%20y1%3D%22160%22%20x2%3D%22350%22%20y2%3D%22160%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22/%3E%3Cline%20x1%3D%22180%22%20y1%3D%2210%22%20x2%3D%22180%22%20y2%3D%22290%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%22346%22%20y%3D%22150%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3Ex%3C/text%3E%3Ctext%20x%3D%22190%22%20y%3D%2222%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3Ey%3C/text%3E%3Cline%20x1%3D%22116%22%20y1%3D%2232%22%20x2%3D%22244%22%20y2%3D%22288%22%20stroke%3D%22%2300d6d8%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%22252%22%20y%3D%22284%22%20fill%3D%22%2300d6d8%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3Ey%20%3D%20%E2%88%922x%3C/text%3E%3Cline%20x1%3D%22140%22%20y1%3D%2280%22%20x2%3D%22140%22%20y2%3D%22160%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221%22%20stroke-dasharray%3D%225%204%22/%3E%3Cline%20x1%3D%22180%22%20y1%3D%22160%22%20x2%3D%22140%22%20y2%3D%2280%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%223%22/%3E%3Ccircle%20cx%3D%22140%22%20cy%3D%2280%22%20r%3D%224%22%20fill%3D%22%23ffd300%22/%3E%3Ctext%20x%3D%22132%22%20y%3D%2272%22%20fill%3D%22%23ffd300%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3EP%28%E2%88%921%2C%202%29%3C/text%3E%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%222%22%20points%3D%22208.0%2C160.0%20207.9%2C157.6%20207.6%2C155.3%20207.1%2C153.0%20206.4%2C150.7%20205.5%2C148.5%20204.5%2C146.4%20203.2%2C144.3%20201.8%2C142.4%20200.2%2C140.7%20198.5%2C139.0%20196.7%2C137.5%20194.7%2C136.2%20192.6%2C135.0%20190.5%2C134.0%20188.3%2C133.2%20186.0%2C132.6%20183.6%2C132.2%20181.3%2C132.0%20178.9%2C132.0%20176.5%2C132.2%20174.2%2C132.6%20171.9%2C133.2%20169.6%2C134.0%20167.5%2C135.0%22/%3E%3Ctext%20x%3D%22198%22%20y%3D%22134%22%20fill%3D%22%23ffd300%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3E%CE%B8%3C/text%3E%3Ctext%20x%3D%22140%22%20y%3D%22178%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3E%E2%88%921%3C/text%3E%3C/svg%3E",
+  "options": {
+   "A": "\\(\\dfrac{5}{2}\\)",
+   "B": "\\(\\dfrac{2}{5}\\)",
+   "C": "\\(-\\dfrac{5}{2}\\)",
+   "D": "\\(-\\dfrac{2}{5}\\)",
+   "E": "\\(-\\dfrac{\\sqrt{5}}{2}\\)"
+  },
+  "correct_answer": "C",
+  "pembahasan_image": "",
+  "pembahasan": "<p>Ambil titik pada garis di kuadran II: untuk \\(x=-1\\), \\(y=-2(-1)=2\\), sehingga \\(P(-1,\\,2)\\).</p>$$r=\\sqrt{(-1)^2+2^2}=\\sqrt{5}$$$$\\sin\\theta=\\frac{2}{\\sqrt{5}},\\qquad \\cos\\theta=\\frac{-1}{\\sqrt{5}}$$$$\\begin{aligned}\\sec\\theta\\cdot\\csc\\theta &= \\frac{\\sqrt{5}}{-1}\\cdot\\frac{\\sqrt{5}}{2}\\\\ &= -\\frac{5}{2}\\end{aligned}$$<p><b>Jawaban: C.</b></p>",
+  "cara_cepat": "<p>\\(\\sec\\theta\\csc\\theta=\\dfrac{1}{\\sin\\theta\\cos\\theta}=\\dfrac{1+\\tan^2\\theta}{\\tan\\theta}\\). Kemiringan garis \\(\\tan\\theta=-2\\), sehingga \\(\\dfrac{1+4}{-2}=-\\dfrac{5}{2}\\).</p>"
+ },
+ {
+  "id": 6,
+  "question_text": "Dari puncak menara setinggi 60 m di tepi pantai, seorang pengamat melihat dua perahu yang segaris dengan menara dan berada pada sisi yang sama. Sudut depresi perahu pertama \\(45^\\circ\\) dan perahu kedua \\(30^\\circ\\). Jarak kedua perahu adalah \\(\\ldots\\)",
+  "image": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20460%20260%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%3E%3Cline%20x1%3D%2220%22%20y1%3D%22220%22%20x2%3D%22450%22%20y2%3D%22220%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22/%3E%3Crect%20x%3D%2250%22%20y%3D%22100%22%20width%3D%2220%22%20height%3D%22120%22%20fill%3D%22%2364748b%22/%3E%3Cline%20x1%3D%2260%22%20y1%3D%22100%22%20x2%3D%22330%22%20y2%3D%22100%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221%22%20stroke-dasharray%3D%225%204%22/%3E%3Cline%20x1%3D%2260%22%20y1%3D%22100%22%20x2%3D%22180%22%20y2%3D%22220%22%20stroke%3D%22%23ff6b6b%22%20stroke-width%3D%222%22/%3E%3Cline%20x1%3D%2260%22%20y1%3D%22100%22%20x2%3D%22268%22%20y2%3D%22220%22%20stroke%3D%22%234ade80%22%20stroke-width%3D%222%22/%3E%3Ccircle%20cx%3D%22180%22%20cy%3D%22220%22%20r%3D%225%22%20fill%3D%22%23ff6b6b%22/%3E%3Ccircle%20cx%3D%22268%22%20cy%3D%22220%22%20r%3D%225%22%20fill%3D%22%234ade80%22/%3E%3Ctext%20x%3D%22180%22%20y%3D%22242%22%20fill%3D%22%23ff6b6b%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3EPerahu%201%3C/text%3E%3Ctext%20x%3D%22268%22%20y%3D%22242%22%20fill%3D%22%234ade80%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3EPerahu%202%3C/text%3E%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%23ff6b6b%22%20stroke-width%3D%222%22%20points%3D%2295.4%2C135.4%2096.5%2C134.2%2097.6%2C133.0%2098.7%2C131.7%2099.7%2C130.4%20100.6%2C129.1%20101.6%2C127.8%20102.5%2C126.4%20103.3%2C125.0%20104.1%2C123.6%20104.8%2C122.1%20105.5%2C120.6%20106.2%2C119.1%20106.8%2C117.6%20107.3%2C116.1%20107.8%2C114.5%20108.3%2C112.9%20108.7%2C111.4%20109.0%2C109.8%20109.3%2C108.1%20109.6%2C106.5%20109.8%2C104.9%20109.9%2C103.3%20110.0%2C101.6%20110.0%2C100.0%22/%3E%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%234ade80%22%20stroke-width%3D%222%22%20points%3D%22137.9%2C145.0%20138.9%2C143.3%20139.8%2C141.6%20140.7%2C139.8%20141.6%2C138.0%20142.4%2C136.2%20143.1%2C134.4%20143.9%2C132.6%20144.6%2C130.8%20145.2%2C128.9%20145.8%2C127.1%20146.4%2C125.2%20146.9%2C123.3%20147.4%2C121.4%20147.9%2C119.5%20148.3%2C117.6%20148.6%2C115.6%20149.0%2C113.7%20149.2%2C111.7%20149.5%2C109.8%20149.7%2C107.8%20149.8%2C105.9%20149.9%2C103.9%20150.0%2C102.0%20150.0%2C100.0%22/%3E%3Ctext%20x%3D%22112%22%20y%3D%2292%22%20fill%3D%22%23ff6b6b%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3E45%C2%B0%3C/text%3E%3Ctext%20x%3D%22152%22%20y%3D%2292%22%20fill%3D%22%234ade80%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3E30%C2%B0%3C/text%3E%3Cline%20x1%3D%2230%22%20y1%3D%22100%22%20x2%3D%2230%22%20y2%3D%22220%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221%22/%3E%3Ctext%20x%3D%2224%22%20y%3D%22165%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3E60%20m%3C/text%3E%3Cline%20x1%3D%22180%22%20y1%3D%22206%22%20x2%3D%22268%22%20y2%3D%22206%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%22224%22%20y%3D%22198%22%20fill%3D%22%23ffd300%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3Ejarak%20%3D%20%3F%3C/text%3E%3C/svg%3E",
+  "options": {
+   "A": "\\(60(\\sqrt{3}+1)\\) m",
+   "B": "\\(60(\\sqrt{3}-1)\\) m",
+   "C": "\\(30(\\sqrt{3}-1)\\) m",
+   "D": "\\(60\\sqrt{3}\\) m",
+   "E": "\\(60\\) m"
+  },
+  "correct_answer": "B",
+  "pembahasan_image": "",
+  "pembahasan": "<p>Sudut depresi sama dengan sudut elevasi dari perahu ke puncak. Jarak mendatar perahu ke kaki menara: \\(x=\\dfrac{60}{\\tan\\theta}=60\\cot\\theta\\).</p>$$\\begin{aligned}x_1 &= 60\\cot 45^\\circ = 60\\\\ x_2 &= 60\\cot 30^\\circ = 60\\sqrt{3}\\end{aligned}$$$$x_2-x_1=60\\sqrt{3}-60=60(\\sqrt{3}-1)\\text{ m}$$<p><b>Jawaban: B.</b></p>",
+  "cara_cepat": "<p>Sudut lebih kecil berarti perahu lebih jauh. Jaraknya selisih \\(60\\cot 30^\\circ-60\\cot 45^\\circ=60(\\sqrt{3}-1)\\) m. Karena kedua perahu sisi yang sama, selisih (bukan jumlah): coret A.</p>"
+ },
+ {
+  "id": 7,
+  "question_text": "Untuk setiap sudut lancip \\(\\theta\\) (\\(0^\\circ<\\theta<90^\\circ\\)), pernyataan yang pasti benar adalah \\(\\ldots\\)",
+  "image": "",
+  "options": {
+   "A": "\\(\\sin\\theta>\\tan\\theta\\)",
+   "B": "\\(\\sec\\theta<\\cos\\theta\\)",
+   "C": "\\(\\csc\\theta>\\sin\\theta\\)",
+   "D": "\\(\\cot\\theta<0\\)",
+   "E": "\\(\\sin\\theta+\\cos\\theta=1\\)"
+  },
+  "correct_answer": "C",
+  "pembahasan_image": "",
+  "pembahasan": "<p>Untuk sudut lancip: \\(0<\\sin\\theta<1\\) dan \\(0<\\cos\\theta<1\\), sehingga \\(\\csc\\theta>1\\) dan \\(\\sec\\theta>1\\).</p><p>A salah: \\(\\tan\\theta=\\frac{\\sin\\theta}{\\cos\\theta}>\\sin\\theta\\) karena \\(\\cos\\theta<1\\).</p><p>B salah: \\(\\sec\\theta>1>\\cos\\theta\\).</p><p>C benar: \\(\\csc\\theta>1>\\sin\\theta\\).</p><p>D salah: di kuadran I, \\(\\cot\\theta>0\\).</p><p>E salah: \\(\\sin\\theta+\\cos\\theta=1\\) hanya di \\(0^\\circ\\) atau \\(90^\\circ\\). Contoh \\(45^\\circ\\): \\(\\sqrt{2}\\neq 1\\).</p><p><b>Jawaban: C.</b></p>",
+  "cara_cepat": "<p>Uji \\(\\theta=30^\\circ\\): \\(\\sin=0{,}5\\) dan \\(\\tan\\approx0{,}58\\) (A salah); \\(\\sec\\approx1{,}15>\\cos\\approx0{,}87\\) (B salah); \\(\\csc=2>\\sin=0{,}5\\) (C benar); \\(\\cot\\approx1{,}73>0\\) (D salah); \\(\\sin+\\cos\\approx1{,}37\\) (E salah).</p>"
+ },
+ {
+  "id": 8,
+  "question_text": "Pada segitiga sama kaki \\(ABC\\) dengan \\(AB=AC=13\\) cm dan \\(BC=10\\) cm, besar sudut \\(ABC=\\beta\\). Nilai \\(\\cot\\beta+\\csc\\beta\\) adalah \\(\\ldots\\)",
+  "image": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20320%20240%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%3E%3Cpolygon%20points%3D%22100%2C200%20220%2C200%20160%2C56%22%20fill%3D%22%2300d6d8%22%20fill-opacity%3D%22.2%22/%3E%3Cline%20x1%3D%22100%22%20y1%3D%22200%22%20x2%3D%22220%22%20y2%3D%22200%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22/%3E%3Cline%20x1%3D%22160%22%20y1%3D%2256%22%20x2%3D%22100%22%20y2%3D%22200%22%20stroke%3D%22%2300d6d8%22%20stroke-width%3D%223%22/%3E%3Cline%20x1%3D%22160%22%20y1%3D%2256%22%20x2%3D%22220%22%20y2%3D%22200%22%20stroke%3D%22%2300d6d8%22%20stroke-width%3D%223%22/%3E%3Cline%20x1%3D%22160%22%20y1%3D%2256%22%20x2%3D%22160%22%20y2%3D%22200%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%222%22%20stroke-dasharray%3D%225%204%22/%3E%3Crect%20x%3D%22150%22%20y%3D%22190%22%20width%3D%2210%22%20height%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%23ffd300%22/%3E%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%234ade80%22%20stroke-width%3D%222%22%20points%3D%22130.0%2C200.0%20130.0%2C198.5%20129.9%2C197.1%20129.7%2C195.6%20129.4%2C194.2%20129.1%2C192.7%20128.7%2C191.3%20128.3%2C189.9%20127.7%2C188.5%20127.1%2C187.2%20126.5%2C185.9%20125.7%2C184.6%20125.0%2C183.4%20124.1%2C182.2%20123.2%2C181.0%20122.3%2C179.9%20121.2%2C178.8%20120.2%2C177.8%20119.1%2C176.8%20117.9%2C175.9%20116.7%2C175.1%20115.5%2C174.3%20114.2%2C173.6%20112.9%2C172.9%20111.5%2C172.3%22/%3E%3Ctext%20x%3D%22134%22%20y%3D%22190%22%20fill%3D%22%234ade80%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3E%CE%B2%3C/text%3E%3Ctext%20x%3D%2292%22%20y%3D%22206%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3EB%3C/text%3E%3Ctext%20x%3D%22228%22%20y%3D%22206%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3EC%3C/text%3E%3Ctext%20x%3D%22160%22%20y%3D%2246%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3EA%3C/text%3E%3Ctext%20x%3D%22122%22%20y%3D%22124%22%20fill%3D%22%2300d6d8%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3E13%20cm%3C/text%3E%3Ctext%20x%3D%22198%22%20y%3D%22124%22%20fill%3D%22%2300d6d8%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3E13%20cm%3C/text%3E%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3E10%20cm%3C/text%3E%3C/svg%3E",
+  "options": {
+   "A": "\\(\\dfrac{3}{2}\\)",
+   "B": "\\(\\dfrac{5}{2}\\)",
+   "C": "\\(\\dfrac{17}{12}\\)",
+   "D": "\\(\\dfrac{7}{6}\\)",
+   "E": "\\(\\dfrac{13}{5}\\)"
+  },
+  "correct_answer": "A",
+  "pembahasan_image": "",
+  "pembahasan": "<p>Tarik tinggi dari \\(A\\) ke \\(BC\\); kaki tinggi di titik tengah \\(BC\\), sehingga alas setengah \\(=5\\) cm.</p>$$t=\\sqrt{13^2-5^2}=\\sqrt{144}=12\\text{ cm}$$$$\\sin\\beta=\\frac{12}{13},\\qquad \\cos\\beta=\\frac{5}{13}$$$$\\begin{aligned}\\cot\\beta+\\csc\\beta &= \\frac{5}{12}+\\frac{13}{12}\\\\ &= \\frac{18}{12}=\\frac{3}{2}\\end{aligned}$$<p><b>Jawaban: A.</b></p>",
+  "cara_cepat": "<p>\\(\\cot\\beta+\\csc\\beta=\\dfrac{\\cos\\beta+1}{\\sin\\beta}=\\dfrac{\\frac{5}{13}+1}{\\frac{12}{13}}=\\dfrac{18}{12}=\\dfrac{3}{2}\\).</p>"
+ },
+ {
+  "id": 9,
+  "question_text": "Bentuk sederhana dari \\((\\sec\\theta-\\cos\\theta)(\\csc\\theta-\\sin\\theta)(\\tan\\theta+\\cot\\theta)\\) adalah \\(\\ldots\\)",
+  "image": "",
+  "options": {
+   "A": "\\(0\\)",
+   "B": "\\(\\dfrac{1}{2}\\)",
+   "C": "\\(1\\)",
+   "D": "\\(\\sin\\theta\\cos\\theta\\)",
+   "E": "\\(\\tan\\theta+\\cot\\theta\\)"
+  },
+  "correct_answer": "C",
+  "pembahasan_image": "",
+  "pembahasan": "<p>Ubah setiap faktor ke sin dan cos:</p>$$\\begin{aligned}\\sec\\theta-\\cos\\theta &= \\frac{1-\\cos^2\\theta}{\\cos\\theta}=\\frac{\\sin^2\\theta}{\\cos\\theta}\\\\ \\csc\\theta-\\sin\\theta &= \\frac{1-\\sin^2\\theta}{\\sin\\theta}=\\frac{\\cos^2\\theta}{\\sin\\theta}\\\\ \\tan\\theta+\\cot\\theta &= \\frac{\\sin^2\\theta+\\cos^2\\theta}{\\sin\\theta\\cos\\theta}=\\frac{1}{\\sin\\theta\\cos\\theta}\\end{aligned}$$$$\\frac{\\sin^2\\theta}{\\cos\\theta}\\cdot\\frac{\\cos^2\\theta}{\\sin\\theta}\\cdot\\frac{1}{\\sin\\theta\\cos\\theta}=\\sin\\theta\\cos\\theta\\cdot\\frac{1}{\\sin\\theta\\cos\\theta}=1$$<p><b>Jawaban: C.</b></p>",
+  "cara_cepat": "<p>Substitusi \\(\\theta=45^\\circ\\): \\(\\sec-\\cos=\\frac{\\sqrt{2}}{2}\\), \\(\\csc-\\sin=\\frac{\\sqrt{2}}{2}\\), \\(\\tan+\\cot=2\\). Hasil \\(=\\frac{1}{2}\\cdot 2=1\\). Opsi lain bernilai \\(0\\), \\(\\frac{1}{2}\\), \\(\\frac{1}{2}\\), \\(2\\).</p>"
+ },
+ {
+  "id": 10,
+  "question_text": "Pada segitiga \\(ABC\\) siku-siku di \\(B\\) dengan \\(AC=10\\) cm berlaku \\(\\sin A=2\\sin C\\). Luas segitiga \\(ABC\\) adalah \\(\\ldots\\) cm\\(^2\\)",
+  "image": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20300%20240%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%3E%3Cpolygon%20points%3D%2270%2C200%20159%2C200%20159%2C21%22%20fill%3D%22%23ffd300%22%20fill-opacity%3D%22.2%22/%3E%3Cline%20x1%3D%2270%22%20y1%3D%22200%22%20x2%3D%22159%22%20y2%3D%22200%22%20stroke%3D%22%2300d6d8%22%20stroke-width%3D%223%22/%3E%3Cline%20x1%3D%22159%22%20y1%3D%22200%22%20x2%3D%22159%22%20y2%3D%2221%22%20stroke%3D%22%234ade80%22%20stroke-width%3D%223%22/%3E%3Cline%20x1%3D%2270%22%20y1%3D%22200%22%20x2%3D%22159%22%20y2%3D%2221%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%223%22/%3E%3Crect%20x%3D%22147%22%20y%3D%22188%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22/%3E%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%23ffd300%22%20stroke-width%3D%222%22%20points%3D%22100.0%2C200.0%20100.0%2C198.6%2099.9%2C197.2%2099.7%2C195.9%2099.5%2C194.5%2099.2%2C193.1%2098.9%2C191.8%2098.4%2C190.5%2098.0%2C189.2%2097.5%2C187.9%2096.9%2C186.6%2096.2%2C185.4%2095.5%2C184.2%2094.8%2C183.1%2094.0%2C181.9%2093.1%2C180.9%2092.2%2C179.8%2091.2%2C178.8%2090.2%2C177.9%2089.2%2C176.9%2088.1%2C176.1%2087.0%2C175.3%2085.8%2C174.5%2084.6%2C173.8%2083.4%2C173.2%22/%3E%3Ctext%20x%3D%2262%22%20y%3D%22206%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3EA%3C/text%3E%3Ctext%20x%3D%22159%22%20y%3D%22220%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3EB%3C/text%3E%3Ctext%20x%3D%22166%22%20y%3D%2216%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3EC%3C/text%3E%3Ctext%20x%3D%22104%22%20y%3D%22104%22%20fill%3D%22%23ffd300%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22end%22%3EAC%20%3D%2010%20cm%3C/text%3E%3Ctext%20x%3D%22114%22%20y%3D%22224%22%20fill%3D%22%2300d6d8%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3EAB%20%3D%20%3F%3C/text%3E%3Ctext%20x%3D%22168%22%20y%3D%22115%22%20fill%3D%22%234ade80%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20text-anchor%3D%22start%22%3EBC%20%3D%20%3F%3C/text%3E%3C/svg%3E",
+  "options": {
+   "A": "\\(10\\)",
+   "B": "\\(10\\sqrt{5}\\)",
+   "C": "\\(16\\)",
+   "D": "\\(20\\)",
+   "E": "\\(40\\)"
+  },
+  "correct_answer": "D",
+  "pembahasan_image": "",
+  "pembahasan": "<p>Karena \\(C=90^\\circ-A\\), maka \\(\\sin C=\\cos A\\).</p>$$\\begin{aligned}\\sin A &= 2\\cos A\\\\ \\tan A &= 2\\;\\Rightarrow\\; BC=2AB\\end{aligned}$$$$\\begin{aligned}AB^2+BC^2 &= AC^2\\\\ AB^2+4AB^2 &= 100\\\\ AB &= 2\\sqrt{5},\\quad BC=4\\sqrt{5}\\end{aligned}$$$$L=\\frac{1}{2}\\cdot AB\\cdot BC=\\frac{1}{2}\\cdot 2\\sqrt{5}\\cdot 4\\sqrt{5}=20\\text{ cm}^2$$<p><b>Jawaban: D.</b></p>",
+  "cara_cepat": "<p>Luas segitiga siku-siku dengan sisi miring \\(c\\): \\(L=\\frac{1}{2}c^2\\sin A\\cos A\\). Dengan \\(\\tan A=2\\): \\(\\sin A=\\frac{2}{\\sqrt{5}}\\), \\(\\cos A=\\frac{1}{\\sqrt{5}}\\), sehingga \\(L=\\frac{1}{2}\\cdot100\\cdot\\frac{2}{5}=20\\).</p>"
+ }
+];
+
+/* ============ STATE ============ */
+const $ = id => document.getElementById(id);
+let cur = 0, answers = {}, seconds = 0, timer = null, finished = false;
+const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+const IMG_CLASS = 'max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block';
+
+function typeset() {
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([$('app')]).catch(() => {});
+  else setTimeout(typeset, 300);
+}
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => { seconds++; const el = $('sw'); if (el) el.textContent = fmt(seconds); }, 1000);
+}
+
+/* ============ STATE 1: MENGERJAKAN ============ */
+function renderQuiz() {
+  const q = questions[cur], N = questions.length, last = cur === N - 1;
+  const done = Object.keys(answers).length;
+  const navBtns = questions.map((x, i) => {
+    const on = answers[x.id] !== undefined;
+    return `<button onclick="go(${i})" class="shrink-0 w-11 h-11 rounded-lg font-bold border transition ${on ? 'bg-[#ffd300] text-black border-[#ffd300]' : 'bg-white/5 text-white border-white/30 hover:border-[#00d6d8]'} ${i === cur ? 'glow' : ''}">${i + 1}</button>`;
+  }).join('');
+  const opts = Object.entries(q.options).map(([k, v]) => {
+    const sel = answers[q.id] === k;
+    return `<label class="opt flex items-center gap-3 w-full p-3 sm:p-4 rounded-xl border cursor-pointer transition ${sel ? 'bg-[#00d6d8]/25 border-[#00d6d8]' : 'bg-white/5 border-white/20'}">
+      <input type="radio" name="opt" class="hidden" ${sel ? 'checked' : ''} onchange="pick('${k}')">
+      <span class="shrink-0 w-9 h-9 rounded-full flex items-center justify-center font-bold ${sel ? 'bg-[#00d6d8] text-black' : 'bg-white/10'}">${k}</span>
+      <span class="min-w-0 overflow-x-auto">${v}</span></label>`;
+  }).join('');
+
+  $('app').innerHTML = `
+  <div class="grid lg:grid-cols-[3fr_1fr] gap-4 items-start">
+    <section class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 min-w-0">
+      <div class="flex items-center justify-between mb-4">
+        <span class="font-bold text-[#00d6d8]">Soal ${cur + 1} dari ${N}</span>
+        <span class="bg-black/30 border border-[#00d6d8]/50 rounded-lg px-3 py-1 font-mono text-lg"><i class="fa-regular fa-clock mr-2 text-[#00d6d8]"></i><span id="sw">${fmt(seconds)}</span></span>
+      </div>
+      <div class="text-base sm:text-lg leading-relaxed overflow-x-auto">${q.question_text}</div>
+      ${q.image ? `<img src="${q.image}" alt="Gambar soal ${cur + 1}" class="${IMG_CLASS}">` : ''}
+      <div class="space-y-3 mt-4">${opts}</div>
+      <div id="warn" class="hidden mt-4 p-3 rounded-lg bg-[#ffd300]/15 border border-[#ffd300] text-[#ffd300] text-sm"></div>
+      <div class="flex justify-between gap-3 mt-6">
+        <button onclick="go(cur-1)" ${cur === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8] hover:text-black transition disabled:opacity-30 disabled:pointer-events-none"><i class="fa-solid fa-chevron-left mr-2"></i>Sebelumnya</button>
+        ${last
+          ? `<button onclick="finish()" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-110">Selesai &amp; Lihat Pembahasan<i class="fa-solid fa-flag-checkered ml-2"></i></button>`
+          : `<button onclick="go(cur+1)" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-110">Selanjutnya<i class="fa-solid fa-chevron-right ml-2"></i></button>`}
+      </div>
+    </section>
+
+    <aside class="bg-white/5 border border-white/10 rounded-2xl p-4 lg:sticky lg:top-20 min-w-0">
+      <h2 class="font-bold mb-3 text-[#00d6d8]">Navigasi Soal</h2>
+      <div class="scroll-x flex lg:flex-wrap gap-2 overflow-x-auto pb-2">${navBtns}</div>
+      <p class="text-sm text-white/70 mt-2">Terjawab: <b class="text-[#ffd300]">${done}</b> / ${N}</p>
+      <div class="mt-3 text-xs text-white/80 bg-[#00d6d8]/10 border border-[#00d6d8]/40 rounded-lg p-3">
+        <i class="fa-solid fa-circle-info text-[#00d6d8] mr-1"></i>
+        Semua soal harus dikerjakan. Jika masih ada yang kosong, latihan tidak bisa diselesaikan dan pembahasan belum dapat dibuka.
+      </div>
+      <button onclick="finish()" class="mt-3 w-full px-3 py-2 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-110">Selesai &amp; Lihat Pembahasan</button>
+    </aside>
+  </div>`;
+  typeset();
+}
+function go(i) { if (i < 0 || i >= questions.length) return; cur = i; renderQuiz(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function pick(k) { answers[questions[cur].id] = k; renderQuiz(); }
+function finish() {
+  const empty = questions.map((q, i) => answers[q.id] === undefined ? i + 1 : null).filter(Boolean);
+  if (empty.length) {
+    const w = $('warn');
+    w.classList.remove('hidden');
+    w.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Belum bisa selesai. Soal nomor <b>${empty.join(', ')}</b> belum dijawab. Kerjakan semua soal dulu, lalu klik "Selesai &amp; Lihat Pembahasan".`;
+    w.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  clearInterval(timer); finished = true; renderReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============ STATE 2: PEMBAHASAN & EVALUASI ============ */
+function renderReview() {
+  const N = questions.length;
+  const benar = questions.filter(q => answers[q.id] === q.correct_answer).length;
+  const salah = N - benar, skor = Math.round(benar / N * 100);
+  const stat = (label, val, cls) => `<div class="bg-black/25 rounded-xl p-3 text-center"><div class="text-2xl sm:text-3xl font-extrabold ${cls}">${val}</div><div class="text-xs sm:text-sm text-white/70">${label}</div></div>`;
+
+  const cards = questions.map((q, i) => {
+    const mine = answers[q.id], ok = mine === q.correct_answer;
+    const opts = Object.entries(q.options).map(([k, v]) => {
+      let c = 'border-white/15 bg-white/5', tag = '';
+      if (k === q.correct_answer) { c = 'border-green-400 bg-green-500/20'; tag = '<span class="ml-auto shrink-0 text-green-300 text-xs font-bold"><i class="fa-solid fa-check"></i> Kunci</span>'; }
+      else if (k === mine) { c = 'border-red-400 bg-red-500/20'; tag = '<span class="ml-auto shrink-0 text-red-300 text-xs font-bold"><i class="fa-solid fa-xmark"></i> Jawabanmu</span>'; }
+      if (k === mine && ok) tag = '<span class="ml-auto shrink-0 text-green-300 text-xs font-bold"><i class="fa-solid fa-check"></i> Jawabanmu (Benar)</span>';
+      return `<div class="flex items-center gap-3 p-3 rounded-xl border ${c}"><span class="shrink-0 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold">${k}</span><span class="min-w-0 overflow-x-auto">${v}</span>${tag}</div>`;
+    }).join('');
+    return `
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-bold text-[#00d6d8]">Soal ${i + 1}</h3>
+        <span class="px-3 py-1 rounded-full text-sm font-bold ${ok ? 'bg-green-500/25 text-green-300' : 'bg-red-500/25 text-red-300'}">${ok ? '<i class="fa-solid fa-circle-check"></i> Benar' : '<i class="fa-solid fa-circle-xmark"></i> Salah'}</span>
+      </div>
+      <div class="text-base sm:text-lg leading-relaxed overflow-x-auto">${q.question_text}</div>
+      ${q.image ? `<img src="${q.image}" alt="Gambar soal ${i + 1}" class="${IMG_CLASS}">` : ''}
+      <div class="space-y-2 mt-3">${opts}</div>
+      <p class="mt-3 text-sm">Jawabanmu: <b class="${ok ? 'text-green-300' : 'text-red-300'}">${mine}</b> &nbsp;|&nbsp; Kunci: <b class="text-green-300">${q.correct_answer}</b></p>
+
+      <div class="mt-5 rounded-xl border border-white/20 bg-[#011836] p-4 prose-vm">
+        <h4 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open mr-2"></i>Pembahasan Lengkap</h4>
+        ${q.pembahasan_image ? `<img src="${q.pembahasan_image}" alt="Ilustrasi pembahasan ${i + 1}" class="${IMG_CLASS}">` : ''}
+        ${q.pembahasan}
+      </div>
+      <div class="mt-4 rounded-xl border border-[#00d6d8]/60 bg-[#00d6d8]/10 p-4 prose-vm">
+        <h4 class="font-bold text-[#00d6d8] mb-2">🔥 Cara Cepat / Trik</h4>
+        ${q.cara_cepat}
+      </div>
+    </article>`;
+  }).join('');
+
+  $('app').innerHTML = `
+  <section class="rounded-2xl p-5 sm:p-6 mb-5 bg-gradient-to-br from-[#00d6d8]/25 to-[#022050] border border-[#00d6d8]/60">
+    <h2 class="text-xl sm:text-2xl font-extrabold mb-4"><i class="fa-solid fa-trophy text-[#ffd300] mr-2"></i>Ringkasan Hasil Latihan</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      ${stat('Skor Akhir', skor, 'text-[#ffd300]')}${stat('Total Benar', benar, 'text-green-300')}
+      ${stat('Total Salah', salah, 'text-red-300')}${stat('Waktu Pengerjaan', fmt(seconds), 'text-[#00d6d8]')}
+    </div>
+    <div class="flex flex-wrap gap-3 mt-4">
+      <button onclick="restart()" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-110"><i class="fa-solid fa-rotate-right mr-2"></i>Ulangi Latihan</button>
+      <a href="trigonometri.html" class="px-4 py-2 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8] hover:text-black transition">Kembali ke Dashboard Trigonometri</a>
+    </div>
+  </section>
+  <div class="space-y-5">${cards}</div>`;
+  typeset();
+}
+function restart() { cur = 0; answers = {}; seconds = 0; finished = false; startTimer(); renderQuiz(); window.scrollTo({ top: 0 }); }
+
+/* ============ INIT ============ */
+renderQuiz();
+startTimer();
+</script>
+</body>
+</html>
