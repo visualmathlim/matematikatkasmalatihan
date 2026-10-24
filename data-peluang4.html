@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Latihan HOTS Data dan Peluang – VisualMath.Lim</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},chtml:{scale:.92}};</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"></script>
+<style>
+body{background:#022050}
+mjx-container[display=true]{display:block!important;text-align:left!important;overflow-x:auto;overflow-y:hidden;max-width:100%;margin:.5em 0!important;padding:.45em 0 .6em!important;line-height:1.6}
+mjx-container[display=true]>mjx-math{display:inline-block!important;white-space:nowrap}
+mjx-container{max-width:100%}
+#nav::-webkit-scrollbar{height:6px}#nav::-webkit-scrollbar-thumb{background:#00d6d8;border-radius:9px}
+</style>
+</head>
+<body class="text-white min-h-screen font-sans">
+<header class="bg-[#011a45] border-b border-[#00d6d8]/40 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+  <a href="index.html" class="font-bold text-sm sm:text-base"><span class="text-[#00d6d8]">VisualMath.Lim</span> - Latihan HOTS Data dan Peluang TKA SMA Kelas 12</a>
+  <a href="data-peluang.html" class="flex items-center gap-2 text-sm border border-[#00d6d8] rounded-lg px-3 py-1.5 hover:bg-[#00d6d8] hover:text-[#022050] transition">
+    <img src="logo.png" alt="" class="h-6 w-6 object-contain" onerror="this.style.display='none'">
+    <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard Data dan Peluang
+  </a>
+</header>
+<main id="app" class="max-w-7xl mx-auto p-3 sm:p-5"></main>
+<div id="warn" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-red-600 text-white text-sm rounded-lg p-3 shadow-xl"></div>
+
+<script>
+const R=String.raw;
+const IMG='max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block overflow-x-auto';
+const C={bl:'#4f86f7',or:'#f59e0b',gr:'#94a3b8',gn:'#22c55e',rd:'#ef4444'};
+const MO=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+const BR=(a,c=C.bl)=>a.map(([l,v,col,t])=>({l,v,c:col||c,t}));
+const tbl=(h,r)=>`<div class="overflow-x-auto"><table class="my-3 text-center text-sm border-collapse"><tr>${h.map(x=>`<th class="border border-white/30 bg-white/10 px-3 py-1">${x}</th>`).join('')}</tr>${r.map(a=>`<tr>${a.map(x=>`<td class="border border-white/30 px-3 py-1">${x}</td>`).join('')}</tr>`).join('')}</table></div>`;
+
+/* ---------- Gambar dibuat dengan kode (SVG) ---------- */
+function bars(it,o={}){
+  const n=it.length,W=Math.max(340,n*50+50),H=250,T=28,B=H-36,L=42;
+  const vs=it.map(d=>d.v||0),mx=o.max??Math.max(...vs),mn=Math.min(0,...vs),st=o.s||(mx-mn)/4;
+  const y=v=>T+(mx-v)/(mx-mn)*(B-T),bw=(W-L-8)/n,g=o.g??.28,pts=[];
+  let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:${n>7?W:300}px" font-family="sans-serif" font-size="11" fill="#fff">`;
+  for(let v=Math.ceil(mn/st)*st;v<=mx+1e-9;v+=st)s+=`<line x1="${L}" x2="${W-6}" y1="${y(v)}" y2="${y(v)}" stroke="#fff" stroke-opacity=".15"/><text x="${L-5}" y="${y(v)+4}" text-anchor="end">${+v.toFixed(1)}</text>`;
+  s+=`<line x1="${L}" x2="${W-6}" y1="${y(0)}" y2="${y(0)}" stroke="#94a3b8"/>`;
+  if(o.u)s+=`<text x="${L}" y="14" fill="#00d6d8">${o.u}</text>`;
+  it.forEach((d,i)=>{const x=L+i*bw,cx=x+bw/2;
+    if(d.v==null)s+=`<text x="${cx}" y="${y(0)-8}" text-anchor="middle" fill="#ffd300" font-size="22" font-weight="bold">?</text>`;
+    else{
+      if(o.line){pts.push(`${cx},${y(d.v)}`);s+=`<circle cx="${cx}" cy="${y(d.v)}" r="4" fill="${d.c}"/>`}
+      else s+=`<rect x="${x+bw*g/2}" y="${Math.min(y(d.v),y(0))}" width="${bw*(1-g)}" height="${Math.abs(y(d.v)-y(0))}" fill="${d.c}" rx="2"/>`;
+      s+=`<text x="${cx}" y="${d.v<0?y(d.v)+13:y(d.v)-6}" text-anchor="middle" font-weight="bold">${d.t??d.v}</text>`}
+    s+=`<text x="${cx}" y="${H-18}" text-anchor="middle" fill="#cbd5e1">${d.l}</text>`});
+  if(o.line)s=s.replace('<circle',`<polyline points="${pts.join(' ')}" fill="none" stroke="${C.bl}" stroke-width="2"/><circle`);
+  return s+'</svg>'}
+
+const hist=(f,lab,hi,o)=>bars(lab.map((l,i)=>({l,v:f[i],c:i==hi?C.or:C.bl})),{g:.03,...o});
+const LC=['#4f86f7','#f59e0b','#22c55e'];
+function lines(S,yrs,mn,mx){
+  const W=560,H=280,L=44,T=36,Bt=H-32,y=v=>T+(mx-v)/(mx-mn)*(Bt-T),dx=(W-L-16)/(yrs.length-1);
+  let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:440px" font-family="sans-serif" font-size="11" fill="#fff">`;
+  for(let v=mn;v<=mx;v+=10)s+=`<line x1="${L}" x2="${W-8}" y1="${y(v)}" y2="${y(v)}" stroke="#fff" stroke-opacity=".15"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  s+=`<text x="${L}" y="14" fill="#00d6d8">Penjualan (ribu unit)</text>`;
+  S.forEach((d,i)=>{s+=`<rect x="${W-300+i*100}" y="5" width="12" height="12" fill="${LC[i]}"/><text x="${W-284+i*100}" y="15">${d.n}</text>`;
+    s+=`<polyline fill="none" stroke="${LC[i]}" stroke-width="2.5" points="${d.v.map((v,j)=>`${L+j*dx},${y(v)}`).join(' ')}"/>`+d.v.map((v,j)=>`<circle cx="${L+j*dx}" cy="${y(v)}" r="3.5" fill="${LC[i]}"/>`).join('')});
+  yrs.forEach((t,j)=>s+=`<text x="${L+j*dx}" y="${H-12}" text-anchor="middle" fill="#cbd5e1">${t}</text>`);
+  return s+'</svg>'}
+const balls=g=>{let s=`<svg viewBox="0 0 380 ${g.length*46+10}" class="w-full max-w-md" font-family="sans-serif" font-size="13" fill="#fff">`;
+  g.forEach(([n,c,l],j)=>{for(let i=0;i<n;i++)s+=`<circle cx="${22+i*32}" cy="${28+j*46}" r="13" fill="${c}" stroke="#fff" stroke-opacity=".6"/>`;s+=`<text x="${22+n*32}" y="${33+j*46}">${l}</text>`});return s+'</svg>'};
+const vn=(a,ab,b,o,l1,l2,t)=>`<svg viewBox="0 0 360 200" class="w-full max-w-md mx-auto" font-family="sans-serif" font-size="15" fill="#fff"><rect x="2" y="2" width="356" height="196" fill="none" stroke="#94a3b8"/><circle cx="140" cy="105" r="70" fill="#4f86f7" fill-opacity=".5"/><circle cx="220" cy="105" r="70" fill="#f59e0b" fill-opacity=".5"/><g text-anchor="middle"><text x="105" y="110">${a}</text><text x="180" y="110" font-weight="bold">${ab}</text><text x="255" y="110">${b}</text><text x="100" y="22" font-size="12">${l1}</text><text x="260" y="22" font-size="12">${l2}</text></g><text x="12" y="188" font-size="12">Di luar keduanya: ${o} · ${t}</text></svg>`;
+const sc=(a,t)=>`<div><div class="text-xs text-center text-slate-300">${t}</div>${bars(a,{max:20,s:5})}</div>`;
+const figs={
+  line1:()=>lines([{n:'Toko A',v:[40,46,52,48,56,62]},{n:'Toko B',v:[25,30,30,38,47,55]},{n:'Toko C',v:[64,54,44,46,52,58]}],[2020,2021,2022,2023,2024,2025],20,70),
+  bar1p:()=>bars([6,6,-4,8,6].map((v,i)=>({l:[2021,2022,2023,2024,2025][i],v,c:v<0?C.rd:C.bl,t:v>0?'+'+v:v})),{max:10,s:5,u:'Selisih penjualan Toko A per tahun'}),
+  slots:()=>{const L=['D','A','B','C','E','F'];let s=`<svg viewBox="0 0 370 120" class="w-full max-w-lg" font-family="sans-serif" font-size="16" fill="#fff" text-anchor="middle">`;
+    L.forEach((c,i)=>{const x=8+i*60,ab=c=='A'||c=='B',e=i==0||i==5;s+=`<rect x="${x}" y="30" width="54" height="46" rx="6" fill="${ab?'#f59e0b':c=='C'?'#00d6d8':'#4f86f7'}" fill-opacity=".55" stroke="${e?'#ef4444':'#fff'}" stroke-width="${e?3:1}" ${e?'stroke-dasharray="5 3"':''}/><text x="${x+27}" y="60">${c}</text>`});
+    return s+`<text x="35" y="22" font-size="11" fill="#fca5a5">ujung</text><text x="335" y="22" font-size="11" fill="#fca5a5">ujung</text><text x="185" y="104" font-size="12">Contoh sah: AB berdampingan, C tidak di ujung</text></svg>`},
+  bar2p:()=>bars(BR([['AB berdampingan',240],['C di ujung',96,C.rd],['Memenuhi',144,C.gn]]),{max:300,s:100,u:'Banyak susunan'}),
+  balls3:()=>balls([[5,'#ef4444','5 merah'],[3,'#4f86f7','3 biru'],[2,'#22c55e','2 hijau']]),
+  fig4:()=>`<div class="grid sm:grid-cols-2 gap-3">${sc(BR([['Sen',12],['Sel',16,C.or],['Rab',15],['Kam',19,C.or],['Jum',18]]),'Contoh 1: x = 16, y = 19')}${sc(BR([['Sen',12],['Sel',19,C.or],['Rab',15],['Kam',16,C.or],['Jum',18]]),'Contoh 2: x = 19, y = 16')}</div>`,
+  venn5:()=>vn(16,8,10,6,'Pramuka (24)','PMR (18)','S = 40 siswa'),
+  hist6:()=>hist([4,8,16,6,6],['31–40','41–50','51–60','61–70','71–80'],2,{max:20,s:5,u:'Banyak peserta menurut waktu (menit)'}),
+  ogive6:()=>bars(BR([['31–40',4],['41–50',12],['51–60',28],['61–70',34],['71–80',40]]),{line:true,max:40,s:10,u:'Frekuensi kumulatif (n = 40, setengah = 20)'}),
+  balls7:()=>balls([[6,'#22c55e','6 hadiah (tidak kembali)'],[4,'#94a3b8','4 kosong (kembali)']]),
+  bar7p:()=>bars(BR([['Hadiah awal',6,C.gn],['Kosong awal',4,C.gr],['Hadiah saat Dimas',4,C.gn],['Kosong saat Dimas',4,C.gr]]),{max:8,s:2,u:'Isi kotak'}),
+  balls8:()=>balls([[5,'#4f86f7','5 putra'],[4,'#ec4899','4 putri']]),
+  bar9:()=>bars(BR([['20 siswa',70],['4 mundur',55,C.rd],['16 tersisa',73.75,C.gn,'73,75']]),{max:80,s:20,u:'Rata-rata nilai'}),
+  bar10q:()=>bars(BR([['Android puas',90,C.gn],['Android tidak',30,C.gr],['iOS puas',30,C.gn],['iOS tidak',50,C.gr]]),{max:100,s:20,u:'Banyak pengguna (n = 200)'}),
+  bar10p:()=>bars(BR([['Semua yang puas',120],['Android',90,C.or],['iOS',30]]),{max:120,s:30,u:'Ruang sampel baru = 120 orang yang puas'})
+};
+const img=k=>!k?'':/^http/.test(k)?`<img src="${k}" alt="" class="${IMG}">`:`<div class="${IMG}">${figs[k]()}</div>`;
+
+/* ---------- Data soal ---------- */
+const questions=[
+{id:1,meta:['Statistika – interpretasi grafik garis','Sedang'],type:'multi',
+ question_text:`Nusa Mart memiliki tiga toko daring. Grafik dan tabel berikut menunjukkan banyak penjualan (ribu unit) pada tahun 2020–2025.`+tbl(['Tahun',2020,2021,2022,2023,2024,2025],[['Toko A',40,46,52,48,56,62],['Toko B',25,30,30,38,47,55],['Toko C',64,54,44,46,52,58]])+`Tentukan semua pernyataan yang benar! <b>(Jawaban benar lebih dari satu)</b>`,
+ image:'line1',options:{1:'Penjualan Toko A hanya turun satu kali, yaitu pada tahun 2023.',2:'Selama 2020–2025, penjualan Toko B tidak pernah turun dari tahun sebelumnya.',3:'Pada tahun 2023, penjualan ketiga toko sama-sama naik dibanding tahun 2022.',4:'Total penjualan ketiga toko pada tahun 2025 lebih dari 175 ribu unit.',5:'Rata-rata penjualan Toko C selama 2020–2025 adalah 53 ribu unit.'},correct_answer:['1','2','5'],
+ pembahasan:R`<p>Hitung selisih tahunan dan jumlahnya.</p>
+$$\text{Toko A}:+6,\ +6,\ -4,\ +8,\ +6\ \Rightarrow\ \text{turun sekali (1 benar)}$$
+$$\text{Toko B}:25,30,30,38,47,55\ \Rightarrow\ \text{tidak pernah turun (2 benar)}$$
+$$\text{2023}:\ \text{Toko A turun }52\to48\ \Rightarrow\ \text{(3 salah)}$$
+$$62+55+58=175\ \Rightarrow\ \text{tidak lebih dari 175 (4 salah)}$$
+$$\bar{x}_C=\frac{64+54+44+46+52+58}{6}=\frac{318}{6}=53\ \Rightarrow\ \text{(5 benar)}$$`,
+ pembahasan_image:'bar1p',
+ cara_cepat:R`<p>"Tidak pernah turun" berbeda dengan "selalu naik": nilai yang tetap (30→30) masih boleh. Kata "lebih dari 175" gugur karena totalnya tepat 175. Cukup satu garis yang turun untuk menggugurkan pernyataan "ketiga toko naik".</p>`},
+
+{id:2,meta:['Pencacahan – permutasi dengan syarat (soal cerita)','Sulit'],type:'single',
+ question_text:`Enam siswa, yaitu A, B, C, D, E, dan F, akan berfoto berjajar dalam satu baris. Fotografer mengatur agar A dan B <b>selalu berdampingan</b> karena mereka kakak-adik, sedangkan C <b>tidak boleh berdiri di ujung</b> baris karena membawa spanduk yang harus berada di tengah. Banyak susunan berbeda yang memenuhi kedua syarat tersebut adalah ....`,
+ image:'slots',options:{A:'96 susunan',B:'120 susunan',C:'144 susunan',D:'192 susunan',E:'240 susunan'},correct_answer:'C',
+ pembahasan:R`<p>Anggap A dan B satu blok (AB atau BA), sehingga ada 5 objek: blok, C, D, E, F.</p>
+$$\text{A dan B berdampingan}=5!\times2=240$$
+<p>Kurangi susunan dengan C di ujung. Jika C di ujung kiri, sisa 4 objek disusun \(4!\) cara dan blok punya 2 urutan. Ujung kanan sama banyak.</p>
+$$\text{C di ujung}=2\times(4!\times2)=96$$
+$$\text{Memenuhi}=240-96=144$$`,
+ pembahasan_image:'bar2p',
+ cara_cepat:R`<p>Hitung dulu syarat yang "mengikat" (blok AB), lalu kurangi yang dilarang: \(2\cdot5!-2\cdot(2\cdot4!)=144\). Jebakan: 240 (lupa syarat C).</p>`},
+
+{id:3,meta:['Peluang – kejadian tanpa pengembalian','Sedang'],type:'tf',
+ question_text:`Rina mengambil dua bola secara acak, satu per satu <b>tanpa pengembalian</b>, dari sebuah kotak berisi 5 bola merah, 3 bola biru, dan 2 bola hijau. Tentukan Benar atau Salah pada setiap pernyataan!`,
+ image:'balls3',options:{A:R`Peluang kedua bola yang terambil berwarna merah adalah \(\frac{2}{9}\).`,B:R`Peluang terambil satu bola merah dan satu bola biru (urutan bebas) adalah \(\frac{1}{3}\).`,C:R`Peluang tidak ada bola hijau yang terambil adalah \(\frac{4}{5}\).`},correct_answer:{A:true,B:true,C:false},
+ pembahasan:R`<p>Tiap pengambilan mengubah isi kotak (total 10, lalu 9).</p>
+$$P(MM)=\frac{5}{10}\times\frac{4}{9}=\frac{2}{9}\ \Rightarrow\ \text{A benar}$$
+$$P(MB\text{ atau }BM)=2\times\frac{5}{10}\times\frac{3}{9}=\frac{1}{3}\ \Rightarrow\ \text{B benar}$$
+$$P(\text{tanpa hijau})=\frac{8}{10}\times\frac{7}{9}=\frac{28}{45}\neq\frac{4}{5}\ \Rightarrow\ \text{C salah}$$`,
+ pembahasan_image:'',
+ cara_cepat:R`<p>Urutan bebas pada B berarti dikali 2. Untuk C, \(\frac{4}{5}\) hanya peluang tahap pertama bukan hijau; tahap kedua penyebutnya jadi 9 dan jumlah bukan hijau tinggal 7.</p>`},
+
+{id:4,meta:['Statistika – rata-rata dan median dengan batas nilai (pasti/mungkin)','Sulit'],type:'tf',
+ question_text:`Kafe Nusa mencatat banyak pengunjung (bilangan bulat) pada minggu pertama Oktober.`+tbl(['Hari','Senin','Selasa','Rabu','Kamis','Jumat'],[['Pengunjung',12,'<i>x</i>',15,'<i>y</i>',18]])+`Diketahui: rata-rata pengunjung per hari adalah 16; setiap hari minimal 10 dan paling banyak 20 pengunjung; median data lebih dari 15. Tentukan Benar atau Salah pada setiap pernyataan!`,
+ image:'',options:{A:'Banyak pengunjung hari Selasa pasti lebih banyak daripada hari Kamis.',B:'Banyak pengunjung hari Kamis pasti lebih dari 15 orang.',C:'Banyak pengunjung hari Selasa dan Kamis mungkin sama.'},correct_answer:{A:false,B:true,C:false},
+ pembahasan:R`<p>Gunakan rata-rata, lalu batas, lalu median.</p>
+$$\frac{12+x+15+y+18}{5}=16$$
+$$x+y=80-45=35$$
+<p>Karena \(x,y\le20\), maka \(x,y\ge15\). Jika salah satunya 15 (pasangan 15 dan 20), data terurut 12, 15, 15, 18, 20 bermedian 15, tidak memenuhi. Jadi \(16\le x,y\le19\).</p>
+$$(x,y)\in\{(16,19),(17,18),(18,17),(19,16)\}$$
+<p>A: bisa \(x<y\) atau \(x>y\), jadi tidak pasti → <b>Salah</b>. B: \(y\ge16>15\) → <b>Benar</b>. C: \(x=y\) memberi \(17{,}5\), bukan bilangan bulat → <b>Salah</b>.</p>`,
+ pembahasan_image:'fig4',
+ cara_cepat:R`<p>\(x+y=35\) ganjil, sehingga tidak mungkin sama (C salah). Median harus lebih dari 15, maka tidak ada yang bernilai 15 (B benar). Dua contoh yang membalik urutan Selasa dan Kamis cukup untuk menggugurkan A.</p>`},
+
+{id:5,meta:['Peluang bersyarat – diagram Venn','Sedang'],type:'single',
+ question_text:`Dari 40 siswa kelas XII, 24 siswa mengikuti Pramuka, 18 siswa mengikuti PMR, dan 8 siswa mengikuti keduanya. Sisanya tidak mengikuti keduanya. Seorang siswa dipilih acak untuk menjadi ketua panitia dan <b>diketahui ia anggota PMR</b>. Peluang siswa tersebut juga anggota Pramuka adalah ....`,
+ image:'',options:{A:R`\(\frac{1}{5}\)`,B:R`\(\frac{1}{3}\)`,C:R`\(\frac{4}{9}\)`,D:R`\(\frac{1}{2}\)`,E:R`\(\frac{2}{3}\)`},correct_answer:'C',
+ pembahasan:R`<p>Hanya Pramuka \(=24-8=16\), hanya PMR \(=18-8=10\), keduanya 8, di luar keduanya \(=40-34=6\). Karena diketahui anggota PMR, ruang sampel menyempit menjadi 18 siswa.</p>
+$$P(\text{Pramuka}\mid\text{PMR})=\frac{n(\text{Pramuka}\cap\text{PMR})}{n(\text{PMR})}$$
+$$P=\frac{8}{18}=\frac{4}{9}$$`,
+ pembahasan_image:'venn5',
+ cara_cepat:R`<p>Kata "diketahui" mengganti penyebut dengan banyak anggota syarat: 18, bukan 40. Jebakan: \(\frac{8}{40}=\frac{1}{5}\) (A) dan \(\frac{8}{24}=\frac{1}{3}\) (B).</p>`},
+
+{id:6,meta:['Statistika – median data berkelompok (soal cerita)','Sedang'],type:'single',
+ question_text:`Panitia lomba coding mencatat waktu penyelesaian soal oleh 40 peserta (dalam menit, data bulat) seperti pada histogram. Panitia akan memberi sertifikat kecepatan kepada separuh peserta tercepat. Batas waktu (median) yang menjadi acuan adalah ....`,
+ image:'hist6',options:{A:'54,5 menit',B:'55,0 menit',C:'55,5 menit',D:'56,0 menit',E:'56,5 menit'},correct_answer:'C',
+ pembahasan:R`<p>\(n=40\), letak median di data ke-20. Frekuensi kumulatif: 4, 12, 28, ... sehingga kelas median 51–60. Tepi bawah \(t_b=51-0{,}5=50{,}5\), \(F=12\), \(f=16\), \(p=10\).</p>
+$$Me=t_b+\frac{\frac{n}{2}-F}{f}\times p$$
+$$Me=50{,}5+\frac{20-12}{16}\times10$$
+$$Me=50{,}5+5=55{,}5$$`,
+ pembahasan_image:'ogive6',
+ cara_cepat:R`<p>Setengah data (20) dicapai di kelas 51–60 dengan sisa 8 dari 16 data, yaitu tepat setengah kelas: \(50{,}5+\frac{1}{2}\times10=55{,}5\). Jebakan: memakai batas 50 atau 51 sebagai tepi bawah.</p>`},
+
+{id:7,meta:['Peluang – ruang sampel berubah (penalaran terbalik)','Sulit'],type:'single',
+ question_text:`Sebuah kotak undian berisi 6 kupon hadiah dan 4 kupon kosong. Kupon hadiah yang terambil <b>tidak dikembalikan</b>, sedangkan kupon kosong <b>selalu dikembalikan</b>. Setiap peserta mengambil satu kupon secara acak. Dimas adalah peserta keempat dan peluang ia mendapat kupon hadiah ternyata \\(\\frac{1}{2}\\). Banyak kupon kosong yang terambil oleh tiga peserta sebelum Dimas adalah ....`,
+ image:'balls7',options:{A:'0',B:'1',C:'2',D:'3',E:'tidak dapat ditentukan'},correct_answer:'B',
+ pembahasan:R`<p>Misalkan \(k\) kupon hadiah terambil oleh tiga peserta sebelumnya. Hadiah tersisa \(6-k\); kupon kosong tetap 4, sehingga total \(10-k\).</p>
+$$\frac{6-k}{10-k}=\frac{1}{2}$$
+$$12-2k=10-k$$
+$$k=2$$
+<p>Tiga peserta mengambil 3 kupon, 2 di antaranya hadiah, maka kupon kosong yang terambil:</p>
+$$3-2=1$$`,
+ pembahasan_image:'bar7p',
+ cara_cepat:R`<p>Coba \(k=0,1,2,3\): \(\frac{6}{10},\frac{5}{9},\frac{4}{8},\frac{3}{7}\). Hanya \(k=2\) memberi \(\frac{1}{2}\). Yang ditanya kupon <b>kosong</b>: \(3-2=1\), bukan 2.</p>`},
+
+{id:8,meta:['Peluang dan kombinasi – soal cerita','Sulit'],type:'single',
+ question_text:`Sebuah panitia terdiri atas 5 siswa putra dan 4 siswa putri. Guru memilih 3 orang secara acak untuk membentuk tim debat. Agar tim seimbang, tim harus terdiri atas putra <b>dan</b> putri. Peluang terbentuknya tim yang seimbang adalah ....`,
+ image:'balls8',options:{A:R`\(\frac{1}{6}\)`,B:R`\(\frac{1}{2}\)`,C:R`\(\frac{2}{3}\)`,D:R`\(\frac{5}{6}\)`,E:R`\(\frac{37}{42}\)`},correct_answer:'D',
+ pembahasan:R`<p>Cacah semua cara memilih 3 dari 9 orang, lalu kurangi tim yang seluruhnya putra atau seluruhnya putri.</p>
+$$n(S)=\binom{9}{3}=84$$
+$$\text{semua putra}=\binom{5}{3}=10,\quad \text{semua putri}=\binom{4}{3}=4$$
+$$\text{seimbang}=84-10-4=70$$
+$$P=\frac{70}{84}=\frac{5}{6}$$`,
+ pembahasan_image:'',
+ cara_cepat:R`<p>Komplemen: \(1-\frac{10+4}{84}=1-\frac{1}{6}=\frac{5}{6}\). Jebakan: \(\frac{1}{6}\) adalah peluang tim tidak seimbang (A), dan \(\frac{37}{42}\) hanya memastikan ada putri (E).</p>`},
+
+{id:9,meta:['Statistika – rata-rata gabungan dan penalaran','Sedang'],type:'multi',
+ question_text:`Rata-rata nilai ujian 20 siswa adalah 70. Setelah pengumuman, 4 siswa dengan rata-rata nilai 55 mengundurkan diri dari kelas. Tentukan semua pernyataan yang benar! <b>(Jawaban benar lebih dari satu)</b>`,
+ image:'',options:{1:'Jumlah nilai seluruh 20 siswa adalah 1.400.',2:'Rata-rata nilai 16 siswa yang tersisa adalah 73,75.',3:'Rata-rata nilai kelas naik lebih dari 4 poin dari rata-rata semula.',4:'Nilai tertinggi di antara keempat siswa yang mengundurkan diri pasti lebih dari 55.'},correct_answer:['1','2'],
+ pembahasan:R`<p>Jumlah nilai = rata-rata × banyak data.</p>
+$$20\times70=1400\ \Rightarrow\ \text{(1) benar}$$
+$$4\times55=220$$
+$$\bar{x}_{\text{tersisa}}=\frac{1400-220}{16}=\frac{1180}{16}=73{,}75\ \Rightarrow\ \text{(2) benar}$$
+$$73{,}75-70=3{,}75<4\ \Rightarrow\ \text{(3) salah}$$
+<p>(4) Nilai tertinggi \(\ge\) rata-rata 55. Jika keempat siswa bernilai 55 semua, nilai tertingginya tepat 55, bukan lebih dari 55 → <b>salah</b>.</p>`,
+ pembahasan_image:'bar9',
+ cara_cepat:R`<p>Yang keluar bernilai di bawah rata-rata, sehingga rata-rata sisa naik. Naiknya \(\frac{4\times(70-55)}{16}=3{,}75\) poin. "Pasti lebih dari" gugur bila ada satu kemungkinan sama dengan.</p>`},
+
+{id:10,meta:['Peluang bersyarat – tabel dua arah (soal cerita)','Sedang–Sulit'],type:'single',
+ question_text:`Sebuah aplikasi belanja mensurvei kepuasan 200 penggunanya.`+tbl(['Sistem','Puas','Tidak puas','Jumlah'],[['Android',90,30,120],['iOS',30,50,80],['Jumlah',120,80,200]])+`Satu pengguna dipilih acak dari mereka yang <b>menyatakan puas</b>. Peluang pengguna tersebut memakai Android adalah ....`,
+ image:'bar10q',options:{A:R`\(\frac{3}{8}\)`,B:R`\(\frac{9}{20}\)`,C:R`\(\frac{3}{5}\)`,D:R`\(\frac{3}{4}\)`,E:R`\(\frac{1}{4}\)`},correct_answer:'D',
+ pembahasan:R`<p>Ruang sampel dibatasi pada pengguna yang puas: \(n(S)=120\). Di antara mereka, 90 memakai Android.</p>
+$$P(\text{Android}\mid\text{puas})=\frac{n(\text{Android}\cap\text{puas})}{n(\text{puas})}$$
+$$P=\frac{90}{120}=\frac{3}{4}$$`,
+ pembahasan_image:'bar10p',
+ cara_cepat:R`<p>Penyebut = total kolom "Puas" (120). Jangan tertukar: \(\frac{90}{200}=\frac{9}{20}\) (B, peluang gabungan), \(\frac{120}{200}=\frac{3}{5}\) (C, peluang Android saja), \(\frac{30}{80}=\frac{3}{8}\) (A, puas di antara iOS).</p>`}
+];
+
+/* ---------- Logika ---------- */
+const $=id=>document.getElementById(id),N=questions.length;
+let cur=0,sec=0,ans={},tm;
+const clock=s=>String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const typeset=()=>window.MathJax&&MathJax.typesetPromise&&MathJax.typesetPromise();
+const done=q=>{const a=ans[q.id];return q.type=='tf'?!!a&&Object.keys(q.options).every(k=>k in a):q.type=='multi'?!!a&&a.length>0:!!a};
+const ok=q=>{const a=ans[q.id],c=q.correct_answer;return q.type=='single'?a===c:q.type=='multi'?!!a&&[...a].sort().join()==[...c].sort().join():!!a&&Object.keys(c).every(k=>a[k]===c[k])};
+const fmt=(q,a)=>!a?'—':q.type=='tf'?Object.keys(q.options).map(k=>k+': '+(a[k]===undefined?'—':a[k]?'Benar':'Salah')).join(' · '):q.type=='multi'?[...a].sort().join(', '):a;
+const hints={single:'Pilih satu jawaban',multi:'Pilih semua pernyataan yang benar',tf:'Tentukan Benar atau Salah untuk setiap pernyataan'};
+
+function pick(k,v){const q=questions[cur];
+  if(q.type=='single')ans[q.id]=k;
+  else if(q.type=='multi'){const a=ans[q.id]=ans[q.id]||[],j=a.indexOf(k);j<0?a.push(k):a.splice(j,1)}
+  else(ans[q.id]=ans[q.id]||{})[k]=v;
+  renderQ()}
+const go=d=>{cur=Math.min(N-1,Math.max(0,cur+d));renderQ();scrollTo(0,0)};
+const jump=i=>{cur=i;renderQ();scrollTo(0,0)};
+function toast(h){const w=$('warn');w.innerHTML=h;w.classList.remove('hidden');clearTimeout(w.t);w.t=setTimeout(()=>w.classList.add('hidden'),5000)}
+
+function shell(){
+  $('app').innerHTML=`<div class="grid lg:grid-cols-4 gap-4">
+  <section id="qa" class="lg:col-span-3 order-1 min-w-0"></section>
+  <aside class="order-2"><div class="bg-white/5 border border-[#00d6d8]/30 rounded-xl p-3 lg:sticky lg:top-3">
+    <div class="flex items-center justify-between mb-2"><span class="text-sm text-slate-300"><i class="fa-regular fa-clock text-[#00d6d8]"></i> Waktu</span><span id="sw" class="font-mono text-xl text-[#00d6d8]">${clock(sec)}</span></div>
+    <div class="text-xs text-slate-300 mb-2">Terjawab: <b id="cnt" class="text-[#ffd300]"></b> / ${N}</div>
+    <div id="nav" class="flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible"></div>
+    <button onclick="finish()" id="fin" class="mt-3 w-full bg-[#ffd300] text-black font-bold rounded-lg py-2.5 hover:brightness-110"><i class="fa-solid fa-flag-checkered"></i> Selesai &amp; Lihat Pembahasan</button>
+    <p class="text-xs text-slate-300 mt-2 leading-snug"><i class="fa-solid fa-circle-info text-[#00d6d8]"></i> Semua soal harus dijawab dulu. Jika masih ada yang kosong, latihan belum bisa diselesaikan dan pembahasan belum terbuka.</p>
+  </div></aside></div>`}
+
+function renderQ(){
+  const q=questions[cur],a=ans[q.id];
+  const opts=Object.keys(q.options).map(k=>{
+    let inner;
+    if(q.type=='tf'){const v=a&&a[k];
+      inner=`<div class="p-3 rounded-lg border border-white/20 ${v!==undefined?'bg-[#00d6d8]/20 border-[#00d6d8]':''}"><div class="mb-2"><b>${k}.</b> ${q.options[k]}</div><div class="flex gap-2">${[[true,'Benar'],[false,'Salah']].map(([b,t])=>`<label class="flex-1 text-center cursor-pointer rounded-md py-1.5 border ${v===b?'bg-[#00d6d8]/40 border-[#00d6d8] font-bold':'border-white/25 hover:border-[#00d6d8]'}"><input type="radio" class="hidden" name="tf${k}" onchange="pick('${k}',${b})">${t}</label>`).join('')}</div></div>`}
+    else{const sel=q.type=='single'?a===k:!!a&&a.includes(k);
+      inner=`<label class="flex items-start gap-3 w-full p-3 rounded-lg border cursor-pointer ${sel?'bg-[#00d6d8]/25 border-[#00d6d8]':'border-white/20 hover:border-[#00d6d8]'}"><input type="${q.type=='single'?'radio':'checkbox'}" class="mt-1 accent-[#00d6d8]" name="o" ${sel?'checked':''} onchange="pick('${k}')"><span class="font-bold">${k}.</span><span class="min-w-0 break-words">${q.options[k]}</span></label>`}
+    return inner}).join('');
+  $('qa').innerHTML=`<div class="bg-white/5 border border-white/15 rounded-xl p-4 sm:p-6">
+    <div class="text-[#00d6d8] font-bold mb-3">Soal ${cur+1} dari ${N} <span class="ml-2 text-xs font-normal text-slate-300">${hints[q.type]}</span></div>
+    <div class="leading-relaxed break-words">${q.question_text}</div>${img(q.image)}
+    <div class="space-y-2 mt-3">${opts}</div></div>
+    <div class="flex justify-between gap-2 mt-4">
+      <button onclick="go(-1)" ${cur==0?'disabled':''} class="px-4 py-2 rounded-lg border border-[#00d6d8] hover:bg-[#00d6d8] hover:text-[#022050] disabled:opacity-30 disabled:pointer-events-none"><i class="fa-solid fa-chevron-left"></i> Sebelumnya</button>
+      ${cur==N-1?`<button onclick="finish()" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold">Selesai &amp; Lihat Pembahasan</button>`:`<button onclick="go(1)" class="px-4 py-2 rounded-lg border border-[#00d6d8] hover:bg-[#00d6d8] hover:text-[#022050]">Selanjutnya <i class="fa-solid fa-chevron-right"></i></button>`}
+    </div>`;
+  $('nav').innerHTML=questions.map((x,i)=>`<button onclick="jump(${i})" class="shrink-0 w-11 h-11 lg:w-full lg:h-10 rounded-lg font-bold border ${done(x)?'bg-[#ffd300] text-black border-[#ffd300]':'bg-white/10 border-white/25 hover:border-[#00d6d8]'} ${i==cur?'ring-2 ring-[#00d6d8] shadow-[0_0_10px_#00d6d8]':''}">${i+1}</button>`).join('');
+  $('cnt').textContent=questions.filter(done).length;
+  $('fin').classList.toggle('opacity-70',questions.some(x=>!done(x)));
+  typeset()}
+
+function finish(){
+  const m=questions.map((q,i)=>done(q)?0:i+1).filter(Boolean);
+  if(m.length)return toast(`<i class="fa-solid fa-triangle-exclamation"></i> Belum bisa selesai. Soal yang belum dijawab: <b>${m.join(', ')}</b>.`);
+  clearInterval(tm);renderReview();scrollTo(0,0)}
+
+function row(q,k){
+  const a=ans[q.id],c=q.correct_answer;let good,bad,note='';
+  if(q.type=='tf'){const u=a[k];good=u===c[k];bad=!good;note=`Jawabanmu: ${u?'Benar':'Salah'} · Kunci: ${c[k]?'Benar':'Salah'}`}
+  else{const isc=q.type=='single'?c===k:c.includes(k),sel=q.type=='single'?a===k:a.includes(k);
+    good=isc;bad=sel&&!isc;note=[isc?'Kunci':'',sel?'Pilihanmu':''].filter(Boolean).join(' · ')}
+  return `<div class="p-3 rounded-lg border ${good?'border-green-400 bg-green-500/15':bad?'border-red-400 bg-red-500/15':'border-white/15'}"><b>${k}.</b> <span class="break-words">${q.options[k]}</span>${note?`<div class="text-xs mt-1 ${bad?'text-red-300':'text-green-300'}">${note}</div>`:''}</div>`}
+
+function card(q,i){
+  const g=ok(q);
+  return `<article class="bg-white/5 border-2 ${g?'border-green-400/60':'border-red-400/60'} rounded-xl p-4 sm:p-6 mb-5">
+  <div class="flex justify-between items-center mb-3"><b class="text-[#00d6d8]">Soal ${i+1}</b><span class="text-sm font-bold px-3 py-1 rounded-full ${g?'bg-green-500':'bg-red-500'}"><i class="fa-solid ${g?'fa-check':'fa-xmark'}"></i> ${g?'Benar':'Salah'}</span></div>
+  <div class="leading-relaxed break-words">${q.question_text}</div>${img(q.image)}
+  <div class="space-y-2 mt-3">${Object.keys(q.options).map(k=>row(q,k)).join('')}</div>
+  <div class="grid sm:grid-cols-2 gap-2 mt-3 text-sm"><div class="p-3 rounded-lg ${g?'bg-green-500/20':'bg-red-500/20'}"><b>Jawabanmu:</b> ${fmt(q,ans[q.id])}</div><div class="p-3 rounded-lg bg-white/10"><b>Kunci:</b> ${fmt(q,q.correct_answer)}</div></div>
+  <div class="mt-4 rounded-lg bg-[#011a45] border border-white/20 p-4 leading-relaxed"><h4 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open"></i> Pembahasan Lengkap</h4>${q.pembahasan}${img(q.pembahasan_image)}</div>
+  <div class="mt-3 rounded-lg bg-[#00d6d8]/15 border border-[#00d6d8]/60 p-4 leading-relaxed"><h4 class="font-bold text-[#00d6d8] mb-2">🔥 Cara Cepat / Trik</h4>${q.cara_cepat}</div></article>`}
+
+function renderReview(){
+  const b=questions.filter(ok).length;
+  $('app').innerHTML=`<div class="rounded-xl bg-[#011a45] border border-[#00d6d8] shadow-[0_0_20px_#00d6d855] p-5 mb-5">
+   <h2 class="font-bold text-lg mb-3 text-[#00d6d8]">Ringkasan Hasil Latihan</h2>
+   <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+    <div class="rounded-lg bg-[#ffd300] text-black p-3"><div class="text-3xl font-bold">${Math.round(b/N*100)}</div><div class="text-xs">Skor Akhir</div></div>
+    <div class="rounded-lg bg-green-500/25 p-3"><div class="text-3xl font-bold">${b}</div><div class="text-xs">Total Benar</div></div>
+    <div class="rounded-lg bg-red-500/25 p-3"><div class="text-3xl font-bold">${N-b}</div><div class="text-xs">Total Salah</div></div>
+    <div class="rounded-lg bg-white/10 p-3"><div class="text-3xl font-bold font-mono">${clock(sec)}</div><div class="text-xs">Waktu Pengerjaan</div></div></div>
+   <p class="text-xs text-slate-300 mt-3">Soal pilihan ganda kompleks dan Benar/Salah dinilai benar bila seluruh jawabanmu sesuai kunci.</p></div>
+  ${questions.map(card).join('')}
+  <div class="flex flex-wrap gap-3 justify-center mb-8"><button onclick="location.reload()" class="px-5 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold"><i class="fa-solid fa-rotate-right"></i> Ulangi Latihan</button><a href="data-peluang.html" class="px-5 py-2.5 rounded-lg border border-[#00d6d8] hover:bg-[#00d6d8] hover:text-[#022050]">Kembali ke Dashboard Data dan Peluang</a></div>`;
+  typeset()}
+
+shell();renderQ();
+tm=setInterval(()=>{sec++;const e=$('sw');if(e)e.textContent=clock(sec)},1000);
+</script>
+</body>
+</html>
