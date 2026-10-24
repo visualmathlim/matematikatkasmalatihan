@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualMath.Lim - Latihan Aljabar TKA SMA Kelas 12</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+window.MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$']] }, options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] } };
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<style>
+  body{background:#022050;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .glow:hover{box-shadow:0 0 14px #00d6d8;border-color:#00d6d8}
+  mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;margin:.6em 0!important}
+  .sol b{color:#ffd300}
+  .sol ul{margin-left:.25rem}
+  .navscroll::-webkit-scrollbar{height:6px}.navscroll::-webkit-scrollbar-thumb{background:#00d6d8;border-radius:9px}
+  table.q{border-collapse:collapse;margin:.8rem 0;min-width:60%}table.q td,table.q th{border:1px solid #4b6a9b;padding:.35rem .7rem}table.q th{background:#0a3a85}
+</style>
+</head>
+<body class="min-h-screen">
+
+<nav class="sticky top-0 z-20 bg-[#011a42] border-b border-[#00d6d8]/40 px-3 sm:px-6 py-2 flex items-center justify-between gap-2">
+  <div class="flex items-center gap-3 min-w-0">
+    <a href="index.html" class="text-[#00d6d8] hover:text-white text-lg" title="Home"><i class="fa-solid fa-house"></i></a>
+    <h1 class="font-bold text-sm sm:text-lg truncate"><span class="text-[#00d6d8]">VisualMath.Lim</span> - Latihan Aljabar TKA SMA Kelas 12</h1>
+  </div>
+  <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+    <div id="clock" class="font-mono text-[#ffd300] text-base sm:text-xl"><i class="fa-regular fa-clock mr-1"></i><span id="clockTxt">00:00</span></div>
+    <a href="aljabar.html" class="flex items-center gap-2 border border-[#00d6d8] text-[#00d6d8] hover:bg-[#00d6d8] hover:text-[#022050] rounded-lg px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold transition">
+      <img src="logo.png" alt="logo" class="h-7 w-7 object-contain" onerror="this.style.display='none'">
+      <span class="hidden sm:inline">Kembali ke Dashboard Aljabar</span><span class="sm:hidden">Dashboard</span>
+    </a>
+  </div>
+</nav>
+
+<main id="app" class="max-w-7xl mx-auto p-3 sm:p-6"></main>
+
+<script>
+/* ============ GAMBAR (SVG dibuat dengan kode) ============ */
+const IMG_CLS = 'max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block';
+function svgRegion(){
+  return `<svg class="${IMG_CLS}" style="max-width:380px" viewBox="0 0 300 210" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="12" fill="#fff">
+  <polygon points="50,170 110,50 230,170" fill="#ffd300" fill-opacity=".4" stroke="#00d6d8" stroke-width="2"/>
+  <line x1="20" y1="170" x2="280" y2="170" stroke="#fff"/><line x1="110" y1="195" x2="110" y2="25" stroke="#fff"/>
+  <text x="283" y="174">x</text><text x="114" y="26">y</text>
+  <circle cx="50" cy="170" r="3" fill="#00d6d8"/><circle cx="110" cy="50" r="3" fill="#00d6d8"/><circle cx="230" cy="170" r="3" fill="#00d6d8"/>
+  <text x="22" y="190">A(-2,0)</text><text x="118" y="52">B(0,4)</text><text x="208" y="190">C(4,0)</text></svg>`;
+}
+function svgParabola(){
+  let pts=[]; for(let t=0;t<=5.001;t+=0.25){const h=-5*t*t+20*t+25; pts.push((30+t*60).toFixed(1)+','+(170-h*3).toFixed(1));}
+  return `<svg class="${IMG_CLS}" style="max-width:420px" viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="12" fill="#fff">
+  <line x1="30" y1="170" x2="350" y2="170" stroke="#fff"/><line x1="30" y1="185" x2="30" y2="10" stroke="#fff"/>
+  <polyline points="${pts.join(' ')}" fill="none" stroke="#00d6d8" stroke-width="3"/>
+  <line x1="150" y1="35" x2="150" y2="170" stroke="#ffd300" stroke-dasharray="4"/>
+  <circle cx="150" cy="35" r="4" fill="#ffd300"/><circle cx="30" cy="95" r="4" fill="#00d6d8"/>
+  <text x="160" y="32">titik puncak</text><text x="38" y="92">(0, 25)</text>
+  <text x="318" y="186">t (detik)</text><text x="36" y="18">h (m)</text></svg>`;
+}
+
+/* ============ DATA SOAL (prediksi bergaya TKA SMA, 15 soal) ============ */
+/* type: 'mc' = pilihan ganda | 'multi' = pilihan ganda kompleks | 'tf' = benar/salah per pernyataan
+   correct_answer: mc -> 'C' | multi -> ['A','C'] | tf -> [true,false,true]
+   Format teks: baris kosong = paragraf baru, "- " = daftar, **tebal**, | tabel |, $...$ dan $$...$$ = rumus */
+const questions = [
+{ id:1, type:'mc',
+  question_text: String.raw`Ibu Sari membandingkan dua taksi online untuk perjalanan ke bandara.
+
+- Taksi A: tarif buka Rp10.000,00 ditambah Rp4.000,00 per km.
+- Taksi B: tarif buka Rp4.000,00 ditambah Rp5.000,00 per km.
+
+Taksi B menjadi **lebih mahal** daripada Taksi A jika jarak tempuh ....`,
+  image:'', options:{A:'lebih dari 4 km',B:'lebih dari 5 km',C:'lebih dari 6 km',D:'lebih dari 7 km',E:'lebih dari 10 km'}, correct_answer:'C',
+  pembahasan: String.raw`**Diketahui:** misalkan jarak tempuh $x$ km.
+- Tarif Taksi A $=10.000+4.000x$
+- Tarif Taksi B $=4.000+5.000x$
+
+**Ditanya:** nilai $x$ agar tarif B lebih mahal daripada tarif A.
+
+**Langkah 1 — Susun pertidaksamaan.**
+$$4.000+5.000x \;>\; 10.000+4.000x$$
+
+**Langkah 2 — Selesaikan.**
+$$\begin{aligned} 5.000x-4.000x &> 10.000-4.000\\ 1.000x &> 6.000\\ x &> 6\end{aligned}$$
+
+**Langkah 3 — Periksa jebakan.** Pada $x=6$ kedua tarif sama besar, yaitu $10.000+4.000(6)=4.000+5.000(6)=34.000$. Soal meminta "lebih mahal", sehingga jarak harus **lebih dari** 6 km.
+
+**Jawaban: C. lebih dari 6 km**`,
+  cara_cepat: String.raw`Cari titik impas: selisih tarif buka $=10.000-4.000=6.000$, selisih tarif per km $=5.000-4.000=1.000$.
+$$\frac{6.000}{1.000}=6 \text{ km}$$
+Setelah 6 km, Taksi B menjadi lebih mahal.` },
+
+{ id:2, type:'tf',
+  question_text: String.raw`Di koperasi sekolah:
+
+- Rani membeli 2 buku dan 3 pulpen, ia membayar Rp18.000,00.
+- Tia membeli 3 buku dan 1 pulpen, ia membayar Rp20.000,00.
+
+Tentukan **Benar** atau **Salah** untuk setiap pernyataan berikut!`,
+  statements:[
+    'Harga sebuah pulpen adalah Rp2.000,00.',
+    'Uang Rp29.000,00 cukup untuk membeli 4 buku dan 3 pulpen.',
+    'Jika Rani membeli 1 buku dan 6 pulpen, ia membayar kurang dari Rp20.000,00.'],
+  correct_answer:[true,false,true], image:'', options:{},
+  pembahasan: String.raw`**Langkah 1 — Pemisalan** (dalam ribu rupiah).
+- $b$ = harga sebuah buku
+- $p$ = harga sebuah pulpen
+
+**Langkah 2 — Model persamaan.**
+$$\begin{aligned} 2b+3p &= 18 \quad\cdots(1)\\ 3b+p &= 20 \quad\cdots(2)\end{aligned}$$
+
+**Langkah 3 — Selesaikan (substitusi).** Dari (2): $p=20-3b$. Masukkan ke (1):
+$$\begin{aligned} 2b+3(20-3b) &= 18\\ 2b+60-9b &= 18\\ -7b &= -42\\ b &= 6\end{aligned}$$
+$$p=20-3(6)=2$$
+Jadi buku Rp6.000 dan pulpen Rp2.000.
+
+**Langkah 4 — Periksa setiap pernyataan.**
+- **(1) Benar.** Harga pulpen $=\text{Rp}2.000$.
+- **(2) Salah.** $4(6.000)+3(2.000)=24.000+6.000=30.000$, lebih dari $29.000$ sehingga uang tidak cukup.
+- **(3) Benar.** $6.000+6(2.000)=18.000$, kurang dari $20.000$.
+
+**Jawaban: (1) Benar, (2) Salah, (3) Benar**`,
+  cara_cepat: String.raw`Kalikan persamaan (2) dengan 3: $9b+3p=60$. Kurangkan persamaan (1): $7b=42$, sehingga $b=6$ dan $p=2$. Lalu uji tiap pernyataan satu per satu.` },
+
+{ id:3, type:'multi',
+  question_text: String.raw`Pak Hendra membuat kue lapis dan kue bolu.
+
+- Satu kue lapis memerlukan 2 butir telur, satu kue bolu memerlukan 1 butir telur.
+- Telur yang tersedia hanya 14 butir.
+- Waktu kerja paling banyak 9 jam, dan setiap kue memerlukan 1 jam pengerjaan.
+
+Pilihlah **semua** kombinasi (kue lapis, kue bolu) yang dapat dibuat Pak Hendra. Jawaban benar lebih dari satu.`,
+  image:'', options:{A:'(5, 4)',B:'(6, 3)',C:'(4, 5)',D:'(3, 7)',E:'(7, 0)'}, correct_answer:['A','C','E'],
+  pembahasan: String.raw`**Langkah 1 — Model matematika.** Misalkan $x$ = kue lapis dan $y$ = kue bolu.
+$$\begin{aligned} 2x+y &\le 14 \quad\text{(telur)}\\ x+y &\le 9 \quad\text{(waktu)}\end{aligned}$$
+
+**Langkah 2 — Uji setiap pilihan.** Kombinasi harus memenuhi **kedua** syarat sekaligus.
+
+| Pilihan | $2x+y\le14$ | $x+y\le9$ | Dapat dibuat? |
+|---|---|---|---|
+| A (5, 4) | $14$ benar | $9$ benar | Ya |
+| B (6, 3) | $15$ salah | $9$ benar | Tidak |
+| C (4, 5) | $13$ benar | $9$ benar | Ya |
+| D (3, 7) | $13$ benar | $10$ salah | Tidak |
+| E (7, 0) | $14$ benar | $7$ benar | Ya |
+
+**Jawaban: A, C, dan E**`,
+  cara_cepat: String.raw`Hitung $x+y$ lebih dulu karena paling mudah: D gagal (10). Lalu cek $2x+y$: B gagal (15).` },
+
+{ id:4, type:'mc',
+  question_text: String.raw`Bu Tini menjahit gamis dan kemeja.
+
+- Satu gamis memerlukan 3 m kain, satu kemeja memerlukan 2 m kain.
+- Kain yang tersedia 36 m.
+- Bu Tini hanya mampu menyelesaikan paling banyak 14 potong pakaian per minggu.
+- Laba satu gamis Rp150.000,00 dan laba satu kemeja Rp120.000,00.
+
+Jika semua pakaian terjual, laba maksimum per minggu adalah ....`,
+  image:'', options:{A:'Rp1.680.000,00',B:'Rp1.800.000,00',C:'Rp1.920.000,00',D:'Rp2.040.000,00',E:'Rp2.100.000,00'}, correct_answer:'C',
+  pembahasan: String.raw`**Langkah 1 — Model matematika.** Misalkan $x$ = gamis dan $y$ = kemeja.
+$$\begin{aligned} 3x+2y &\le 36\\ x+y &\le 14\\ x\ge 0,\; y &\ge 0\end{aligned}$$
+Fungsi tujuan (laba):
+$$Z=150.000x+120.000y$$
+
+**Langkah 2 — Titik pojok daerah penyelesaian.** Titik potong kedua garis, dengan $y=14-x$:
+$$\begin{aligned} 3x+2(14-x) &= 36\\ x+28 &= 36\\ x &= 8,\quad y=6\end{aligned}$$
+Titik pojok lain: $(0,0)$, $(12,0)$ dari $3x=36$, dan $(0,14)$ dari $y=14$.
+
+**Langkah 3 — Hitung laba di tiap titik pojok.**
+
+| Titik pojok $(x,y)$ | $Z=150.000x+120.000y$ |
+|---|---|
+| $(0,0)$ | Rp0 |
+| $(12,0)$ | Rp1.800.000 |
+| $(0,14)$ | Rp1.680.000 |
+| $(8,6)$ | **Rp1.920.000** (terbesar) |
+
+**Jawaban: C. Rp1.920.000,00**
+Jebakan: berhenti di pojok sumbu (Rp1.800.000).`,
+  cara_cepat: String.raw`Hitung titik potong dua kendala $(8,6)$, lalu bandingkan dengan dua pojok sumbu:
+$$12\times150=1.800,\qquad 14\times120=1.680,\qquad 8\times150+6\times120=1.920 \text{ (ribu)}$$` },
+
+{ id:5, type:'tf',
+  question_text: String.raw`Rina menabung mulai Januari.
+
+- Tabungan bulan pertama Rp200.000,00 dan naik Rp50.000,00 setiap bulan.
+- **Mulai bulan ke-7** Rina tidak menaikkan lagi. Setiap bulan ia menabung sama besar dengan bulan ke-6.
+
+Tentukan **Benar** atau **Salah** untuk setiap pernyataan berikut!`,
+  statements:[
+    'Tabungan Rina pada bulan ke-6 adalah Rp450.000,00.',
+    'Total tabungan Rina selama 12 bulan adalah Rp4.800.000,00.',
+    'Jika kenaikan Rp50.000,00 berlanjut sampai bulan ke-12, total tabungannya lebih banyak Rp1.050.000,00 daripada rencana Rina yang berhenti naik.'],
+  correct_answer:[true,false,true], image:'', options:{},
+  pembahasan: String.raw`**Langkah 1 — Bulan 1 sampai 6** (deret aritmetika, $a=200.000$ dan $b=50.000$).
+$$U_6=a+5b=200.000+5(50.000)=450.000$$
+$$S_6=\frac{6}{2}\,(200.000+450.000)=1.950.000$$
+
+**Langkah 2 — Bulan 7 sampai 12** (tetap 450.000 per bulan).
+$$6\times450.000=2.700.000$$
+
+**Langkah 3 — Total 12 bulan.**
+$$1.950.000+2.700.000=4.650.000$$
+
+**Langkah 4 — Jika kenaikan berlanjut sampai bulan ke-12.**
+$$S_{12}=\frac{12}{2}\,\big(2(200.000)+11(50.000)\big)=6\times950.000=5.700.000$$
+$$5.700.000-4.650.000=1.050.000$$
+
+**Langkah 5 — Periksa pernyataan.**
+- **(1) Benar.** $U_6=450.000$.
+- **(2) Salah.** Totalnya $4.650.000$, bukan $4.800.000$.
+- **(3) Benar.** Selisihnya $1.050.000$.
+
+**Jawaban: (1) Benar, (2) Salah, (3) Benar**`,
+  cara_cepat: String.raw`Kenaikan yang "hilang" pada bulan ke-7 sampai ke-12:
+$$50.000\times(1+2+3+4+5+6)=50.000\times21=1.050.000$$` },
+
+{ id:6, type:'mc',
+  question_text: String.raw`Seorang peneliti mengamati koloni sel yang pada awal pengamatan berjumlah 500 sel.
+
+- Setiap 3 jam, jumlah sel menjadi tiga kali lipat.
+- Tepat setelah pembelahan pada jam ke-6, sebanyak 500 sel mati karena kekurangan nutrisi.
+- Setelah itu koloni terus membelah seperti semula.
+
+Banyak sel pada jam ke-9 adalah ....`,
+  image:'', options:{A:'4.000 sel',B:'10.800 sel',C:'12.000 sel',D:'13.000 sel',E:'13.500 sel'}, correct_answer:'C',
+  pembahasan: String.raw`**Diketahui:** sel awal $500$; pembelahan $\times3$ tiap 3 jam; $500$ sel mati setelah pembelahan jam ke-6.
+
+**Langkah 1 — Ikuti kejadian secara berurutan.** Sel yang mati tidak ikut membelah lagi, sehingga urutan kejadian penting.
+
+| Waktu | Kejadian | Jumlah sel |
+|---|---|---|
+| Jam 0 | Awal | $500$ |
+| Jam 3 | $500\times3$ | $1.500$ |
+| Jam 6 | $1.500\times3=4.500$, lalu $-500$ | $4.000$ |
+| Jam 9 | $4.000\times3$ | **$12.000$** |
+
+**Jawaban: C. 12.000 sel**
+Jebakan: E (tanpa kematian), D (500 dikurangkan di akhir), A (berhenti di jam ke-6).`,
+  cara_cepat: String.raw`Kurangi 500 **sebelum** dikali tiga yang terakhir:
+$$(4.500-500)\times3=12.000$$` },
+
+{ id:7, type:'multi',
+  question_text: String.raw`Pak Joko menyimpan Rp10.000.000,00 di bank dengan bunga majemuk 10% per tahun. Bunga ditambahkan ke saldo setiap akhir tahun.
+
+Pilihlah **semua** pernyataan yang benar. Jawaban benar lebih dari satu.`,
+  image:'', options:{
+    A:'Saldo setelah 2 tahun adalah Rp12.100.000,00.',
+    B:'Bunga yang diperoleh selama 2 tahun lebih besar Rp100.000,00 daripada jika bunganya tunggal.',
+    C:'Saldo setelah 3 tahun adalah Rp13.300.000,00.',
+    D:'Pertambahan saldo pada tahun ke-3 adalah Rp1.210.000,00.',
+    E:'Bunga yang diperoleh pada tahun ke-1 dan tahun ke-2 sama besar.'}, correct_answer:['A','B','D'],
+  pembahasan: String.raw`**Langkah 1 — Hitung saldo tahun demi tahun** ($M_0=10.000.000$, $i=10\%$).
+
+| Akhir tahun | Bunga | Saldo |
+|---|---|---|
+| 1 | $10\%\times10.000.000=1.000.000$ | $11.000.000$ |
+| 2 | $10\%\times11.000.000=1.100.000$ | $12.100.000$ |
+| 3 | $10\%\times12.100.000=1.210.000$ | $13.310.000$ |
+
+**Langkah 2 — Cek dengan rumus.**
+$$M_n=M_0(1+i)^n \;\Rightarrow\; M_2=10.000.000\,(1{,}1)^2=12.100.000$$
+
+**Langkah 3 — Periksa pernyataan.**
+- **A Benar.** Saldo tahun ke-2 $=12.100.000$.
+- **B Benar.** Bunga majemuk 2 tahun $=2.100.000$, bunga tunggal $=2\times1.000.000=2.000.000$, selisih $100.000$.
+- **C Salah.** Saldo tahun ke-3 adalah $13.310.000$.
+- **D Benar.** Tahun ke-3 bertambah $1.210.000$.
+- **E Salah.** Bunga tahun ke-2 ($1.100.000$) lebih besar karena dihitung dari saldo yang lebih besar.
+
+**Jawaban: A, B, dan D**`,
+  cara_cepat: String.raw`Kalikan 1,1 berulang (dalam juta rupiah):
+$$10\;\to\;11\;\to\;12{,}1\;\to\;13{,}31$$
+A, C, dan D langsung terbaca. B dan E dilihat dari bunga tiap tahun.` },
+
+{ id:8, type:'tf',
+  question_text: String.raw`Sebuah mesin bekerja dalam dua tahap.
+
+- Tahap I mengubah masukan $x$ menjadi $f(x)=2x+3$.
+- Tahap II mengubah hasil Tahap I menjadi keluaran akhir.
+- Keluaran akhir untuk masukan $x$ adalah $(g\circ f)(x)=4x^2+12x+5$.
+
+Tentukan **Benar** atau **Salah** untuk setiap pernyataan berikut!`,
+  statements:[
+    'Aturan Tahap II adalah $g(t)=t^2-4$.',
+    'Keluaran akhir bernilai 21 hanya jika masukan $x=1$.',
+    'Jika masukannya $x=-2$, keluaran akhirnya adalah $-3$.'],
+  correct_answer:[true,false,true], image:'', options:{},
+  pembahasan: String.raw`**Pernyataan (1).** Uji $g(t)=t^2-4$ dengan $t=f(x)=2x+3$:
+$$g(f(x))=(2x+3)^2-4=4x^2+12x+9-4=4x^2+12x+5$$
+Sama dengan yang diketahui, jadi **Benar**.
+
+**Pernyataan (2).** Selesaikan $(g\circ f)(x)=21$:
+$$\begin{aligned} 4x^2+12x+5 &= 21\\ 4x^2+12x-16 &= 0\\ x^2+3x-4 &= 0\\ (x+4)(x-1) &= 0\end{aligned}$$
+Diperoleh $x=1$ **atau** $x=-4$. Kata "hanya" keliru, jadi **Salah**.
+
+**Pernyataan (3).** Untuk $x=-2$:
+$$f(-2)=2(-2)+3=-1,\qquad g(-1)=(-1)^2-4=-3$$
+Jadi **Benar**.
+
+**Jawaban: (1) Benar, (2) Salah, (3) Benar**`,
+  cara_cepat: String.raw`Persamaan kuadrat bisa mempunyai dua akar. Jika pernyataan memakai kata "hanya", cek dulu apakah ada akar kedua.` },
+
+{ id:9, type:'mc',
+  question_text: String.raw`Massa suatu zat radioaktif dinyatakan oleh
+$$M(t)=80\cdot 2^{-t/5}\ \text{gram}$$
+dengan $t$ dalam tahun. Zat tersebut dinyatakan **aman** dipindahkan jika massanya **tidak lebih dari** 10 gram.
+
+Zat tersebut aman dipindahkan setelah ....`,
+  image:'', options:{A:'$t\ge 10$',B:'$t\ge 15$',C:'$t\ge 20$',D:'$t\ge 25$',E:'$t\le 15$'}, correct_answer:'B',
+  pembahasan: String.raw`**Langkah 1 — Terjemahkan syarat aman.** "Tidak lebih dari 10 gram" berarti $M(t)\le10$.
+
+**Langkah 2 — Selesaikan.**
+$$\begin{aligned} 80\cdot2^{-t/5} &\le 10\\ 2^{-t/5} &\le \tfrac{1}{8}=2^{-3}\\ -\tfrac{t}{5} &\le -3\\ t &\ge 15\end{aligned}$$
+Basis $2>1$, sehingga tanda tidak berubah saat pangkat dibandingkan. Tanda **dibalik** pada langkah terakhir karena dikali $-5$.
+
+**Jawaban: B. $t\ge15$**
+Jebakan: E ($t\le15$) muncul jika tanda tidak dibalik.`,
+  cara_cepat: String.raw`Massa menjadi separuh tiap 5 tahun:
+$$80\to40\to20\to10$$
+Butuh 3 periode, yaitu $3\times5=15$ tahun. Setelah itu massa makin kecil, sehingga $t\ge15$.` },
+
+{ id:10, type:'multi',
+  question_text: String.raw`Pak Tani memiliki pagar kawat sepanjang 40 m untuk membuat kandang berbentuk persegi panjang. Satu sisi kandang memanfaatkan dinding sehingga tidak perlu dipagari.
+
+Misalkan lebar kandang (sisi yang tegak lurus dinding) adalah $x$ meter.
+
+Pilihlah **semua** pernyataan yang benar. Jawaban benar lebih dari satu.`,
+  image:'', options:{
+    A:'Luas maksimum kandang adalah 200 m².',
+    B:'Luas maksimum tercapai ketika lebar kandang 10 m.',
+    C:'Jika lebar kandang 5 m, luas kandang 150 m².',
+    D:'Lebar 15 m menghasilkan luas yang lebih besar daripada lebar 10 m.',
+    E:'Lebar kandang dapat dibuat 25 m.'}, correct_answer:['A','B','C'],
+  pembahasan: String.raw`**Langkah 1 — Rumus luas.** Dua sisi lebar dan satu sisi panjang dipagari, sehingga panjang $=40-2x$.
+$$L(x)=x\,(40-2x)=-2x^2+40x$$
+
+**Langkah 2 — Titik puncak (luas maksimum).**
+$$x=\frac{-b}{2a}=\frac{-40}{2(-2)}=10,\qquad L(10)=10\times20=200$$
+
+**Langkah 3 — Periksa pernyataan.**
+- **A Benar.** Luas maksimum $200$ m².
+- **B Benar.** Maksimum tercapai saat $x=10$.
+- **C Benar.** $L(5)=5\times30=150$ m².
+- **D Salah.** $L(15)=15\times10=150$ m², lebih kecil dari $L(10)=200$.
+- **E Salah.** Panjang $=40-2(25)=-10$, tidak mungkin.
+
+**Jawaban: A, B, dan C**`,
+  cara_cepat: String.raw`Luas terbesar tercapai ketika kawat dibagi adil: separuh untuk sisi panjang ($20$ m), sisanya untuk dua lebar ($10$ m masing-masing).
+$$L=20\times10=200$$` },
+
+{ id:11, type:'mc',
+  question_text: String.raw`Perhatikan peta lahan sebuah desa. Daerah yang diarsir adalah lahan yang boleh ditanami, berbentuk segitiga dengan titik sudut $A(-2,0)$, $B(0,4)$, dan $C(4,0)$.
+
+Sistem pertidaksamaan yang sesuai dengan daerah tersebut adalah ....`,
+  image: svgRegion(),
+  options:{
+    A:String.raw`$2x-y\ge -4;\; x+y\le 4;\; y\ge 0$`,
+    B:String.raw`$2x-y\le -4;\; x+y\le 4;\; y\ge 0$`,
+    C:String.raw`$2x-y\ge -4;\; x+y\ge 4;\; y\ge 0$`,
+    D:String.raw`$2x-y\ge -4;\; x+y\le 4;\; x\ge 0;\; y\ge 0$`,
+    E:String.raw`$2x-y\ge 4;\; x+y\le 4;\; y\ge 0$`}, correct_answer:'A',
+  pembahasan: String.raw`Daerah dibatasi tiga garis: garis $AB$, garis $BC$, dan sumbu-$x$. Titik uji yang dipakai: $(0,1)$ (berada di dalam daerah arsiran).
+
+**Langkah 1 — Garis AB** melalui $A(-2,0)$ dan $B(0,4)$.
+$$\frac{x}{-2}+\frac{y}{4}=1 \;\Rightarrow\; -2x+y=4 \;\Rightarrow\; 2x-y=-4$$
+Uji $(0,1)$: $2(0)-1=-1\ge-4$ (benar), sehingga $2x-y\ge-4$.
+
+**Langkah 2 — Garis BC** melalui $B(0,4)$ dan $C(4,0)$.
+$$x+y=4$$
+Uji $(0,1)$: $0+1=1\le4$ (benar), sehingga $x+y\le4$.
+
+**Langkah 3 — Sumbu-x.** Daerah berada di atas sumbu-$x$, sehingga $y\ge0$.
+
+**Kesimpulan:**
+$$\begin{cases} 2x-y\ge-4\\ x+y\le4\\ y\ge0\end{cases}$$
+
+**Jawaban: A**
+Jebakan: pilihan D menambah $x\ge0$, padahal daerah meluas ke kiri sampai $x=-2$.`,
+  cara_cepat: String.raw`Uji titik $(0,1)$ pada semua pilihan. B gagal ($-1\le-4$ salah), C gagal ($1\ge4$ salah), E gagal ($-1\ge4$ salah). D salah karena memuat $x\ge0$. Tersisa A.` },
+
+{ id:12, type:'tf',
+  question_text: String.raw`Toko sepatu memberi potongan pembukaan 20%, sehingga harga menjadi $y=0{,}8x$ dengan $x$ harga normal. Pembeli yang menjadi member mendapat potongan tambahan dari harga $y$:
+$$g(y)=\begin{cases}0{,}9y, & \text{member Emas}\\[2pt] 0{,}95y, & \text{member Silver}\end{cases}$$
+Harga normal sepasang sepatu adalah Rp400.000,00. Empat pembeli datang dengan data berikut:
+
+<table class="q"><tr><th>Nama</th><th>Member</th><th>Uang (Rp)</th></tr><tr><td>Ani</td><td>Emas</td><td>290.000</td></tr><tr><td>Budi</td><td>Silver</td><td>300.000</td></tr><tr><td>Cici</td><td>Emas</td><td>285.000</td></tr><tr><td>Dodi</td><td>Silver</td><td>305.000</td></tr></table>
+
+Tentukan **Benar** atau **Salah**: uang pembeli berikut **cukup** untuk membeli sepatu tersebut!`,
+  statements:['Ani','Budi','Cici','Dodi'],
+  correct_answer:[true,false,false,true], image:'', options:{},
+  pembahasan: String.raw`**Langkah 1 — Harga setelah potongan pembukaan.**
+$$y=0{,}8\times400.000=320.000$$
+
+**Langkah 2 — Harga setelah potongan member.**
+$$\begin{aligned}\text{Emas: } g(y) &= 0{,}9\times320.000=288.000\\ \text{Silver: } g(y) &= 0{,}95\times320.000=304.000\end{aligned}$$
+
+**Langkah 3 — Bandingkan dengan uang masing-masing.**
+
+| Nama | Harus bayar | Uang | Cukup? |
+|---|---|---|---|
+| Ani (Emas) | 288.000 | 290.000 | Ya |
+| Budi (Silver) | 304.000 | 300.000 | Tidak |
+| Cici (Emas) | 288.000 | 285.000 | Tidak |
+| Dodi (Silver) | 304.000 | 305.000 | Ya |
+
+**Jawaban: Ani Benar, Budi Salah, Cici Salah, Dodi Benar**`,
+  cara_cepat: String.raw`Cukup hitung dua harga: Emas $=288.000$ dan Silver $=304.000$. Lalu bandingkan dengan uang tiap pembeli.` },
+
+{ id:13, type:'mc',
+  question_text: String.raw`Pengurus masjid menargetkan dana renovasi **minimal** Rp60 juta pada akhir bulan ke-12.
+
+- Sumbangan bulan pertama Rp2 juta, lalu naik dengan jumlah tetap setiap bulan.
+- Pada bulan ke-6 terjadi pengeluaran darurat Rp3 juta yang diambil dari dana terkumpul.
+- Dengan kenaikan Rp0,5 juta per bulan, target tidak tercapai.
+
+Kenaikan tetap per bulan yang **paling kecil** di antara pilihan berikut agar target tercapai adalah ....`,
+  image:'', options:{A:'Rp0,50 juta',B:'Rp0,55 juta',C:'Rp0,60 juta',D:'Rp0,65 juta',E:'Rp0,70 juta'}, correct_answer:'C',
+  pembahasan: String.raw`**Diketahui** (dalam juta rupiah): $a=2$, kenaikan tetap $b$, $n=12$, pengeluaran $3$, target $\ge60$.
+
+**Langkah 1 — Syarat target.**
+$$S_{12}-3\ge60,\qquad S_{12}=\frac{12}{2}\,\big(2(2)+11b\big)=6\,(4+11b)$$
+
+**Langkah 2 — Selesaikan.**
+$$\begin{aligned} 6(4+11b)-3 &\ge 60\\ 24+66b &\ge 63\\ b &\ge \frac{39}{66}\approx0{,}59\end{aligned}$$
+
+**Langkah 3 — Uji pilihan.**
+- $b=0{,}50$: $6(9{,}5)-3=54<60$ (sesuai cerita, target tidak tercapai)
+- $b=0{,}55$: $6(10{,}05)-3=57{,}3<60$ (gagal)
+- $b=0{,}60$: $6(10{,}6)-3=60{,}6\ge60$ (berhasil)
+
+**Jawaban: C. Rp0,60 juta**`,
+  cara_cepat: String.raw`Dengan $b=0{,}5$ dana akhir $54$, kurang $6$. Setiap tambahan $0{,}05$ pada $b$ menambah dana $6\times11\times0{,}05=3{,}3$. Butuh dua tambahan ($6{,}6\ge6$), yaitu $b=0{,}60$.` },
+
+{ id:14, type:'multi',
+  question_text: String.raw`Dalam uji beban sebuah jembatan, beban pada titik tumpuan pertama, kedua, dan ketiga berturut-turut adalah 250 kg, 500 kg, dan 1.000 kg. Beban pada titik berikutnya mengikuti pola yang sama.
+
+Batas aman beton adalah 32 ton (1 ton = 1.000 kg).
+
+Pilihlah **semua** pernyataan yang benar. Jawaban benar lebih dari satu.`,
+  image:'', options:{
+    A:'Beban pada titik ke-5 adalah 4.000 kg.',
+    B:'Beban pada titik ke-8 tepat mencapai batas aman 32 ton.',
+    C:'Beban pada titik ke-9 adalah 48 ton.',
+    D:'Beban pertama kali melampaui batas aman pada titik ke-9.',
+    E:'Total beban dari titik ke-1 sampai ke-4 adalah 3.000 kg.'}, correct_answer:['A','B','D'],
+  pembahasan: String.raw`**Langkah 1 — Jenis pola.**
+$$\frac{500}{250}=2,\qquad \frac{1.000}{500}=2$$
+Rasio tetap, jadi barisan geometri dengan $a=250$ dan $r=2$:
+$$U_n=250\cdot2^{\,n-1}$$
+
+**Langkah 2 — Periksa pernyataan.**
+- **A Benar.** $U_5=250\cdot2^4=4.000$ kg.
+- **B Benar.** $U_8=250\cdot2^7=32.000$ kg $=32$ ton.
+- **C Salah.** $U_9=250\cdot2^8=64.000$ kg $=64$ ton, bukan 48 ton.
+- **D Benar.** "Melampaui" berarti lebih dari 32 ton, pertama kali di titik ke-9 (64 ton).
+- **E Salah.** $S_4=\dfrac{250\,(2^4-1)}{2-1}=3.750$ kg, bukan 3.000 kg.
+
+**Jawaban: A, B, dan D**`,
+  cara_cepat: String.raw`Gandakan terus (kg):
+$$250,\;500,\;1.000,\;2.000,\;4.000,\;8.000,\;16.000,\;32.000,\;64.000$$
+Titik ke-8 $=32$ ton (mencapai), titik ke-9 $=64$ ton (melampaui). Total 4 titik pertama $=250+500+1.000+2.000=3.750$.` },
+
+{ id:15, type:'mc',
+  question_text: String.raw`Tiga pembeli membeli buah di sebuah toko:
+
+- Ani membeli 2 kg apel, 1 kg jeruk, dan 1 kg mangga dengan harga Rp22.000,00.
+- Budi membeli 1 kg apel, 2 kg jeruk, dan 1 kg mangga dengan harga Rp21.000,00.
+- Cici membeli 1 kg apel, 1 kg jeruk, dan 2 kg mangga dengan harga Rp25.000,00.
+
+Dodi membeli masing-masing 1 kg apel, jeruk, dan mangga, lalu membayar dengan uang Rp20.000,00. Uang kembalian yang diterima Dodi adalah ....`,
+  image:'', options:{A:'Rp1.000,00',B:'Rp2.000,00',C:'Rp3.000,00',D:'Rp4.000,00',E:'Rp5.000,00'}, correct_answer:'C',
+  pembahasan: String.raw`**Langkah 1 — Pemisalan** (harga per kg).
+- $a$ = apel, $j$ = jeruk, $m$ = mangga
+
+**Langkah 2 — Model persamaan.**
+$$\begin{aligned} 2a+j+m &= 22.000 \quad\cdots(1)\\ a+2j+m &= 21.000 \quad\cdots(2)\\ a+j+2m &= 25.000 \quad\cdots(3)\end{aligned}$$
+
+**Langkah 3 — Jumlahkan ketiga persamaan.**
+$$4a+4j+4m=68.000 \;\Rightarrow\; a+j+m=17.000$$
+Harga yang dibayar Dodi adalah $17.000$.
+
+**Langkah 4 — Hitung kembalian.**
+$$20.000-17.000=3.000$$
+
+**Jawaban: C. Rp3.000,00**
+Jebakan: menjawab Rp17.000 (harga), padahal yang ditanya kembalian.`,
+  cara_cepat: String.raw`Jumlahkan ketiga persamaan lalu bagi 4: $a+j+m=17.000$. Kembalian $=20.000-17.000=3.000$.` }
+];
+
+/* ============ STATE ============ */
+const TOTAL = questions.length;
+let cur = 0, seconds = 0, timer = null, finished = false, finalTime = 0;
+// mc: 'A' | multi: ['A','C'] | tf: [true,false,null]
+const answers = questions.map(q => q.type==='mc' ? null : q.type==='multi' ? [] : q.statements.map(()=>null));
+const $ = id => document.getElementById(id);
+const fmt = s => String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+const TYPE_LABEL = {mc:'Pilihan Ganda', multi:'Pilihan Ganda Kompleks (jawaban benar lebih dari satu)', tf:'Benar / Salah (jawab setiap pernyataan)'};
+
+function isAnswered(i){
+  const q = questions[i], a = answers[i];
+  if (q.type==='mc') return !!a;
+  if (q.type==='multi') return a.length > 0;
+  return a.every(v => v !== null);
+}
+function isCorrect(i){
+  const q = questions[i], a = answers[i];
+  if (q.type==='mc') return a === q.correct_answer;
+  if (q.type==='multi') return [...a].sort().join() === [...q.correct_answer].sort().join();
+  return a.every((v,k) => v === q.correct_answer[k]);
+}
+
+function typeset(el){
+  if (window.MathJax && MathJax.startup && MathJax.typesetPromise) {
+    MathJax.startup.promise.then(() => MathJax.typesetPromise([el])).catch(()=>{});
+  }
+}
+// Format teks: baris kosong = paragraf, "- " = daftar, **tebal**, | tabel |, $$ rumus $$
+function rich(s){
+  const inline = t => t.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+  let out = '', tbl = [], ul = [];
+  const flushT = () => { if(!tbl.length) return;
+    const rows = tbl.filter(r => !/^\|[\s\-|]+\|$/.test(r)).map(r => r.split('|').slice(1,-1).map(c=>c.trim()));
+    out += '<div class="overflow-x-auto"><table class="q">' + rows.map((r,i)=>'<tr>'+r.map(c=>i? `<td>${inline(c)}</td>`:`<th>${inline(c)}</th>`).join('')+'</tr>').join('') + '</table></div>'; tbl = []; };
+  const flushU = () => { if(!ul.length) return;
+    out += '<ul class="list-disc pl-6 my-2 space-y-1">' + ul.map(x=>`<li>${inline(x)}</li>`).join('') + '</ul>'; ul = []; };
+  for (const raw of s.split('\n')) {
+    const l = raw.trim();
+    if (!l) { flushT(); flushU(); continue; }
+    if (l.startsWith('|')) { flushU(); tbl.push(l); continue; }
+    flushT();
+    if (l.startsWith('- ')) { ul.push(l.slice(2)); continue; }
+    flushU();
+    if (l.startsWith('<table')) out += '<div class="overflow-x-auto">' + l + '</div>';
+    else if (l.startsWith('$$') && l.endsWith('$$')) out += `<div class="my-1">${l}</div>`;
+    else out += `<p class="my-2">${inline(l)}</p>`;
+  }
+  flushT(); flushU();
+  return out;
+}
+function imgHTML(q){
+  if(!q.image) return '';
+  if(q.image.trim().startsWith('<svg')) return q.image;
+  return `<img src="${q.image}" alt="Gambar soal ${q.id}" class="${IMG_CLS}">`;
+}
+function badges(q){ return ''; }
+
+/* ============ STOPWATCH ============ */
+function startTimer(){ timer = setInterval(()=>{ seconds++; $('clockTxt').textContent = fmt(seconds); }, 1000); }
+function stopTimer(){ clearInterval(timer); finalTime = seconds; }
+
+/* ============ STATE 1: MENGERJAKAN ============ */
+function allDone(){ return questions.every((_,i)=>isAnswered(i)); }
+function pendingList(){ return questions.map((q,i)=>isAnswered(i)?null:q.id).filter(Boolean); }
+function finishBtn(cls, icon, extra){
+  const ok = allDone();
+  return `<button onclick="finish()" ${ok?'':'disabled'} class="${cls} ${ok?'hover:brightness-110':'opacity-40 cursor-not-allowed'} ${extra||''}">${icon}Selesai &amp; Lihat Pembahasan</button>`;
+}
+function finishNote(){
+  if (allDone()) return `<p class="text-xs text-green-300 mt-2"><i class="fa-solid fa-circle-check mr-1"></i>Semua soal sudah dijawab. Kamu bisa menekan tombol Selesai.</p>`;
+  const p = pendingList();
+  return `<p class="text-xs text-[#ffd300] mt-2 leading-relaxed"><i class="fa-solid fa-lock mr-1"></i><b>Tombol Selesai terkunci.</b> Kerjakan semua soal terlebih dahulu (benar/salah harus dijawab di setiap pernyataan). Belum terjawab: soal nomor ${p.join(', ')}.</p>`;
+}
+
+function answerArea(q){
+  const a = answers[cur];
+  if (q.type==='tf') {
+    return `<div class="mt-4 rounded-xl border border-white/20 overflow-hidden">` + q.statements.map((s,k)=>`
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 ${k?'border-t border-white/15':''} bg-white/5">
+        <div class="flex-1 min-w-0 break-words"><b class="mr-1">${k+1}.</b>${s}</div>
+        <div class="flex gap-2 shrink-0">
+          ${[true,false].map(v=>{ const on = a[k]===v;
+            return `<button onclick="setTF(${k},${v})" class="px-4 py-2 rounded-lg border-2 font-bold transition glow ${on?'bg-[#00d6d8]/30 border-[#00d6d8] text-white':'bg-white/5 border-white/20 text-gray-200'}">${v?'Benar':'Salah'}</button>`; }).join('')}
+        </div></div>`).join('') + `</div>`;
+  }
+  const multi = q.type==='multi';
+  return `<div class="space-y-3 mt-4">` + Object.entries(q.options).map(([k,v]) => {
+    const sel = multi ? a.includes(k) : a === k;
+    return `<label class="flex items-start gap-3 w-full p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition glow ${sel?'bg-[#00d6d8]/25 border-[#00d6d8]':'bg-white/5 border-white/20'}">
+      <input type="${multi?'checkbox':'radio'}" name="opt" class="hidden" ${sel?'checked':''} onchange="pick('${k}')">
+      <span class="shrink-0 w-8 h-8 ${multi?'rounded-md':'rounded-full'} flex items-center justify-center font-bold ${sel?'bg-[#00d6d8] text-[#022050]':'bg-white/10'}">${multi&&sel?'<i class="fa-solid fa-check"></i>':k}</span>
+      <span class="pt-1 min-w-0 break-words">${multi?`<b class="mr-1">${k}.</b>`:''}${v}</span></label>`;
+  }).join('') + `</div>`;
+}
+function renderExam(){
+  const q = questions[cur];
+  const answered = questions.filter((_,i)=>isAnswered(i)).length;
+  $('app').innerHTML = `
+  <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+    <section class="w-full lg:w-3/4 bg-white/5 border border-[#00d6d8]/30 rounded-2xl p-4 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+        <div class="flex items-center gap-2"><span class="px-3 py-1 rounded-full bg-[#00d6d8] text-[#022050] font-bold text-sm">Soal ${q.id} dari ${TOTAL}</span>${badges(q)}</div>
+        <span class="text-sm text-[#00d6d8]">Terjawab ${answered}/${TOTAL}</span>
+      </div>
+      <p class="text-xs text-gray-300 mb-3"><i class="fa-solid fa-circle-info mr-1"></i>${TYPE_LABEL[q.type]}</p>
+      <div class="text-base sm:text-lg leading-relaxed">${rich(q.question_text)}</div>
+      ${imgHTML(q)}
+      ${answerArea(q)}
+      <div class="flex items-center justify-between gap-2 mt-6">
+        <button onclick="go(-1)" ${cur===0?'disabled':''} class="px-4 py-2 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold disabled:opacity-30 hover:bg-[#00d6d8] hover:text-[#022050]"><i class="fa-solid fa-arrow-left mr-1"></i>Sebelumnya</button>
+        ${cur===TOTAL-1
+          ? finishBtn('px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold','<i class="fa-solid fa-flag-checkered mr-1"></i>')
+          : `<button onclick="go(1)" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-110">Selanjutnya<i class="fa-solid fa-arrow-right ml-1"></i></button>`}
+      </div>
+      ${allDone()?'':finishNote()}
+    </section>
+    <aside class="w-full lg:w-1/4">
+      <div class="bg-white/5 border border-[#00d6d8]/30 rounded-2xl p-4 lg:sticky lg:top-20">
+        <h2 class="font-bold text-[#00d6d8] mb-3"><i class="fa-solid fa-table-cells mr-1"></i>Navigasi Soal</h2>
+        <div class="navscroll flex lg:grid lg:grid-cols-5 gap-2 overflow-x-auto lg:overflow-visible pb-2">
+          ${questions.map((x,i)=>{
+            const done = isAnswered(i), now = i===cur;
+            return `<button onclick="jump(${i})" class="shrink-0 w-11 h-11 lg:w-full lg:h-11 rounded-lg font-bold border-2 transition ${done?'bg-[#ffd300] text-black':'bg-white/10 text-white'} ${now?'border-[#00d6d8] shadow-[0_0_10px_#00d6d8]':'border-transparent'}">${i+1}</button>`;
+          }).join('')}
+        </div>
+        <div class="flex gap-3 text-xs mt-3 text-gray-300">
+          <span><i class="fa-solid fa-square text-[#ffd300]"></i> Terjawab</span>
+          <span><i class="fa-solid fa-square text-white/30"></i> Belum</span>
+        </div>
+        ${finishBtn('px-4 py-2 rounded-lg bg-[#00d6d8] text-[#022050] font-bold','','w-full mt-4')}
+        ${finishNote()}
+      </div>
+    </aside>
+  </div>`;
+  typeset($('app'));
+}
+function pick(k){
+  const q = questions[cur];
+  if (q.type==='multi') { const a = answers[cur], p = a.indexOf(k); if (p>-1) a.splice(p,1); else a.push(k); }
+  else answers[cur] = k;
+  renderExam();
+}
+function setTF(k,v){ answers[cur][k] = v; renderExam(); }
+function go(d){ cur = Math.min(TOTAL-1, Math.max(0, cur+d)); renderExam(); window.scrollTo({top:0,behavior:'smooth'}); }
+function jump(i){ cur = i; renderExam(); window.scrollTo({top:0,behavior:'smooth'}); }
+function finish(){
+  if (!allDone()) { alert('Kerjakan semua soal terlebih dahulu. Belum terjawab: soal nomor ' + pendingList().join(', ') + '.'); return; }
+  finished = true; stopTimer(); renderResult(); window.scrollTo({top:0});
+}
+
+/* ============ STATE 2: PEMBAHASAN & EVALUASI ============ */
+function reviewArea(q,i){
+  const a = answers[i];
+  const tagOK = '<span class="ml-auto shrink-0 text-green-300 text-xs font-bold"><i class="fa-solid fa-check"></i> Kunci</span>';
+  if (q.type==='tf') {
+    return `<div class="space-y-2 mt-3">` + q.statements.map((s,k)=>{
+      const key = q.correct_answer[k], ua = a[k], ok = ua === key;
+      const L = v => v===null ? '-' : (v?'Benar':'Salah');
+      return `<div class="flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg border ${ok?'bg-green-500/15 border-green-400':'bg-red-500/15 border-red-400'}">
+        <div class="flex-1 min-w-0 break-words"><b class="mr-1">${k+1}.</b>${s}</div>
+        <div class="text-sm shrink-0">Jawabanmu: <b>${L(ua)}</b> | Kunci: <b class="text-green-300">${L(key)}</b> <i class="fa-solid ${ok?'fa-check text-green-300':'fa-xmark text-red-300'}"></i></div></div>`;
+    }).join('') + `</div>`;
+  }
+  const multi = q.type==='multi';
+  const keys = multi ? q.correct_answer : [q.correct_answer], mine = multi ? a : (a?[a]:[]);
+  return `<div class="space-y-2 mt-3">` + Object.entries(q.options).map(([k,v])=>{
+    const isKey = keys.includes(k), isMine = mine.includes(k);
+    let cls = 'bg-white/5 border-white/15', tag = '';
+    if (isKey) { cls = 'bg-green-500/20 border-green-400'; tag = isMine ? '<span class="ml-auto shrink-0 text-green-300 text-xs font-bold"><i class="fa-solid fa-check"></i> Kunci &amp; pilihanmu</span>' : tagOK; }
+    else if (isMine) { cls = 'bg-red-500/20 border-red-400'; tag = '<span class="ml-auto shrink-0 text-red-300 text-xs font-bold"><i class="fa-solid fa-xmark"></i> Pilihanmu</span>'; }
+    return `<div class="flex items-start gap-3 p-3 rounded-lg border ${cls}"><b class="w-6 shrink-0">${k}.</b><span class="min-w-0 break-words">${v}</span>${tag}</div>`;
+  }).join('') + `</div>
+  <p class="mt-3 text-sm">Jawabanmu: <b>${mine.length?[...mine].sort().join(', '):'-'}</b> &nbsp;|&nbsp; Kunci: <b class="text-green-300">${[...keys].sort().join(', ')}</b></p>`;
+}
+function renderResult(){
+  const benar = questions.filter((_,i)=>isCorrect(i)).length;
+  const kosong = questions.filter((_,i)=>!isAnswered(i)).length, salah = TOTAL - benar;
+  const skor = Math.round(benar/TOTAL*100);
+  const cards = questions.map((q,i)=>{
+    const ok = isCorrect(i), ans = isAnswered(i);
+    return `<article class="bg-white/5 border ${ok?'border-green-400/50':'border-red-400/50'} rounded-2xl p-4 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+        <div class="flex items-center gap-2"><span class="px-3 py-1 rounded-full bg-[#00d6d8] text-[#022050] font-bold text-sm">Soal ${q.id}</span>${badges(q)}</div>
+        <span class="font-bold ${ok?'text-green-300':'text-red-300'}">${ok?'<i class="fa-solid fa-circle-check"></i> Benar':(ans?'<i class="fa-solid fa-circle-xmark"></i> Salah':'<i class="fa-solid fa-circle-minus"></i> Tidak dijawab')}</span>
+      </div>
+      <p class="text-xs text-gray-300 mb-3">${TYPE_LABEL[q.type]}${q.type!=='mc'?' - dinilai benar jika semua bagian benar':''}</p>
+      <div class="leading-relaxed">${rich(q.question_text)}</div>
+      ${imgHTML(q)}
+      ${reviewArea(q,i)}
+      <div class="mt-4 rounded-xl bg-[#011a42] border border-white/20 p-4">
+        <h3 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open mr-1"></i>Pembahasan Lengkap</h3>
+        <div class="leading-relaxed sol">${rich(q.pembahasan)}</div>
+      </div>
+      <div class="mt-3 rounded-xl bg-[#00d6d8]/15 border border-[#00d6d8]/60 p-4">
+        <h3 class="font-bold text-[#00d6d8] mb-2">&#128293; Cara Cepat / Trik</h3>
+        <div class="leading-relaxed sol">${rich(q.cara_cepat)}</div>
+      </div>
+    </article>`;
+  }).join('');
+  $('app').innerHTML = `
+  <section class="bg-gradient-to-r from-[#00d6d8]/25 to-[#ffd300]/15 border border-[#00d6d8] rounded-2xl p-5 sm:p-6 mb-6">
+    <h2 class="text-xl sm:text-2xl font-bold mb-4"><i class="fa-solid fa-trophy text-[#ffd300] mr-2"></i>Ringkasan Hasil Latihan</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+      <div class="rounded-xl bg-[#011a42] p-3"><div class="text-3xl font-extrabold text-[#ffd300]">${skor}</div><div class="text-xs text-gray-300">Skor Akhir</div></div>
+      <div class="rounded-xl bg-[#011a42] p-3"><div class="text-3xl font-extrabold text-green-300">${benar}</div><div class="text-xs text-gray-300">Total Benar</div></div>
+      <div class="rounded-xl bg-[#011a42] p-3"><div class="text-3xl font-extrabold text-red-300">${salah}</div><div class="text-xs text-gray-300">Total Salah${kosong?` (${kosong} kosong)`:''}</div></div>
+      <div class="rounded-xl bg-[#011a42] p-3"><div class="text-3xl font-extrabold text-[#00d6d8]">${fmt(finalTime)}</div><div class="text-xs text-gray-300">Waktu Pengerjaan</div></div>
+    </div>
+    <div class="flex flex-wrap gap-3 mt-4">
+      <button onclick="location.reload()" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-110"><i class="fa-solid fa-rotate-right mr-1"></i>Ulangi Latihan</button>
+      <a href="aljabar.html" class="px-4 py-2 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-bold hover:bg-[#00d6d8] hover:text-[#022050]">Kembali ke Dashboard Aljabar</a>
+    </div>
+  </section>
+  <div class="space-y-6 max-w-4xl mx-auto">${cards}</div>`;
+  typeset($('app'));
+}
+
+/* ============ INIT ============ */
+renderExam(); startTimer();
+</script>
+</body>
+</html>
