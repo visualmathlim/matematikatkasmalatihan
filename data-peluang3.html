@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Latihan Data dan Peluang – VisualMath.Lim</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},chtml:{scale:.92}};</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"></script>
+<style>
+body{background:#022050}
+mjx-container[display=true]{display:block!important;text-align:left!important;overflow-x:auto;overflow-y:hidden;max-width:100%;margin:.5em 0!important;padding:.45em 0 .6em!important;line-height:1.6}
+mjx-container[display=true]>mjx-math{display:inline-block!important;white-space:nowrap}
+mjx-container{max-width:100%}
+#nav::-webkit-scrollbar{height:6px}#nav::-webkit-scrollbar-thumb{background:#00d6d8;border-radius:9px}
+</style>
+</head>
+<body class="text-white min-h-screen font-sans">
+<header class="bg-[#011a45] border-b border-[#00d6d8]/40 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+  <a href="index.html" class="font-bold text-sm sm:text-base"><span class="text-[#00d6d8]">VisualMath.Lim</span> - Latihan Data dan Peluang TKA SMA Kelas 12</a>
+  <a href="data-peluang.html" class="flex items-center gap-2 text-sm border border-[#00d6d8] rounded-lg px-3 py-1.5 hover:bg-[#00d6d8] hover:text-[#022050] transition">
+    <img src="logo.png" alt="" class="h-6 w-6 object-contain" onerror="this.style.display='none'">
+    <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard Data dan Peluang
+  </a>
+</header>
+<main id="app" class="max-w-7xl mx-auto p-3 sm:p-5"></main>
+<div id="warn" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-red-600 text-white text-sm rounded-lg p-3 shadow-xl"></div>
+
+<script>
+const R=String.raw;
+const IMG='max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block overflow-x-auto';
+const C={bl:'#4f86f7',or:'#f59e0b',gr:'#94a3b8',gn:'#22c55e',rd:'#ef4444'};
+const MO=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+const BR=(a,c=C.bl)=>a.map(([l,v,col,t])=>({l,v,c:col||c,t}));
+const tbl=(h,r)=>`<div class="overflow-x-auto"><table class="my-3 text-center text-sm border-collapse"><tr>${h.map(x=>`<th class="border border-white/30 bg-white/10 px-3 py-1">${x}</th>`).join('')}</tr>${r.map(a=>`<tr>${a.map(x=>`<td class="border border-white/30 px-3 py-1">${x}</td>`).join('')}</tr>`).join('')}</table></div>`;
+
+/* ---------- Gambar dibuat dengan kode (SVG) ---------- */
+function bars(it,o={}){
+  const n=it.length,W=Math.max(340,n*50+50),H=250,T=28,B=H-36,L=42;
+  const vs=it.map(d=>d.v||0),mx=o.max??Math.max(...vs),mn=Math.min(0,...vs),st=o.s||(mx-mn)/4;
+  const y=v=>T+(mx-v)/(mx-mn)*(B-T),bw=(W-L-8)/n,g=o.g??.28,pts=[];
+  let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:${n>7?W:300}px" font-family="sans-serif" font-size="11" fill="#fff">`;
+  for(let v=Math.ceil(mn/st)*st;v<=mx+1e-9;v+=st)s+=`<line x1="${L}" x2="${W-6}" y1="${y(v)}" y2="${y(v)}" stroke="#fff" stroke-opacity=".15"/><text x="${L-5}" y="${y(v)+4}" text-anchor="end">${+v.toFixed(1)}</text>`;
+  s+=`<line x1="${L}" x2="${W-6}" y1="${y(0)}" y2="${y(0)}" stroke="#94a3b8"/>`;
+  if(o.u)s+=`<text x="${L}" y="14" fill="#00d6d8">${o.u}</text>`;
+  it.forEach((d,i)=>{const x=L+i*bw,cx=x+bw/2;
+    if(d.v==null)s+=`<text x="${cx}" y="${y(0)-8}" text-anchor="middle" fill="#ffd300" font-size="22" font-weight="bold">?</text>`;
+    else{
+      if(o.line){pts.push(`${cx},${y(d.v)}`);s+=`<circle cx="${cx}" cy="${y(d.v)}" r="4" fill="${d.c}"/>`}
+      else s+=`<rect x="${x+bw*g/2}" y="${Math.min(y(d.v),y(0))}" width="${bw*(1-g)}" height="${Math.abs(y(d.v)-y(0))}" fill="${d.c}" rx="2"/>`;
+      s+=`<text x="${cx}" y="${d.v<0?y(d.v)+13:y(d.v)-6}" text-anchor="middle" font-weight="bold">${d.t??d.v}</text>`}
+    s+=`<text x="${cx}" y="${H-18}" text-anchor="middle" fill="#cbd5e1">${d.l}</text>`});
+  if(o.line)s=s.replace('<circle',`<polyline points="${pts.join(' ')}" fill="none" stroke="${C.bl}" stroke-width="2"/><circle`);
+  return s+'</svg>'}
+
+const hist=(f,lab,hi,o)=>bars(lab.map((l,i)=>({l,v:f[i],c:i==hi?C.or:C.bl})),{g:.03,...o});
+const figs={
+  bar3q:()=>bars(BR([['A',65],['B',40],['C',25],['D',20],['E',null],['F',35],['G',50]]),{max:70,s:10,u:'Banyak orang (ratus)'}),
+  bar3p:()=>bars(BR([['A',65],['B',40],['C',25],['D',20],['E',15,C.or],['F',35],['G',50]]),{max:70,s:10,u:'Banyak orang (ratus) – Kota E = 15 ratus = 1.500 orang'}),
+  bar4q:()=>bars(BR([122,136,112,151,18,81,133,150,166,87,153,131].map((v,i)=>[MO[i],v])),{max:180,s:30,u:'Produksi pakaian 2020'}),
+  bar4p:()=>bars([14,-24,39,-133,63,52,17,16,-79,66,-22].map((v,i)=>({l:MO[i+1],v,c:v<0?C.gr:i==9?C.or:C.bl,t:v>0?'+'+v:v})),{max:80,s:40,u:'Selisih dari bulan sebelumnya (oranye = tertinggi)'}),
+  hist5:()=>hist([2,6,9,6,4,3],['58–60','61–63','64–66','67–69','70–72','73–75'],2,{max:10,s:2,u:'Mo = 65,0 (kelas 64–66)'}),
+  bar7q:()=>bars(BR([['Australia',120],['China',85],['Malaysia',65],['Jepang',40]]),{max:140,s:20,u:'Kunjungan wisatawan (ribu orang)'}),
+  bar7p:()=>bars(BR([['Budaya AU',96],['Selancar AU',24],['Belanja CN',34],['Kuliner CN',51],['Tubuh MY',58.5,null,'58,5'],['Budaya MY',6.5,null,'6,5'],['Kuliner JP',28],['Belanja JP',12]]),{max:100,s:20,u:'Potensi wisatawan (ribu orang)'}),
+  hist8:()=>bars([4,9,6,24,18,3].map((v,i)=>({l:['5–7','8–10','11–13','14–16','17–19','20–22'][i],v,c:i==3?C.or:i==2?C.gn:C.bl,t:i==2?'6 (x)':v})),{g:.03,max:30,s:5,u:'Gaji (juta rupiah); Mo = 15,75'}),
+  bar9:()=>bars(BR([['Tiket KL',4,C.or],['Tiket BKK',4],['Bintang 5',10],['Bintang 4',8],['Kosong',10]]),{max:12,s:2,u:'Kupon tersisa (total 36)'}),
+  line10:()=>bars(BR([['Jan',1.1,null,'1,10'],['Feb',1.45,null,'1,45'],['Mar',1.2,null,'1,20'],['Apr',1.53,null,'1,53'],['Mei',2.12,null,'2,12'],['Jun',1.509,C.rd,'1,51'],['Jul',2.09,null,'2,09']]),{line:true,max:2.4,s:.4,u:'Keuntungan (juta rupiah)'}),
+  bar11:()=>bars(BR([['Murid 1',100],['Murid 2',100],['Murid 3',29,C.or]]),{max:100,s:20,u:'Kasus ekstrem: jumlah 229, jangkauan 71'}),
+  venn:()=>`<svg viewBox="0 0 360 200" class="w-full max-w-md mx-auto" font-family="sans-serif" font-size="15" fill="#fff"><rect x="2" y="2" width="356" height="196" fill="none" stroke="#94a3b8"/><circle cx="140" cy="105" r="70" fill="#4f86f7" fill-opacity=".5"/><circle cx="220" cy="105" r="70" fill="#f59e0b" fill-opacity=".5"/><g text-anchor="middle"><text x="105" y="110">12</text><text x="180" y="110" font-weight="bold">6</text><text x="255" y="110">4</text><text x="100" y="22" font-size="12">Laut (18)</text><text x="260" y="22" font-size="12">Twin Bed (10)</text></g><text x="12" y="188" font-size="12">Standar: 8 · S = 30 kamar</text></svg>`,
+  gadget:()=>'<div class="flex gap-2 flex-wrap">'+[...'bbbboooggr'].map(k=>`<div class="w-8 h-8 rounded" style="background:${{b:C.bl,o:C.or,g:C.gn,r:C.rd}[k]}"></div>`).join('')+'</div><p class="text-xs mt-2 text-slate-300"><span style="color:#4f86f7">■</span> Ponsel 4 &nbsp;<span style="color:#f59e0b">■</span> Jam 3 &nbsp;<span style="color:#22c55e">■</span> Tablet 2 &nbsp;<span style="color:#ef4444">■</span> Smart tag 1</p>',
+  tree:()=>`<svg viewBox="0 0 400 200" class="w-full max-w-lg mx-auto" font-family="sans-serif" font-size="12" fill="#fff"><g stroke="#94a3b8" fill="none"><path d="M60 100L130 50M60 100L130 150M180 50L270 25M180 150L270 125M180 150L270 175"/><path d="M60 100L130 50M180 50L270 75" stroke="#ffd300" stroke-width="3"/></g><g text-anchor="middle"><text x="35" y="104">Awal</text><text x="155" y="54">Putra</text><text x="155" y="154">Putri</text><text x="295" y="29">Putra</text><text x="295" y="79" fill="#ffd300">Putri</text><text x="295" y="129">Putra</text><text x="295" y="179">Putri</text><text x="85" y="68" fill="#ffd300">6/10</text><text x="85" y="140">4/10</text><text x="215" y="35">5/9</text><text x="215" y="76" fill="#ffd300">4/9</text><text x="215" y="125">6/9</text><text x="215" y="172">3/9</text></g><text x="320" y="79" fill="#ffd300">→ 4/15</text></svg>`
+};
+const img=k=>!k?'':/^http/.test(k)?`<img src="${k}" alt="" class="${IMG}">`:`<div class="${IMG}">${figs[k]()}</div>`;
+
+/* ---------- Data soal ---------- */
+const questions=[
+{id:1,type:'single',
+ question_text:R`Sebuah hotel memiliki 30 kamar yang tersedia di lantai 5. Manajer operasional mencatat:<ol class="list-decimal ml-6 my-2"><li>18 kamar memiliki pemandangan ke arah laut.</li><li>10 kamar memiliki fasilitas tempat tidur Twin Bed.</li><li>6 kamar di antaranya adalah kamar pemandangan laut yang juga ber-Twin Bed.</li><li>Sisanya adalah kamar standar (tanpa pemandangan laut maupun Twin Bed).</li></ol>Jika semua kamar kosong dan resepsionis memilih satu kamar secara acak untuk tamu baru, berapakah peluang tamu tersebut mendapatkan kamar dengan pemandangan laut <b>atau</b> tempat tidur Twin Bed?`,
+ image:'',options:{A:R`\(\frac{1}{5}\)`,B:R`\(\frac{8}{15}\)`,C:R`\(\frac{11}{15}\)`,D:R`\(\frac{12}{15}\)`,E:R`\(\frac{14}{15}\)`},correct_answer:'C',
+ pembahasan:R`<p>Diketahui \(n(S)=30\), \(n(L)=18\), \(n(T)=10\), \(n(L\cap T)=6\). Irisan tidak boleh dihitung dua kali.</p>
+$$n(L\cup T)=n(L)+n(T)-n(L\cap T)$$
+$$n(L\cup T)=18+10-6=22$$
+$$P=\frac{22}{30}=\frac{11}{15}$$`,
+ pembahasan_image:'venn',
+ cara_cepat:R`<p>Komplemen: kamar standar \(=30-(12+6+4)=8\).</p>$$P=1-\frac{8}{30}=\frac{22}{30}=\frac{11}{15}$$<p>Jebakan: \(18+10=28\) tanpa mengurangi irisan menghasilkan \(\frac{14}{15}\) (pilihan E).</p>`},
+
+{id:2,type:'multi',
+ question_text:`Dalam sebuah konferensi teknologi dipaparkan bahwa setiap 10 gadget ramah lingkungan produksi perusahaan X rata-rata terdiri dari: 4 ponsel pintar, 3 jam tangan pintar, 2 komputer tablet, dan sisanya unit pelacak lokasi (smart tag). Petugas quality control memilih 1 unit secara acak. Mana pernyataan yang benar? <b>(Jawaban benar lebih dari satu)</b>`,
+ image:'',options:{1:'Peluang terpilihnya ponsel pintar adalah 40%.',2:'Peluang terpilihnya gadget bukan komputer tablet adalah 0,2.',3:R`Peluang terpilihnya unit pelacak lokasi adalah \(\frac{1}{5}\).`,4:'Peluang terpilihnya gadget bukan jam tangan pintar adalah 70%.'},correct_answer:['1','4'],
+ pembahasan:R`<p>Smart tag \(=10-(4+3+2)=1\) unit.</p>
+$$P(\text{ponsel})=\frac{4}{10}=40\%\ \Rightarrow\ \text{Benar}$$
+$$P(\text{bukan tablet})=1-\frac{2}{10}=0{,}8\ \Rightarrow\ \text{0,2 Salah}$$
+$$P(\text{smart tag})=\frac{1}{10}\neq\frac{1}{5}\ \Rightarrow\ \text{Salah}$$
+$$P(\text{bukan jam})=1-\frac{3}{10}=70\%\ \Rightarrow\ \text{Benar}$$`,
+ pembahasan_image:'gadget',
+ cara_cepat:R`<p>"Bukan A" \(=1-P(A)\). Bukan jam \(=4+2+1=7\) dari 10 \(=70\%\). Angka 0,2 adalah peluang tablet, bukan peluang "bukan tablet" (0,8).</p>`},
+
+{id:3,type:'single',
+ question_text:`Pemerintah Provinsi Jingga mendata banyaknya pengusaha di 7 kota pada tahun 2026 (diagram di bawah; satuan sumbu tegak: <b>ratus orang</b>). Data Kota E hilang, namun total pengusaha di Provinsi Jingga sebanyak 25.000 orang. Banyak pengusaha di Kota E adalah ....`,
+ image:'bar3q',options:{A:'500 orang',B:'1.500 orang',C:'2.000 orang',D:'2.500 orang',E:'3.000 orang'},correct_answer:'B',
+ pembahasan:R`<p>Satuan grafik ratusan, total \(25.000=250\) ratus.</p>
+$$65+40+25+20+35+50=235\ \text{ratus}$$
+$$E=250-235=15\ \text{ratus}$$
+$$E=15\times100=1.500\ \text{orang}$$`,
+ pembahasan_image:'bar3p',
+ cara_cepat:R`<p>Total diketahui 235, sisa \(250-235=15\). Jangan lupa dikali 100: <b>1.500 orang</b>, bukan 15.</p>`},
+
+{id:4,type:'single',
+ question_text:`Diagram batang berikut menunjukkan produksi pakaian yang dikelola Bu Rahmi selama tahun 2020 dari Januari sampai Desember. Peningkatan tertinggi jumlah produksi pakaian terjadi pada bulan ....`,
+ image:'bar4q',options:{A:'April',B:'Juni',C:'Juli',D:'September',E:'November'},correct_answer:'E',
+ pembahasan:R`<p>Peningkatan = selisih dengan bulan sebelumnya (positif), bukan batang tertinggi.</p>
+$$\text{April}:151-112=+39$$
+$$\text{Juni}:81-18=+63$$
+$$\text{Juli}:133-81=+52$$
+$$\text{September}:166-150=+16$$
+$$\text{November}:153-87=+66$$
+<p>Terbesar: <b>+66 (November)</b>.</p>`,
+ pembahasan_image:'bar4p',
+ cara_cepat:R`<p>Cari lonjakan setelah bulan yang rendah: Mei→Juni (18→81) dan Okt→Nov (87→153). Bandingkan dua kandidat saja: Juni \(+63\) vs November \(+66\). Jebakan: September batang tertinggi, tetapi naiknya hanya 16.</p>`},
+
+{id:5,type:'single',
+ question_text:`Perhatikan data nilai hasil ulangan matematika kelas XI SMA Z. Modus dari data tersebut adalah ....`+tbl(['Nilai','f'],[['58 – 60',2],['61 – 63',6],['64 – 66',9],['67 – 69',6],['70 – 72',4],['73 – 75',3]]),
+ image:'',options:{A:'64,0',B:'64,5',C:'65,0',D:'65,5',E:'66,0'},correct_answer:'C',
+ pembahasan:R`<p>Kelas modus 64–66 (\(f=9\)). Data bulat: \(t_b=64-0{,}5=63{,}5\), \(d_1=9-6=3\), \(d_2=9-6=3\), \(p=3\).</p>
+$$M_o=t_b+\frac{d_1}{d_1+d_2}\times p$$
+$$M_o=63{,}5+\frac{3}{3+3}\times3$$
+$$M_o=63{,}5+1{,}5=65{,}0$$`,
+ pembahasan_image:'hist5',
+ cara_cepat:R`<p>Frekuensi kelas kiri dan kanan sama (6 dan 6), maka modus tepat di tengah kelas modus: \(\frac{64+66}{2}=65{,}0\).</p>`},
+
+{id:6,type:'single',
+ question_text:`Sekolah P akan mengirim 2 perwakilan grup band untuk Pentas Musik Nusantara. Sekolah memiliki 6 grup band putra dan 4 grup band putri. Kemampuan grup merata sehingga kedua perwakilan dipilih dengan mengambil secara acak satu per satu (tanpa pengembalian). Peluang terambil grup band putra pada pengambilan pertama dan grup band putri pada pengambilan kedua adalah ....`,
+ image:'',options:{A:R`\(\frac{1}{5}\)`,B:R`\(\frac{6}{25}\)`,C:R`\(\frac{4}{15}\)`,D:R`\(\frac{2}{5}\)`,E:R`\(\frac{13}{25}\)`},correct_answer:'C',
+ pembahasan:R`<p>Total 10 grup, tanpa pengembalian.</p>
+$$P(\text{putra})=\frac{6}{10}$$
+$$P(\text{putri}\mid\text{putra})=\frac{4}{9}$$
+$$P=\frac{6}{10}\times\frac{4}{9}=\frac{24}{90}=\frac{4}{15}$$`,
+ pembahasan_image:'tree',
+ cara_cepat:R`<p>Tanpa pengembalian: penyebut tahap kedua dikurangi 1, yaitu \(\frac{6}{10}\times\frac{4}{9}\). Penyebut 10 di kedua tahap (\(\frac{6}{25}\)) hanya berlaku jika dikembalikan.</p>`},
+
+{id:7,type:'tf',
+ question_text:`Manajer pemasaran biro perjalanan di Pulau Wisata Numerasi harus mengalokasikan anggaran iklan pada target pasar dengan potensi wisatawan terbesar. Ia memakai diagram kunjungan wisatawan mancanegara (ribu orang) dan tabel aktivitas favorit berikut.`+tbl(['Negara Asal','Aktivitas Favorit'],[['Australia','80% Wisata Budaya dan 20% Berselancar dan Pantai'],['China','40% Belanja dan 60% Wisata Kuliner'],['Malaysia','90% Perawatan Tubuh dan 10% Wisata Budaya'],['Jepang','70% Wisata Kuliner dan 30% Belanja']])+`<b>Tentukan Benar atau Salah pada setiap pernyataan!</b>`,
+ image:'bar7q',options:{A:'Peningkatan iklan Berselancar untuk wisatawan Australia berpotensi mendatangkan volume wisatawan lebih besar daripada iklan Wisata Kuliner untuk wisatawan Jepang.',B:'Target pasar wisatawan Perawatan Tubuh asal Malaysia lebih besar dibandingkan wisatawan Kuliner asal China.',C:'Potensi wisatawan Belanja asal Jepang lebih kecil dibandingkan potensi wisatawan Belanja asal China.'},correct_answer:{A:false,B:true,C:true},
+ pembahasan:R`<p>Potensi = persentase aktivitas × jumlah wisatawan negara itu (Australia 120, China 85, Malaysia 65, Jepang 40 ribu).</p>
+$$\text{Selancar Australia}=20\%\times120=24\ \text{ribu}$$
+$$\text{Kuliner Jepang}=70\%\times40=28\ \text{ribu}$$
+$$\text{Tubuh Malaysia}=90\%\times65=58{,}5\ \text{ribu}$$
+$$\text{Kuliner China}=60\%\times85=51\ \text{ribu}$$
+$$\text{Belanja Jepang}=30\%\times40=12\ \text{ribu}$$
+$$\text{Belanja China}=40\%\times85=34\ \text{ribu}$$
+<p>A: \(24<28\) → <b>Salah</b>. B: \(58{,}5>51\) → <b>Benar</b>. C: \(12<34\) → <b>Benar</b>.</p>`,
+ pembahasan_image:'bar7p',
+ cara_cepat:R`<p>Jangan bandingkan persentasenya saja (20% vs 70%). Kalikan dengan jumlah wisatawan tiap negara: \(24\) vs \(28\); \(\approx58\) vs \(51\); \(12\) vs \(34\).</p>`},
+
+{id:8,type:'single',
+ question_text:`Perusahaan Kertas "Mayang" merapikan data gaji bulanan karyawan tahun 2025, tetapi frekuensi satu rentang gaji tidak terbaca.`+tbl(['Rentang Gaji (juta rupiah)','Frekuensi'],[['5 - 7',4],['8 - 10',9],['11 - 13','<i class="text-yellow-300">tidak terbaca (x)</i>'],['14 - 16',24],['17 - 19',18],['20 - 22',3]])+`Modus gaji karyawan adalah Rp15.750.000,00. Berapakah nilai data yang tidak terbaca tersebut?`,
+ image:'',options:{A:'6',B:'14',C:'20',D:'21',E:'28'},correct_answer:'A',
+ pembahasan:R`<p>\(M_o=15{,}75\) juta berada di kelas 14–16 (\(f=24\)). Misalkan frekuensi hilang \(=x\): \(t_b=13{,}5\), \(p=3\), \(d_1=24-x\), \(d_2=24-18=6\).</p>
+$$15{,}75=13{,}5+\frac{24-x}{(24-x)+6}\times3$$
+$$\frac{24-x}{30-x}=\frac{2{,}25}{3}=0{,}75$$
+$$24-x=22{,}5-0{,}75x$$
+$$1{,}5=0{,}25x\ \Rightarrow\ x=6$$
+$$\text{Cek: }M_o=13{,}5+\frac{18}{24}\times3=15{,}75\ \checkmark$$`,
+ pembahasan_image:'hist8',
+ cara_cepat:R`<p>\(\frac{d_1}{d_1+d_2}=\frac{15{,}75-13{,}5}{3}=\frac{3}{4}\Rightarrow d_1=3d_2=3\times6=18\). Maka \(x=24-18=6\).</p>`},
+
+{id:9,type:'single',
+ question_text:`Pada pameran wisata, 40 pengunjung pertama mengambil satu kupon doorprize secara acak. Jika beruntung kupon bertuliskan hadiah; jika belum, memperoleh voucher kosong yang dimasukkan lagi ke wadah. Kupon: 5 tiket pp Jakarta–Kuala Lumpur, 5 tiket pp Jakarta–Bangkok, 10 voucher hotel bintang lima, 10 voucher hotel bintang empat, dan 10 voucher kosong.<br>Anto adalah orang ke-6. Sudah terambil 1 tiket Jakarta–Kuala Lumpur, 1 tiket Jakarta–Bangkok, dan 2 voucher hotel bintang empat, sedangkan satu orang lainnya gagal. Berapa peluang Anto mendapatkan tiket gratis pp Jakarta–Kuala Lumpur?`,
+ image:'',options:{A:R`\(\frac{1}{10}\)`,B:R`\(\frac{1}{9}\)`,C:R`\(\frac{4}{35}\)`,D:R`\(\frac{5}{36}\)`,E:R`\(\frac{1}{7}\)`},correct_answer:'B',
+ pembahasan:R`<p>Empat hadiah sudah keluar; voucher kosong dikembalikan, jadi jumlahnya tetap 10.</p>
+$$\text{KL}=5-1=4,\quad \text{BKK}=5-1=4,\quad \text{B5}=10$$
+$$\text{B4}=10-2=8,\quad \text{kosong}=10$$
+$$n(S)=4+4+10+8+10=36$$
+$$P=\frac{4}{36}=\frac{1}{9}$$`,
+ pembahasan_image:'bar9',
+ cara_cepat:R`<p>Ruang sampel \(=40-4=36\) (hanya 4 hadiah yang keluar). Peluang \(=\frac{4}{36}=\frac{1}{9}\). Jebakan: memakai penyebut 40.</p>`},
+
+{id:10,type:'single',
+ question_text:`Amel memiliki toko bunga dan mencatat keuntungan penjualannya dari Januari sampai Juli 2025.`+tbl(['Bulan','Keuntungan'],[['Januari','Rp1.100.000,00'],['Februari','Rp1.450.000,00'],['Maret','Rp1.200.000,00'],['April','Rp1.530.000,00'],['Mei','Rp2.120.000,00'],['Juni','Rp1.509.000,00'],['Juli','Rp2.090.000,00']])+`Berdasarkan data tersebut, keuntungan pada bulan manakah yang mengalami penurunan signifikan?`,
+ image:'',options:{A:'Februari',B:'Maret',C:'April',D:'Mei',E:'Juni'},correct_answer:'E',
+ pembahasan:R`<p>Penurunan terjadi bila keuntungan lebih kecil dari bulan sebelumnya; "signifikan" = penurunan terbesar. Hanya Maret dan Juni yang turun (dalam ribuan rupiah):</p>
+$$\text{Maret}:1200-1450=-250$$
+$$\text{Juni}:1509-2120=-611$$
+$$\text{Persentase Juni}=\frac{611}{2120}\times100\%\approx28{,}8\%$$
+<p>Penurunan Juni jauh lebih besar daripada Maret (±17%).</p>`,
+ pembahasan_image:'line10',
+ cara_cepat:R`<p>Cari hanya bulan yang turun: Maret (turun ±250 ribu) dan Juni (2,12 juta → 1,509 juta, turun 611 ribu). Terbesar: <b>Juni</b>.</p>`},
+
+{id:11,type:'multi',
+ question_text:`Rata-rata nilai ulangan 17 murid (skala 100) adalah 83. Ada 3 murid mengikuti ujian susulan sehingga rata-rata nilai ulangan 20 murid menjadi 82. Tentukan semua pernyataan yang benar tentang nilai ketiga murid susulan! <b>(Jawaban benar lebih dari satu)</b>`,
+ image:'',options:{1:'Jumlah nilai ketiga murid yang mengikuti ujian susulan adalah 229.',2:'Rata-rata nilai ketiga murid tersebut lebih dari 70.',3:'Nilai terendah dari ketiga murid tersebut tidak kurang dari 29.',4:'Nilai tertinggi dari ketiga murid tersebut lebih dari 76.',5:'Jangkauan data nilai ketiga murid tersebut lebih dari 72.'},correct_answer:['1','2','3','4'],
+ pembahasan:R`<p>Jumlah nilai = rata-rata × banyak data.</p>
+$$20\times82-17\times83=1640-1411=229\ \Rightarrow\ \text{(1) benar}$$
+$$\text{Rata-rata}=\frac{229}{3}\approx76{,}33>70\ \Rightarrow\ \text{(2) benar}$$
+<p>Nilai terendah sekecil mungkin jika dua nilai lain maksimum (100):</p>
+$$a=229-100-100=29\ \Rightarrow\ \text{(3) benar}$$
+<p>Nilai tertinggi \(\ge\) rata-rata \(76{,}33\), sehingga lebih dari 76 → (4) benar. Jangkauan terbesar pada 100, 100, 29:</p>
+$$100-29=71<72\ \Rightarrow\ \text{(5) salah}$$`,
+ pembahasan_image:'bar11',
+ cara_cepat:R`<p>Jumlah \(=1640-1411=229\). Karena nilai maksimum 100: terendah \(\ge229-200=29\) dan jangkauan \(\le100-29=71\) (tidak mungkin lebih dari 72).</p>`}
+];
+
+/* ---------- Logika ---------- */
+const $=id=>document.getElementById(id),N=questions.length;
+let cur=0,sec=0,ans={},tm;
+const clock=s=>String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const typeset=()=>window.MathJax&&MathJax.typesetPromise&&MathJax.typesetPromise();
+const done=q=>{const a=ans[q.id];return q.type=='tf'?!!a&&Object.keys(q.options).every(k=>k in a):q.type=='multi'?!!a&&a.length>0:!!a};
+const ok=q=>{const a=ans[q.id],c=q.correct_answer;return q.type=='single'?a===c:q.type=='multi'?!!a&&[...a].sort().join()==[...c].sort().join():!!a&&Object.keys(c).every(k=>a[k]===c[k])};
+const fmt=(q,a)=>!a?'—':q.type=='tf'?Object.keys(q.options).map(k=>k+': '+(a[k]===undefined?'—':a[k]?'Benar':'Salah')).join(' · '):q.type=='multi'?[...a].sort().join(', '):a;
+const hints={single:'Pilih satu jawaban',multi:'Pilih semua pernyataan yang benar',tf:'Tentukan Benar atau Salah untuk setiap pernyataan'};
+
+function pick(k,v){const q=questions[cur];
+  if(q.type=='single')ans[q.id]=k;
+  else if(q.type=='multi'){const a=ans[q.id]=ans[q.id]||[],j=a.indexOf(k);j<0?a.push(k):a.splice(j,1)}
+  else(ans[q.id]=ans[q.id]||{})[k]=v;
+  renderQ()}
+const go=d=>{cur=Math.min(N-1,Math.max(0,cur+d));renderQ();scrollTo(0,0)};
+const jump=i=>{cur=i;renderQ();scrollTo(0,0)};
+function toast(h){const w=$('warn');w.innerHTML=h;w.classList.remove('hidden');clearTimeout(w.t);w.t=setTimeout(()=>w.classList.add('hidden'),5000)}
+
+function shell(){
+  $('app').innerHTML=`<div class="grid lg:grid-cols-4 gap-4">
+  <section id="qa" class="lg:col-span-3 order-1 min-w-0"></section>
+  <aside class="order-2"><div class="bg-white/5 border border-[#00d6d8]/30 rounded-xl p-3 lg:sticky lg:top-3">
+    <div class="flex items-center justify-between mb-2"><span class="text-sm text-slate-300"><i class="fa-regular fa-clock text-[#00d6d8]"></i> Waktu</span><span id="sw" class="font-mono text-xl text-[#00d6d8]">${clock(sec)}</span></div>
+    <div class="text-xs text-slate-300 mb-2">Terjawab: <b id="cnt" class="text-[#ffd300]"></b> / ${N}</div>
+    <div id="nav" class="flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible"></div>
+    <button onclick="finish()" id="fin" class="mt-3 w-full bg-[#ffd300] text-black font-bold rounded-lg py-2.5 hover:brightness-110"><i class="fa-solid fa-flag-checkered"></i> Selesai &amp; Lihat Pembahasan</button>
+    <p class="text-xs text-slate-300 mt-2 leading-snug"><i class="fa-solid fa-circle-info text-[#00d6d8]"></i> Semua soal harus dijawab dulu. Jika masih ada yang kosong, latihan belum bisa diselesaikan dan pembahasan belum terbuka.</p>
+  </div></aside></div>`}
+
+function renderQ(){
+  const q=questions[cur],a=ans[q.id];
+  const opts=Object.keys(q.options).map(k=>{
+    let inner;
+    if(q.type=='tf'){const v=a&&a[k];
+      inner=`<div class="p-3 rounded-lg border border-white/20 ${v!==undefined?'bg-[#00d6d8]/20 border-[#00d6d8]':''}"><div class="mb-2"><b>${k}.</b> ${q.options[k]}</div><div class="flex gap-2">${[[true,'Benar'],[false,'Salah']].map(([b,t])=>`<label class="flex-1 text-center cursor-pointer rounded-md py-1.5 border ${v===b?'bg-[#00d6d8]/40 border-[#00d6d8] font-bold':'border-white/25 hover:border-[#00d6d8]'}"><input type="radio" class="hidden" name="tf${k}" onchange="pick('${k}',${b})">${t}</label>`).join('')}</div></div>`}
+    else{const sel=q.type=='single'?a===k:!!a&&a.includes(k);
+      inner=`<label class="flex items-start gap-3 w-full p-3 rounded-lg border cursor-pointer ${sel?'bg-[#00d6d8]/25 border-[#00d6d8]':'border-white/20 hover:border-[#00d6d8]'}"><input type="${q.type=='single'?'radio':'checkbox'}" class="mt-1 accent-[#00d6d8]" name="o" ${sel?'checked':''} onchange="pick('${k}')"><span class="font-bold">${k}.</span><span class="min-w-0 break-words">${q.options[k]}</span></label>`}
+    return inner}).join('');
+  $('qa').innerHTML=`<div class="bg-white/5 border border-white/15 rounded-xl p-4 sm:p-6">
+    <div class="text-[#00d6d8] font-bold mb-3">Soal ${cur+1} dari ${N} <span class="ml-2 text-xs font-normal text-slate-300">${hints[q.type]}</span></div>
+    <div class="leading-relaxed break-words">${q.question_text}</div>${img(q.image)}
+    <div class="space-y-2 mt-3">${opts}</div></div>
+    <div class="flex justify-between gap-2 mt-4">
+      <button onclick="go(-1)" ${cur==0?'disabled':''} class="px-4 py-2 rounded-lg border border-[#00d6d8] hover:bg-[#00d6d8] hover:text-[#022050] disabled:opacity-30 disabled:pointer-events-none"><i class="fa-solid fa-chevron-left"></i> Sebelumnya</button>
+      ${cur==N-1?`<button onclick="finish()" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold">Selesai &amp; Lihat Pembahasan</button>`:`<button onclick="go(1)" class="px-4 py-2 rounded-lg border border-[#00d6d8] hover:bg-[#00d6d8] hover:text-[#022050]">Selanjutnya <i class="fa-solid fa-chevron-right"></i></button>`}
+    </div>`;
+  $('nav').innerHTML=questions.map((x,i)=>`<button onclick="jump(${i})" class="shrink-0 w-11 h-11 lg:w-full lg:h-10 rounded-lg font-bold border ${done(x)?'bg-[#ffd300] text-black border-[#ffd300]':'bg-white/10 border-white/25 hover:border-[#00d6d8]'} ${i==cur?'ring-2 ring-[#00d6d8] shadow-[0_0_10px_#00d6d8]':''}">${i+1}</button>`).join('');
+  $('cnt').textContent=questions.filter(done).length;
+  $('fin').classList.toggle('opacity-70',questions.some(x=>!done(x)));
+  typeset()}
+
+function finish(){
+  const m=questions.map((q,i)=>done(q)?0:i+1).filter(Boolean);
+  if(m.length)return toast(`<i class="fa-solid fa-triangle-exclamation"></i> Belum bisa selesai. Soal yang belum dijawab: <b>${m.join(', ')}</b>.`);
+  clearInterval(tm);renderReview();scrollTo(0,0)}
+
+function row(q,k){
+  const a=ans[q.id],c=q.correct_answer;let good,bad,note='';
+  if(q.type=='tf'){const u=a[k];good=u===c[k];bad=!good;note=`Jawabanmu: ${u?'Benar':'Salah'} · Kunci: ${c[k]?'Benar':'Salah'}`}
+  else{const isc=q.type=='single'?c===k:c.includes(k),sel=q.type=='single'?a===k:a.includes(k);
+    good=isc;bad=sel&&!isc;note=[isc?'Kunci':'',sel?'Pilihanmu':''].filter(Boolean).join(' · ')}
+  return `<div class="p-3 rounded-lg border ${good?'border-green-400 bg-green-500/15':bad?'border-red-400 bg-red-500/15':'border-white/15'}"><b>${k}.</b> <span class="break-words">${q.options[k]}</span>${note?`<div class="text-xs mt-1 ${bad?'text-red-300':'text-green-300'}">${note}</div>`:''}</div>`}
+
+function card(q,i){
+  const g=ok(q);
+  return `<article class="bg-white/5 border-2 ${g?'border-green-400/60':'border-red-400/60'} rounded-xl p-4 sm:p-6 mb-5">
+  <div class="flex justify-between items-center mb-3"><b class="text-[#00d6d8]">Soal ${i+1}</b><span class="text-sm font-bold px-3 py-1 rounded-full ${g?'bg-green-500':'bg-red-500'}"><i class="fa-solid ${g?'fa-check':'fa-xmark'}"></i> ${g?'Benar':'Salah'}</span></div>
+  <div class="leading-relaxed break-words">${q.question_text}</div>${img(q.image)}
+  <div class="space-y-2 mt-3">${Object.keys(q.options).map(k=>row(q,k)).join('')}</div>
+  <div class="grid sm:grid-cols-2 gap-2 mt-3 text-sm"><div class="p-3 rounded-lg ${g?'bg-green-500/20':'bg-red-500/20'}"><b>Jawabanmu:</b> ${fmt(q,ans[q.id])}</div><div class="p-3 rounded-lg bg-white/10"><b>Kunci:</b> ${fmt(q,q.correct_answer)}</div></div>
+  <div class="mt-4 rounded-lg bg-[#011a45] border border-white/20 p-4 leading-relaxed"><h4 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open"></i> Pembahasan Lengkap</h4>${q.pembahasan}${img(q.pembahasan_image)}</div>
+  <div class="mt-3 rounded-lg bg-[#00d6d8]/15 border border-[#00d6d8]/60 p-4 leading-relaxed"><h4 class="font-bold text-[#00d6d8] mb-2">🔥 Cara Cepat / Trik</h4>${q.cara_cepat}</div></article>`}
+
+function renderReview(){
+  const b=questions.filter(ok).length;
+  $('app').innerHTML=`<div class="rounded-xl bg-[#011a45] border border-[#00d6d8] shadow-[0_0_20px_#00d6d855] p-5 mb-5">
+   <h2 class="font-bold text-lg mb-3 text-[#00d6d8]">Ringkasan Hasil Latihan</h2>
+   <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+    <div class="rounded-lg bg-[#ffd300] text-black p-3"><div class="text-3xl font-bold">${Math.round(b/N*100)}</div><div class="text-xs">Skor Akhir</div></div>
+    <div class="rounded-lg bg-green-500/25 p-3"><div class="text-3xl font-bold">${b}</div><div class="text-xs">Total Benar</div></div>
+    <div class="rounded-lg bg-red-500/25 p-3"><div class="text-3xl font-bold">${N-b}</div><div class="text-xs">Total Salah</div></div>
+    <div class="rounded-lg bg-white/10 p-3"><div class="text-3xl font-bold font-mono">${clock(sec)}</div><div class="text-xs">Waktu Pengerjaan</div></div></div>
+   <p class="text-xs text-slate-300 mt-3">Soal pilihan ganda kompleks dan Benar/Salah dinilai benar bila seluruh jawabanmu sesuai kunci.</p></div>
+  ${questions.map(card).join('')}
+  <div class="flex flex-wrap gap-3 justify-center mb-8"><button onclick="location.reload()" class="px-5 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold"><i class="fa-solid fa-rotate-right"></i> Ulangi Latihan</button><a href="data-peluang.html" class="px-5 py-2.5 rounded-lg border border-[#00d6d8] hover:bg-[#00d6d8] hover:text-[#022050]">Kembali ke Dashboard Data dan Peluang</a></div>`;
+  typeset()}
+
+shell();renderQ();
+tm=setInterval(()=>{sec++;const e=$('sw');if(e)e.textContent=clock(sec)},1000);
+</script>
+</body>
+</html>
