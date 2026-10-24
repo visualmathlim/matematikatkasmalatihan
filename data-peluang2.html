@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan Data dan Peluang 2 (HOTS) - VisualMath.Lim</title>
+
+<!-- Tailwind CSS via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          'brand-navy': '#022050',
+          'brand-deep': '#011842',
+          'brand-card': '#0a2f6b',
+          'brand-cyan': '#00d6d8',
+          'brand-yellow': '#ffd300'
+        },
+        boxShadow: {
+          glow: '0 0 14px rgba(0,214,216,.55)',
+          glowy: '0 0 14px rgba(255,211,0,.45)'
+        }
+      }
+    }
+  };
+</script>
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- MathJax (render LaTeX) -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #022050; color: #fff; font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif; }
+  /* konten kaya (soal & pembahasan) */
+  .rich p { margin: .55rem 0; line-height: 1.7; }
+  .rich ul { list-style: disc; padding-left: 1.4rem; margin: .5rem 0; }
+  .rich ol { list-style: decimal; padding-left: 1.4rem; margin: .5rem 0; }
+  .rich li { margin: .2rem 0; }
+  .rich strong { color: #fff; }
+  /* tabel di dalam soal/pembahasan */
+  .pb-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: .5rem 0; }
+  .pb-table th, .pb-table td { border: 1px solid rgba(255,255,255,.28); padding: 6px 9px; text-align: center; vertical-align: middle; }
+  .pb-table th { background: rgba(0,214,216,.18); }
+  .pb-table td.left, .pb-table th.left { text-align: left; }
+  /* rumus panjang bisa digeser agar tidak terpotong */
+  mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+  /* scrollbar navigasi mobile */
+  .nav-scroll::-webkit-scrollbar { height: 6px; }
+  .nav-scroll::-webkit-scrollbar-thumb { background: rgba(0,214,216,.5); border-radius: 9999px; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  .shake { animation: shake .35s ease-in-out 2; }
+</style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===================== NAVBAR ===================== -->
+<header class="sticky top-0 z-40 bg-brand-deep/95 backdrop-blur border-b border-brand-cyan/30">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2 flex items-center justify-between gap-3">
+    <p class="text-[11px] sm:text-base font-bold leading-tight min-w-0">
+      VisualMath.Lim - Latihan <span class="text-brand-cyan">Data dan Peluang</span> TKA SMA Kelas 12
+    </p>
+    <a id="btnDashboard" href="data-peluang.html"
+       class="shrink-0 flex items-center gap-2 px-2.5 sm:px-4 py-1.5 rounded-xl border border-brand-cyan/60 text-brand-cyan hover:bg-brand-cyan hover:text-brand-navy hover:shadow-glow transition">
+      <img src="logo.png" alt="Logo VisualMath.Lim" class="h-8 w-8 sm:h-9 sm:w-9 object-contain rounded-full" onerror="this.style.display='none'">
+      <span class="text-[11px] sm:text-sm font-semibold leading-tight text-right">Kembali ke Dashboard<br class="sm:hidden"> Data dan Peluang</span>
+    </a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-3 sm:px-6 py-4">
+
+  <!-- ===================== STATE 1: MENGERJAKAN ===================== -->
+  <section id="practiceView">
+
+    <div class="mb-4 rounded-xl border border-brand-yellow/60 bg-brand-yellow/10 p-3 text-sm flex gap-3 items-start">
+      <i class="fa-solid fa-circle-info text-brand-yellow mt-0.5"></i>
+      <p>
+        <strong class="text-brand-yellow">Info:</strong>
+        Kerjakan <strong>semua soal</strong> terlebih dahulu. Jika masih ada soal yang belum dijawab,
+        latihan <strong>tidak bisa diselesaikan</strong> dan tombol
+        <strong>“Selesai &amp; Lihat Pembahasan”</strong> belum aktif. Tidak ada batas waktu, stopwatch hanya untuk mengukur kecepatanmu.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
+
+      <!-- AREA SOAL (75%) -->
+      <div class="lg:col-span-3 order-1 flex flex-col gap-4 min-w-0">
+        <div class="rounded-2xl bg-brand-card border border-brand-cyan/30 p-4 sm:p-6 shadow-lg">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="qCounter" class="px-3 py-1 rounded-full bg-brand-cyan text-brand-navy font-bold text-sm"></span>
+              <span id="qTypeBadge"></span>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-1 rounded-full border border-brand-cyan/50 text-brand-cyan font-mono font-bold">
+              <i class="fa-regular fa-clock"></i><span id="stopwatch">00:00</span>
+            </div>
+          </div>
+
+          <div id="qContent" class="rich"></div>
+        </div>
+
+        <!-- Tombol navigasi bawah -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <button id="btnPrev" class="px-5 py-2.5 rounded-xl border border-brand-cyan text-brand-cyan font-semibold hover:bg-brand-cyan hover:text-brand-navy transition disabled:opacity-40 disabled:cursor-not-allowed">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya
+          </button>
+          <button id="btnNext" class="px-5 py-2.5 rounded-xl bg-brand-cyan text-brand-navy font-bold hover:shadow-glow transition">
+            Selanjutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+          <button id="btnFinishBottom" class="hidden px-5 py-2.5 rounded-xl font-bold transition">
+            <i class="fa-solid fa-flag-checkered mr-1"></i> Selesai &amp; Lihat Pembahasan
+          </button>
+        </div>
+        <p class="finish-hint hidden text-sm text-brand-yellow"></p>
+      </div>
+
+      <!-- PANEL NAVIGASI (25%) -->
+      <aside class="lg:col-span-1 order-2 lg:sticky lg:top-20 min-w-0">
+        <div class="rounded-2xl bg-brand-card border border-brand-cyan/30 p-4 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-bold text-brand-cyan"><i class="fa-solid fa-table-cells mr-1"></i> Navigasi Soal</h2>
+            <span id="progressText" class="text-xs px-2 py-0.5 rounded-full bg-brand-yellow text-black font-bold"></span>
+          </div>
+
+          <!-- Mobile: scroll horizontal | Laptop: grid -->
+          <div id="navGrid" class="nav-scroll flex gap-2 overflow-x-auto pb-2 snap-x lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0"></div>
+
+          <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-300">
+            <span><span class="inline-block w-3 h-3 rounded bg-brand-yellow align-middle"></span> Terjawab</span>
+            <span><span class="inline-block w-3 h-3 rounded border border-brand-cyan align-middle"></span> Belum</span>
+          </div>
+
+          <button id="btnFinishSide" class="mt-4 w-full px-4 py-3 rounded-xl font-bold transition">
+            <i class="fa-solid fa-flag-checkered mr-1"></i> Selesai &amp; Lihat Pembahasan
+          </button>
+          <p class="finish-hint hidden mt-2 text-xs text-brand-yellow"></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===================== STATE 2: PEMBAHASAN ===================== -->
+  <section id="resultView" class="hidden">
+    <div id="resultBanner"></div>
+    <div id="resultList" class="flex flex-col gap-6 mt-6"></div>
+    <div class="mt-8 mb-6 flex flex-wrap justify-center gap-3">
+      <button id="btnRetry" class="px-6 py-3 rounded-xl border border-brand-cyan text-brand-cyan font-semibold hover:bg-brand-cyan hover:text-brand-navy transition">
+        <i class="fa-solid fa-rotate-right mr-1"></i> Kerjakan Ulang
+      </button>
+      <a href="data-peluang.html" class="px-6 py-3 rounded-xl bg-brand-yellow text-black font-bold hover:shadow-glowy transition">
+        <i class="fa-solid fa-house mr-1"></i> Kembali ke Dashboard
+      </a>
+    </div>
+  </section>
+</main>
+
+<!-- Modal konfirmasi (pengganti dialog bawaan browser yang sering diblokir) -->
+<div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+  <div class="w-full max-w-sm rounded-2xl bg-brand-card border border-brand-cyan/60 p-5 shadow-glow">
+    <p id="confirmMsg" class="text-base"></p>
+    <div class="mt-5 flex justify-end gap-3">
+      <button id="confirmNo" type="button" class="px-4 py-2 rounded-xl border border-brand-cyan text-brand-cyan font-semibold hover:bg-brand-cyan hover:text-brand-navy transition">Batal</button>
+      <button id="confirmYes" type="button" class="px-4 py-2 rounded-xl bg-brand-yellow text-black font-bold hover:brightness-110 transition">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   1. GENERATOR GAMBAR (SVG dibuat dengan kode, tanpa upload)
+   ========================================================= */
+const svgUri = (s) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+const FONT = "font-family='Segoe UI, Arial, sans-serif'";
+
+/* --- Soal 2: histogram tinggi badan --- */
+function histogramSVG() {
+  const labels = ['150–154', '155–159', '160–164', '165–169', '170–174'];
+  const freq = [4, 8, 10, 12, 6];
+  const W = 640, H = 340, L = 60, R = 20, T = 50, B = 70;
+  const pw = W - L - R, ph = H - T - B, bw = pw / 5, unit = ph / 14;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" ${FONT}>`;
+  s += `<rect width="${W}" height="${H}" fill="#ffffff"/>`;
+  s += `<text x="${W / 2}" y="26" font-size="16" font-weight="bold" fill="#111827" text-anchor="middle">Tinggi Badan 40 Siswa</text>`;
+  for (let v = 0; v <= 14; v += 2) {
+    const y = T + ph - v * unit;
+    s += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" stroke="#e5e7eb"/>`;
+    s += `<text x="${L - 8}" y="${y + 4}" font-size="12" fill="#374151" text-anchor="end">${v}</text>`;
+  }
+  freq.forEach((f, i) => {
+    const x = L + i * bw, h = f * unit;
+    s += `<rect x="${x}" y="${T + ph - h}" width="${bw}" height="${h}" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1.5"/>`;
+    s += `<text x="${x + bw / 2}" y="${T + ph - h - 6}" font-size="14" font-weight="bold" fill="#111827" text-anchor="middle">${f}</text>`;
+    s += `<text x="${x + bw / 2}" y="${T + ph + 20}" font-size="13" fill="#374151" text-anchor="middle">${labels[i]}</text>`;
+  });
+  s += `<line x1="${L}" x2="${L}" y1="${T}" y2="${T + ph}" stroke="#6b7280"/>`;
+  s += `<line x1="${L}" x2="${W - R}" y1="${T + ph}" y2="${T + ph}" stroke="#6b7280"/>`;
+  s += `<text transform="translate(16 ${T + ph / 2}) rotate(-90)" font-size="13" fill="#111827" text-anchor="middle">Frekuensi</text>`;
+  s += `<text x="${W / 2}" y="${H - 14}" font-size="13" font-weight="bold" fill="#111827" text-anchor="middle">Tinggi badan (cm)</text>`;
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Soal 7: diagram Venn --- */
+function vennSVG() {
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="300" viewBox="0 0 640 300" ${FONT}>`;
+  s += `<rect width="640" height="300" fill="#ffffff"/>`;
+  s += `<rect x="20" y="40" width="600" height="240" rx="8" fill="#f8fafc" stroke="#475569" stroke-width="2"/>`;
+  s += `<text x="32" y="30" font-size="14" font-weight="bold" fill="#111827">Hasil survei 80 siswa kelas XII</text>`;
+  s += `<circle cx="250" cy="165" r="90" fill="#3b82f6" fill-opacity="0.35" stroke="#1d4ed8" stroke-width="2"/>`;
+  s += `<circle cx="390" cy="165" r="90" fill="#f59e0b" fill-opacity="0.35" stroke="#b45309" stroke-width="2"/>`;
+  s += `<text x="205" y="62" font-size="14" font-weight="bold" fill="#1d4ed8" text-anchor="middle">Basket (45)</text>`;
+  s += `<text x="435" y="62" font-size="14" font-weight="bold" fill="#b45309" text-anchor="middle">Voli (38)</text>`;
+  s += `<text x="205" y="173" font-size="26" font-weight="bold" fill="#111827" text-anchor="middle">30</text>`;
+  s += `<text x="320" y="173" font-size="26" font-weight="bold" fill="#111827" text-anchor="middle">15</text>`;
+  s += `<text x="435" y="173" font-size="26" font-weight="bold" fill="#111827" text-anchor="middle">23</text>`;
+  s += `<text x="40" y="262" font-size="14" fill="#374151">Tidak menyukai keduanya: <tspan font-size="20" font-weight="bold" fill="#111827">12</tspan></text>`;
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Soal 8: dua kotak bola --- */
+function kotakBolaSVG() {
+  const ball = (x, y, c) => `<circle cx="${x}" cy="${y}" r="15" fill="${c === 'M' ? '#ef4444' : '#3b82f6'}" stroke="#111827" stroke-width="1.2"/>`;
+  const box = (x0, rows, title) => {
+    let t = `<text x="${x0 + 115}" y="38" font-size="15" font-weight="bold" fill="#111827" text-anchor="middle">${title}</text>`;
+    t += `<rect x="${x0}" y="48" width="230" height="110" rx="8" fill="#f8fafc" stroke="#475569" stroke-width="2"/>`;
+    rows.forEach((row, ri) => row.forEach((c, i) => { t += ball(x0 + 38 + i * 50, 84 + ri * 46, c); }));
+    return t;
+  };
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="210" viewBox="0 0 640 210" ${FONT}>`;
+  s += `<rect width="640" height="210" fill="#ffffff"/>`;
+  s += box(30, [['M', 'M', 'M', 'M'], ['B', 'B', 'B']], 'Kotak I: 4 merah, 3 biru');
+  s += box(380, [['M', 'M', 'B', 'B'], ['B', 'B', 'B']], 'Kotak II: 2 merah, 5 biru');
+  s += `<line x1="268" x2="362" y1="104" y2="104" stroke="#111827" stroke-width="2.5"/><polygon points="362,104 350,97 350,111" fill="#111827"/>`;
+  s += `<text x="315" y="92" font-size="12" fill="#111827" text-anchor="middle">pindah 1 bola</text>`;
+  s += `<text x="315" y="124" font-size="12" fill="#111827" text-anchor="middle">(acak)</text>`;
+  s += `<circle cx="215" cy="190" r="8" fill="#ef4444"/><text x="230" y="195" font-size="13" fill="#374151">merah</text>`;
+  s += `<circle cx="305" cy="190" r="8" fill="#3b82f6"/><text x="320" y="195" font-size="13" fill="#374151">biru</text>`;
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Pembahasan 8: diagram pohon peluang --- */
+function pohonSVG() {
+  const edge = (x1, y1, x2, y2, lab, lx, ly) =>
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#475569" stroke-width="2"/>` +
+    `<rect x="${lx - 20}" y="${ly - 12}" width="40" height="18" fill="#ffffff"/>` +
+    `<text x="${lx}" y="${ly + 2}" font-size="13" font-weight="bold" fill="#1d4ed8" text-anchor="middle">${lab}</text>`;
+  const leaf = (y, txt, hot) =>
+    `<rect x="430" y="${y - 15}" width="200" height="30" rx="6" fill="${hot ? '#fde68a' : '#f1f5f9'}" stroke="${hot ? '#b45309' : '#94a3b8'}" stroke-width="1.5"/>` +
+    `<text x="530" y="${y + 5}" font-size="13" fill="#111827" text-anchor="middle">${txt}</text>`;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="300" viewBox="0 0 640 300" ${FONT}>`;
+  s += `<rect width="640" height="300" fill="#ffffff"/>`;
+  s += edge(40, 150, 185, 85, '4/7', 112, 112) + edge(40, 150, 185, 215, '3/7', 112, 196);
+  s += edge(275, 85, 430, 40, '3/8', 352, 56) + edge(275, 85, 430, 110, '5/8', 352, 102);
+  s += edge(275, 215, 430, 180, '2/8', 352, 190) + edge(275, 215, 430, 250, '6/8', 352, 236);
+  s += `<circle cx="40" cy="150" r="7" fill="#111827"/><text x="40" y="172" font-size="12" fill="#374151" text-anchor="middle">Awal</text>`;
+  s += `<rect x="185" y="70" width="90" height="30" rx="6" fill="#fecaca" stroke="#b91c1c" stroke-width="1.5"/><text x="230" y="90" font-size="13" font-weight="bold" fill="#111827" text-anchor="middle">Pindah M</text>`;
+  s += `<rect x="185" y="200" width="90" height="30" rx="6" fill="#bfdbfe" stroke="#1d4ed8" stroke-width="1.5"/><text x="230" y="220" font-size="13" font-weight="bold" fill="#111827" text-anchor="middle">Pindah B</text>`;
+  s += leaf(40, 'Merah: 4/7 × 3/8 = 12/56', true) + leaf(110, 'Biru: 4/7 × 5/8 = 20/56', false);
+  s += leaf(180, 'Merah: 3/7 × 2/8 = 6/56', true) + leaf(250, 'Biru: 3/7 × 6/8 = 18/56', false);
+  s += `<text x="530" y="285" font-size="12" fill="#374151" text-anchor="middle">Kuning = bola dari kotak II berwarna merah</text>`;
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Pembahasan 6: tabel ruang sampel dua dadu --- */
+function duaDaduSVG() {
+  const c = 52, x0 = 70, y0 = 56;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" ${FONT}>`;
+  s += `<rect width="640" height="400" fill="#ffffff"/>`;
+  s += `<text x="${x0 + 3 * c}" y="24" font-size="14" font-weight="bold" fill="#111827" text-anchor="middle">Jumlah mata dua dadu (baris: dadu 1, kolom: dadu 2)</text>`;
+  for (let i = 1; i <= 6; i++) {
+    s += `<text x="${x0 + (i - 0.5) * c}" y="${y0 - 8}" font-size="14" font-weight="bold" fill="#374151" text-anchor="middle">${i}</text>`;
+    s += `<text x="${x0 - 14}" y="${y0 + (i - 0.5) * c + 5}" font-size="14" font-weight="bold" fill="#374151" text-anchor="middle">${i}</text>`;
+  }
+  for (let a = 1; a <= 6; a++) {
+    for (let b = 1; b <= 6; b++) {
+      const A = (a + b) % 3 === 0, B = Math.abs(a - b) === 2;
+      const fill = A && B ? '#86efac' : A ? '#bfdbfe' : B ? '#fed7aa' : '#ffffff';
+      s += `<rect x="${x0 + (b - 1) * c}" y="${y0 + (a - 1) * c}" width="${c}" height="${c}" fill="${fill}" stroke="#94a3b8"/>`;
+      s += `<text x="${x0 + (b - 0.5) * c}" y="${y0 + (a - 0.5) * c + 5}" font-size="15" fill="#111827" text-anchor="middle">${a + b}</text>`;
+    }
+  }
+  const lg = (y, col, t) => `<rect x="410" y="${y}" width="22" height="22" fill="${col}" stroke="#94a3b8"/><text x="442" y="${y + 16}" font-size="13" fill="#111827">${t}</text>`;
+  s += lg(90, '#bfdbfe', 'A saja (jumlah kelipatan 3)');
+  s += lg(122, '#fed7aa', 'B saja (selisih 2)');
+  s += lg(154, '#86efac', 'A dan B (irisan)');
+  s += `<text x="410" y="220" font-size="13" fill="#111827">n(A) = 12, n(B) = 8, n(A∩B) = 2</text>`;
+  s += `<text x="410" y="244" font-size="13" fill="#111827">n(A∪B) = 12 + 8 − 2 = 18</text>`;
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Pembahasan 9: diagram kotak-garis --- */
+function boxplotSVG() {
+  const X = (v) => 40 + (v - 40) / 60 * 560;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="220" viewBox="0 0 640 220" ${FONT}>`;
+  s += `<rect width="640" height="220" fill="#ffffff"/>`;
+  s += `<line x1="${X(45)}" x2="${X(53.5)}" y1="95" y2="95" stroke="#111827" stroke-width="2"/><line x1="${X(75)}" x2="${X(90)}" y1="95" y2="95" stroke="#111827" stroke-width="2"/>`;
+  s += `<line x1="${X(45)}" x2="${X(45)}" y1="80" y2="110" stroke="#111827" stroke-width="2"/><line x1="${X(90)}" x2="${X(90)}" y1="80" y2="110" stroke="#111827" stroke-width="2"/>`;
+  s += `<rect x="${X(53.5)}" y="68" width="${X(75) - X(53.5)}" height="54" fill="#93c5fd" stroke="#1d4ed8" stroke-width="2"/>`;
+  s += `<line x1="${X(63.5)}" x2="${X(63.5)}" y1="68" y2="122" stroke="#b91c1c" stroke-width="3"/>`;
+  [['Min = 45', 45], ['Q1 = 53,5', 53.5], ['Q2 = 63,5', 63.5], ['Q3 = 75', 75], ['Maks = 90', 90]].forEach(([t, v], i) => {
+    s += `<text x="${X(v)}" y="${i % 2 ? 40 : 56}" font-size="13" font-weight="bold" fill="#111827" text-anchor="middle">${t}</text>`;
+  });
+  s += `<line x1="${X(53.5)}" x2="${X(75)}" y1="142" y2="142" stroke="#047857" stroke-width="2"/><line x1="${X(53.5)}" x2="${X(53.5)}" y1="136" y2="148" stroke="#047857" stroke-width="2"/><line x1="${X(75)}" x2="${X(75)}" y1="136" y2="148" stroke="#047857" stroke-width="2"/>`;
+  s += `<text x="${(X(53.5) + X(75)) / 2}" y="162" font-size="13" font-weight="bold" fill="#047857" text-anchor="middle">IQR = 75 − 53,5 = 21,5</text>`;
+  s += `<line x1="40" x2="600" y1="182" y2="182" stroke="#6b7280"/>`;
+  for (let v = 40; v <= 100; v += 10) {
+    s += `<line x1="${X(v)}" x2="${X(v)}" y1="182" y2="188" stroke="#6b7280"/><text x="${X(v)}" y="205" font-size="12" fill="#374151" text-anchor="middle">${v}</text>`;
+  }
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* =========================================================
+   2. DATA SOAL (HOTS & penalaran, Data dan Peluang)
+   type: 'multi' (jawaban benar > 1) | 'single' | 'bs' (Benar/Salah)
+   ========================================================= */
+const questions = [
+  /* ---------------- SOAL 1 : rata-rata ---------------- */
+  {
+    id: 1,
+    type: 'single',
+    question_text: String.raw`<p>Rata-rata nilai ulangan Matematika 24 siswa adalah 70. Setelah diperiksa ulang, nilai 4 siswa yang mengikuti remedial masing-masing naik 10 poin. Kemudian dua siswa susulan dengan nilai 85 dan 93 bergabung ke dalam data.</p>
+<p>Rata-rata nilai seluruh siswa sekarang adalah ….</p>`,
+    image: '',
+    options: [
+      { label: 'A', text: '71' },
+      { label: 'B', text: '72' },
+      { label: 'C', text: '73' },
+      { label: 'D', text: '74' },
+      { label: 'E', text: '75' }
+    ],
+    correct_answer: 'C',
+    pembahasan_images: [],
+    pembahasan: String.raw`<p>Gunakan jumlah nilai (rata-rata × banyak data), lalu perbarui satu per satu.</p>
+$$\begin{aligned}
+\text{Jumlah awal} &= 24 \times 70 = 1680 \\
+\text{Setelah remedial} &= 1680 + 4 \times 10 = 1720 \\
+\text{Setelah susulan} &= 1720 + 85 + 93 = 1898 \\
+\text{Banyak siswa} &= 24 + 2 = 26 \\
+\bar{x} &= \frac{1898}{26} = 73
+\end{aligned}$$
+<p>Jadi rata-rata nilai seluruh siswa sekarang adalah <strong>73</strong>.</p>`,
+    cara_cepat: String.raw`<ol>
+<li>Kenaikan total hanya dari 4 siswa remedial: $4 \times 10 = 40$. Dua siswa baru menambah $85 + 93 = 178$.</li>
+<li>Jumlah baru: $1680 + 40 + 178 = 1898$. Banyak siswa: $26$.</li>
+<li>Cek cepat: $26 \times 73 = 1898$. Rata-ratanya <strong>73</strong>.</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 2 : data berkelompok ---------------- */
+  {
+    id: 2,
+    type: 'multi',
+    question_text: String.raw`<p>Histogram berikut menunjukkan tinggi badan 40 siswa kelas XII.</p>`,
+    image: histogramSVG(),
+    question_after: String.raw`<p>Berdasarkan histogram tersebut, pernyataan manakah yang benar? <strong class="text-brand-yellow">(Jawaban benar lebih dari satu.)</strong></p>`,
+    options: [
+      { label: 'A', text: 'Kelas median data adalah 160–164 cm.' },
+      { label: 'B', text: 'Median data tersebut adalah 163,5 cm.' },
+      { label: 'C', text: 'Modus data tersebut adalah 165,75 cm.' },
+      { label: 'D', text: 'Rata-rata tinggi badan siswa adalah 164 cm.' },
+      { label: 'E', text: 'Kelas modus dan kelas median adalah kelas yang sama.' }
+    ],
+    correct_answer: ['A', 'B', 'C'],
+    pembahasan_images: [],
+    pembahasan: String.raw`<p><strong>Langkah 1: lengkapi tabel.</strong></p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><th>Kelas</th><th>Tepi bawah</th><th>Frekuensi</th><th>Frek. kumulatif</th><th>Titik tengah</th></tr>
+<tr><td>150–154</td><td>149,5</td><td>4</td><td>4</td><td>152</td></tr>
+<tr><td>155–159</td><td>154,5</td><td>8</td><td>12</td><td>157</td></tr>
+<tr><td>160–164</td><td>159,5</td><td>10</td><td>22</td><td>162</td></tr>
+<tr><td>165–169</td><td>164,5</td><td>12</td><td>34</td><td>167</td></tr>
+<tr><td>170–174</td><td>169,5</td><td>6</td><td>40</td><td>172</td></tr>
+</table></div>
+<p><strong>Langkah 2: median.</strong> $\frac{n}{2} = 20$ ada di kelas 160–164 (frekuensi kumulatif sebelumnya 12, frekuensi kelas 10, panjang kelas 5).</p>
+$$\begin{aligned}
+\text{Me} &= 159{,}5 + \frac{20 - 12}{10} \times 5 \\
+&= 159{,}5 + 4 = 163{,}5
+\end{aligned}$$
+<p><strong>Langkah 3: modus.</strong> Frekuensi terbesar 12 pada kelas 165–169, sehingga $d_1 = 12 - 10 = 2$ dan $d_2 = 12 - 6 = 6$.</p>
+$$\begin{aligned}
+\text{Mo} &= 164{,}5 + \frac{2}{2 + 6} \times 5 \\
+&= 164{,}5 + 1{,}25 = 165{,}75
+\end{aligned}$$
+<p><strong>Langkah 4: rata-rata.</strong></p>
+$$\begin{aligned}
+\bar{x} &= \frac{4(152) + 8(157) + 10(162) + 12(167) + 6(172)}{40} \\
+&= \frac{6520}{40} = 163
+\end{aligned}$$
+<p><strong>Kesimpulan:</strong> A benar, B benar, C benar, D salah (rata-rata 163, bukan 164), E salah (kelas modus 165–169, kelas median 160–164). Kunci: <strong>A, B, C</strong>.</p>`,
+    cara_cepat: String.raw`<ol>
+<li>Kelas median: lihat frekuensi kumulatif, data ke-20 jatuh di kelas ke-3 (160–164). Jadi A benar dan E salah (kelas modus adalah kelas dengan batang tertinggi, yaitu 165–169).</li>
+<li>Median harus berada di dalam kelas 160–164. Nilai 163,5 masuk akal (B). Modus harus berada di kelas 165–169 dan lebih dekat ke batas bawah karena $d_1 < d_2$: 165,75 (C).</li>
+<li>Rata-rata dengan titik tengah: $\frac{6520}{40} = 163$, sehingga D salah.</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 3 : ragam & simpangan baku ---------------- */
+  {
+    id: 3,
+    type: 'bs',
+    question_text: String.raw`<p>Diberikan data: 2, 4, 6, 8, 10. Ragam dihitung dengan membagi jumlah kuadrat selisih terhadap rata-rata dengan banyak data ($n$).</p>
+<p>Tentukan <strong>Benar</strong> atau <strong>Salah</strong> pada setiap pernyataan.</p>`,
+    image: '',
+    statements: [
+      String.raw`Jika setiap data ditambah 5, simpangan baku data tetap $2\sqrt{2}$.`,
+      'Jika setiap data dikalikan 3, ragam data yang baru adalah 24.',
+      String.raw`Jika ke dalam data ditambahkan satu data bernilai 6, rata-rata tetap 6 dan ragam menjadi lebih kecil daripada ragam semula.`
+    ],
+    correct_answer: ['B', 'S', 'B'],
+    pembahasan_images: [],
+    pembahasan: String.raw`<p><strong>Data awal.</strong> Rata-rata dan ragam:</p>
+$$\begin{aligned}
+\bar{x} &= \frac{2+4+6+8+10}{5} = 6 \\
+s^2 &= \frac{(-4)^2 + (-2)^2 + 0^2 + 2^2 + 4^2}{5} = \frac{40}{5} = 8 \\
+s &= \sqrt{8} = 2\sqrt{2}
+\end{aligned}$$
+<p><strong>Pernyataan 1 (Benar).</strong> Menambah semua data dengan bilangan yang sama menggeser rata-rata, tetapi selisih tiap data terhadap rata-rata tidak berubah, jadi simpangan baku tetap $2\sqrt{2}$.</p>
+<p><strong>Pernyataan 2 (Salah).</strong> Jika semua data dikali $k$, simpangan baku dikali $|k|$ dan ragam dikali $k^2$:</p>
+$$\begin{aligned}
+s^2_{\text{baru}} &= 3^2 \times 8 = 72 \quad (\text{bukan } 24)
+\end{aligned}$$
+<p><strong>Pernyataan 3 (Benar).</strong> Data baru: 2, 4, 6, 6, 8, 10 ($n = 6$).</p>
+$$\begin{aligned}
+\bar{x}_{\text{baru}} &= \frac{36}{6} = 6 \\
+s^2_{\text{baru}} &= \frac{40 + 0^2}{6} = \frac{20}{3} \approx 6{,}67 < 8
+\end{aligned}$$`,
+    cara_cepat: String.raw`<ol>
+<li><strong>Geser</strong> (tambah/kurang) tidak mengubah ukuran sebaran. Simpangan baku dan ragam tetap, jadi pernyataan 1 benar.</li>
+<li><strong>Skala</strong> (kali $k$): simpangan baku dikali $|k|$, ragam dikali $k^2$. Ragam menjadi $9 \times 8 = 72$, sehingga pernyataan 2 salah (24 adalah $3 \times 8$, jebakan).</li>
+<li>Data baru sama dengan rata-rata tidak menambah jumlah kuadrat selisih (tetap 40), tetapi pembaginya naik dari 5 menjadi 6. Ragam mengecil, pernyataan 3 benar.</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 4 : permutasi dengan syarat ---------------- */
+  {
+    id: 4,
+    type: 'single',
+    question_text: String.raw`<p>Dari angka-angka 1, 2, 3, 4, 5, dan 6 akan dibentuk bilangan genap empat angka yang lebih dari 3.000 dan semua angkanya berbeda.</p>
+<p>Banyak bilangan yang dapat dibentuk adalah ….</p>`,
+    image: '',
+    options: [
+      { label: 'A', text: '96' },
+      { label: 'B', text: '108' },
+      { label: 'C', text: '120' },
+      { label: 'D', text: '144' },
+      { label: 'E', text: '180' }
+    ],
+    correct_answer: 'C',
+    pembahasan_images: [],
+    pembahasan: String.raw`<p>Syarat: angka satuan genap (2, 4, atau 6), angka ribuan minimal 3, semua angka berbeda. Kerjakan <strong>satuan dulu</strong>, lalu ribuan, karena kedua syarat saling beririsan.</p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><th>Satuan</th><th>Pilihan ribuan (≥ 3, bukan satuan)</th><th>Ratusan</th><th>Puluhan</th><th>Banyak</th></tr>
+<tr><td>2</td><td>3, 4, 5, 6 → 4</td><td>4</td><td>3</td><td>$4 \times 4 \times 3 = 48$</td></tr>
+<tr><td>4</td><td>3, 5, 6 → 3</td><td>4</td><td>3</td><td>$3 \times 4 \times 3 = 36$</td></tr>
+<tr><td>6</td><td>3, 4, 5 → 3</td><td>4</td><td>3</td><td>$3 \times 4 \times 3 = 36$</td></tr>
+</table></div>
+$$\begin{aligned}
+\text{Total} &= 48 + 36 + 36 = 120
+\end{aligned}$$`,
+    cara_cepat: String.raw`<p>Pakai komplemen: hitung semua bilangan genap, lalu kurangi yang kurang dari 3.000.</p>
+$$\begin{aligned}
+\text{Semua genap} &= 3 \times (5 \times 4 \times 3) = 180 \\
+\text{Ribuan 1} &= 3 \times (4 \times 3) = 36 \\
+\text{Ribuan 2} &= 2 \times (4 \times 3) = 24 \\
+\text{Jawaban} &= 180 - 36 - 24 = 120
+\end{aligned}$$`
+  },
+
+  /* ---------------- SOAL 5 : kombinasi dengan syarat ---------------- */
+  {
+    id: 5,
+    type: 'single',
+    question_text: String.raw`<p>Sebuah tim beranggotakan 5 orang akan dipilih dari 6 siswa putra dan 5 siswa putri. Di antara siswa putri terdapat dua anak kembar, Rina dan Rani. Syarat pemilihan tim:</p>
+<ul>
+<li>tim memuat paling sedikit 2 siswa putri, dan</li>
+<li>Rina dan Rani selalu ikut bersama atau tidak ikut sama sekali.</li>
+</ul>
+<p>Banyak cara membentuk tim tersebut adalah ….</p>`,
+    image: '',
+    options: [
+      { label: 'A', text: '120' },
+      { label: 'B', text: '138' },
+      { label: 'C', text: '159' },
+      { label: 'D', text: '168' },
+      { label: 'E', text: '210' }
+    ],
+    correct_answer: 'C',
+    pembahasan_images: [],
+    pembahasan: String.raw`<p>Bagi menjadi dua kasus yang saling lepas.</p>
+<p><strong>Kasus 1: Rina dan Rani keduanya ikut.</strong> Syarat "paling sedikit 2 putri" sudah terpenuhi. Pilih 3 orang lagi dari 9 orang sisanya (6 putra dan 3 putri):</p>
+$$\begin{aligned}
+\binom{9}{3} = \frac{9 \times 8 \times 7}{3 \times 2 \times 1} = 84
+\end{aligned}$$
+<p><strong>Kasus 2: keduanya tidak ikut.</strong> Pilih 5 orang dari 9 orang (6 putra dan 3 putri) dengan paling sedikit 2 putri:</p>
+$$\begin{aligned}
+\text{2 putri, 3 putra} &= \binom{3}{2}\binom{6}{3} = 3 \times 20 = 60 \\
+\text{3 putri, 2 putra} &= \binom{3}{3}\binom{6}{2} = 1 \times 15 = 15 \\
+\text{Jumlah kasus 2} &= 60 + 15 = 75
+\end{aligned}$$
+$$\begin{aligned}
+\text{Total} &= 84 + 75 = 159
+\end{aligned}$$`,
+    cara_cepat: String.raw`<ol>
+<li>Kembar "satu paket": ikut berdua atau tidak sama sekali.</li>
+<li>Berdua ikut: syarat putri otomatis aman, sisa 3 kursi dari 9 orang: $\binom{9}{3} = 84$.</li>
+<li>Tidak ikut: $\binom{9}{5} = 126$ dikurangi yang kurang dari 2 putri (0 putri: $\binom{6}{5} = 6$; 1 putri: $3 \times \binom{6}{4} = 45$) $= 126 - 51 = 75$.</li>
+<li>Jumlahkan: $84 + 75 = 159$.</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 6 : peluang kejadian majemuk ---------------- */
+  {
+    id: 6,
+    type: 'single',
+    question_text: String.raw`<p>Dua dadu setimbang dilempar bersamaan satu kali. Misalkan kejadian $A$: jumlah kedua mata dadu merupakan kelipatan 3, dan kejadian $B$: selisih kedua mata dadu adalah 2.</p>
+<p>Peluang terjadinya $A$ atau $B$ adalah ….</p>`,
+    image: '',
+    options: [
+      { label: 'A', text: String.raw`$\frac{1}{3}$` },
+      { label: 'B', text: String.raw`$\frac{5}{12}$` },
+      { label: 'C', text: String.raw`$\frac{1}{2}$` },
+      { label: 'D', text: String.raw`$\frac{7}{12}$` },
+      { label: 'E', text: String.raw`$\frac{2}{3}$` }
+    ],
+    correct_answer: 'C',
+    pembahasan_images: [duaDaduSVG()],
+    pembahasan: String.raw`<p>Ruang sampel: $n(S) = 6 \times 6 = 36$. Karena $A$ dan $B$ <strong>tidak saling lepas</strong>, gunakan rumus gabungan.</p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><th class="left">Kejadian</th><th class="left">Pasangan (dadu 1, dadu 2)</th><th>Banyak</th></tr>
+<tr><td class="left">$A$ (jumlah 3, 6, 9, 12)</td><td class="left">2 + 5 + 4 + 1 pasangan</td><td>12</td></tr>
+<tr><td class="left">$B$ (selisih 2)</td><td class="left">(1,3), (2,4), (3,5), (4,6) dan kebalikannya</td><td>8</td></tr>
+<tr><td class="left">$A \cap B$</td><td class="left">(2,4) dan (4,2), jumlahnya 6 dan selisihnya 2</td><td>2</td></tr>
+</table></div>
+$$\begin{aligned}
+P(A \cup B) &= P(A) + P(B) - P(A \cap B) \\
+&= \frac{12}{36} + \frac{8}{36} - \frac{2}{36} \\
+&= \frac{18}{36} = \frac{1}{2}
+\end{aligned}$$`,
+    cara_cepat: String.raw`<ol>
+<li>Hitung dari tabel penjumlahan: ada 12 kotak berjumlah kelipatan 3 dan 8 kotak berselisih 2.</li>
+<li>Jangan langsung dijumlah ($12 + 8 = 20$), karena 2 kotak dihitung dua kali, yaitu (2,4) dan (4,2).</li>
+<li>$20 - 2 = 18$, jadi $\frac{18}{36} = \frac{1}{2}$.</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 7 : peluang bersyarat & kebebasan ---------------- */
+  {
+    id: 7,
+    type: 'bs',
+    question_text: String.raw`<p>Dari 80 siswa kelas XII yang disurvei, 45 siswa menyukai basket, 38 siswa menyukai voli, dan 15 siswa menyukai keduanya. Hasilnya disajikan pada diagram Venn berikut. Satu siswa dipilih secara acak.</p>`,
+    image: vennSVG(),
+    question_after: String.raw`<p>Tentukan <strong>Benar</strong> atau <strong>Salah</strong> pada setiap pernyataan.</p>`,
+    statements: [
+      String.raw`Peluang terpilih siswa yang menyukai voli, jika diketahui ia menyukai basket, adalah $\frac{15}{38}$.`,
+      String.raw`Peluang terpilih siswa yang tidak menyukai kedua olahraga tersebut adalah $\frac{3}{20}$.`,
+      'Kejadian "menyukai basket" dan kejadian "menyukai voli" merupakan dua kejadian yang saling bebas.'
+    ],
+    correct_answer: ['S', 'B', 'S'],
+    pembahasan_images: [],
+    pembahasan: String.raw`<p><strong>Isi diagram Venn.</strong></p>
+$$\begin{aligned}
+\text{Basket saja} &= 45 - 15 = 30 \\
+\text{Voli saja} &= 38 - 15 = 23 \\
+\text{Tidak keduanya} &= 80 - (30 + 15 + 23) = 12
+\end{aligned}$$
+<p><strong>Pernyataan 1 (Salah).</strong> Syaratnya "diketahui menyukai basket", jadi ruang sampelnya menyempit menjadi 45 siswa:</p>
+$$\begin{aligned}
+P(V \mid B) &= \frac{n(V \cap B)}{n(B)} = \frac{15}{45} = \frac{1}{3} \quad (\text{bukan } \tfrac{15}{38})
+\end{aligned}$$
+<p><strong>Pernyataan 2 (Benar).</strong> $P(\text{tidak keduanya}) = \frac{12}{80} = \frac{3}{20}$.</p>
+<p><strong>Pernyataan 3 (Salah).</strong> Dua kejadian saling bebas jika $P(B \cap V) = P(B) \times P(V)$.</p>
+$$\begin{aligned}
+P(B) \times P(V) &= \frac{45}{80} \times \frac{38}{80} = \frac{171}{640} \\
+P(B \cap V) &= \frac{15}{80} = \frac{120}{640} \\
+\frac{171}{640} &\neq \frac{120}{640} \;\Rightarrow\; \text{tidak saling bebas}
+\end{aligned}$$`,
+    cara_cepat: String.raw`<ol>
+<li>Peluang bersyarat: penyebut diganti dengan <strong>banyak anggota syarat</strong>. Syaratnya basket (45), maka $\frac{15}{45}$, bukan $\frac{15}{38}$.</li>
+<li>Tidak keduanya: $80 - 68 = 12$ dan $\frac{12}{80} = \frac{3}{20}$.</li>
+<li>Uji kebebasan cepat: bila bebas, $P(V \mid B)$ harus sama dengan $P(V)$. Di sini $\frac{1}{3} \approx 0{,}33$ sedangkan $P(V) = \frac{38}{80} \approx 0{,}48$, jadi tidak bebas.</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 8 : peluang total (dua tahap) ---------------- */
+  {
+    id: 8,
+    type: 'single',
+    question_text: String.raw`<p>Kotak I berisi 4 bola merah dan 3 bola biru. Kotak II berisi 2 bola merah dan 5 bola biru. Satu bola diambil secara acak dari kotak I dan dimasukkan ke kotak II. Kemudian satu bola diambil secara acak dari kotak II.</p>`,
+    image: kotakBolaSVG(),
+    question_after: String.raw`<p>Peluang bola yang diambil dari kotak II berwarna merah adalah ….</p>`,
+    options: [
+      { label: 'A', text: String.raw`$\frac{1}{4}$` },
+      { label: 'B', text: String.raw`$\frac{2}{7}$` },
+      { label: 'C', text: String.raw`$\frac{9}{28}$` },
+      { label: 'D', text: String.raw`$\frac{3}{8}$` },
+      { label: 'E', text: String.raw`$\frac{4}{7}$` }
+    ],
+    correct_answer: 'C',
+    pembahasan_images: [pohonSVG()],
+    pembahasan: String.raw`<p>Isi kotak II bergantung pada warna bola yang dipindahkan, sehingga ada dua kemungkinan (diagram pohon di bawah).</p>
+<ul>
+<li>Jika bola merah dipindahkan (peluang $\frac{4}{7}$): kotak II menjadi 3 merah dan 5 biru (total 8), peluang merah $\frac{3}{8}$.</li>
+<li>Jika bola biru dipindahkan (peluang $\frac{3}{7}$): kotak II menjadi 2 merah dan 6 biru (total 8), peluang merah $\frac{2}{8}$.</li>
+</ul>
+$$\begin{aligned}
+P(M_2) &= P(M_1) \cdot P(M_2 \mid M_1) + P(B_1) \cdot P(M_2 \mid B_1) \\
+&= \frac{4}{7} \cdot \frac{3}{8} + \frac{3}{7} \cdot \frac{2}{8} \\
+&= \frac{12}{56} + \frac{6}{56} \\
+&= \frac{18}{56} = \frac{9}{28}
+\end{aligned}$$`,
+    cara_cepat: String.raw`<ol>
+<li>Setelah bola pindah, kotak II selalu berisi 8 bola, jadi penyebutnya sama: $\frac{\ldots}{7 \times 8}$.</li>
+<li>Pembilang: ($4$ cara merah pindah $\times$ $3$ merah) + ($3$ cara biru pindah $\times$ $2$ merah) $= 12 + 6 = 18$.</li>
+<li>$\frac{18}{56} = \frac{9}{28}$. Jangan memakai $\frac{2}{7}$, karena itu peluang sebelum bola dipindahkan.</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 9 : kuartil & penalaran data ---------------- */
+  {
+    id: 9,
+    type: 'multi',
+    question_text: String.raw`<p>Berikut adalah nilai 12 siswa pada suatu tes yang telah diurutkan.</p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><td>45</td><td>50</td><td>52</td><td>55</td><td>60</td><td>62</td><td>65</td><td>70</td><td>72</td><td>78</td><td>85</td><td>90</td></tr>
+</table></div>
+<p>Kuartil ditentukan dengan metode median setiap belahan data, dan data pencilan adalah data yang kurang dari $Q_1 - 1{,}5 \times \text{IQR}$ atau lebih dari $Q_3 + 1{,}5 \times \text{IQR}$.</p>
+<p>Pernyataan manakah yang benar? <strong class="text-brand-yellow">(Jawaban benar lebih dari satu.)</strong></p>`,
+    image: '',
+    options: [
+      { label: 'A', text: 'Median data adalah 63,5.' },
+      { label: 'B', text: 'Jangkauan interkuartil (IQR) data adalah 21,5.' },
+      { label: 'C', text: 'Terdapat data pencilan, yaitu nilai 90.' },
+      { label: 'D', text: 'Rata-rata data lebih besar daripada median.' },
+      { label: 'E', text: 'Jika nilai terendah 45 diganti menjadi 30, jangkauan interkuartil berubah.' }
+    ],
+    correct_answer: ['A', 'B', 'D'],
+    pembahasan_images: [boxplotSVG()],
+    pembahasan: String.raw`<p><strong>Langkah 1: kuartil (n = 12, tiap belahan 6 data).</strong></p>
+$$\begin{aligned}
+Q_2 &= \frac{62 + 65}{2} = 63{,}5 \\
+Q_1 &= \text{median } (45, 50, 52, 55, 60, 62) = \frac{52 + 55}{2} = 53{,}5 \\
+Q_3 &= \text{median } (65, 70, 72, 78, 85, 90) = \frac{72 + 78}{2} = 75 \\
+\text{IQR} &= Q_3 - Q_1 = 75 - 53{,}5 = 21{,}5
+\end{aligned}$$
+<p><strong>Langkah 2: pagar pencilan.</strong></p>
+$$\begin{aligned}
+\text{Batas bawah} &= 53{,}5 - 1{,}5(21{,}5) = 21{,}25 \\
+\text{Batas atas} &= 75 + 1{,}5(21{,}5) = 107{,}25
+\end{aligned}$$
+<p>Semua data (45 sampai 90) berada di antara 21,25 dan 107,25, jadi <strong>tidak ada pencilan</strong>.</p>
+<p><strong>Langkah 3: rata-rata.</strong></p>
+$$\begin{aligned}
+\bar{x} &= \frac{784}{12} \approx 65{,}33 > 63{,}5
+\end{aligned}$$
+<p><strong>Langkah 4: ganti 45 menjadi 30.</strong> Nilai 30 tetap berada di belahan bawah (data terkecil), sehingga $Q_1$ tetap median dari (30, 50, 52, 55, 60, 62) yaitu 53,5. $Q_3$ juga tetap, jadi IQR <strong>tidak berubah</strong>.</p>
+<p><strong>Kesimpulan:</strong> A benar, B benar, C salah, D benar, E salah. Kunci: <strong>A, B, D</strong>.</p>`,
+    cara_cepat: String.raw`<ol>
+<li>Median: dua data tengah (data ke-6 dan ke-7) adalah 62 dan 65, rata-ratanya 63,5 (A benar).</li>
+<li>IQR: $Q_1$ di antara data ke-3 dan ke-4 (53,5), $Q_3$ di antara data ke-9 dan ke-10 (75), selisih 21,5 (B benar).</li>
+<li>Pencilan harus jauh di luar pagar ($\pm 1{,}5 \times \text{IQR} \approx 32$ dari kuartil). Nilai 90 hanya berjarak 15 dari $Q_3$, jadi bukan pencilan (C salah).</li>
+<li>Rata-rata 65,33 lebih besar dari median 63,5 karena sebaran ekor kanan lebih panjang (D benar).</li>
+<li>Kuartil hanya bergantung pada data tengah belahan. Mengubah <strong>nilai ekstrem</strong> (tanpa melewati posisinya) tidak mengubah $Q_1$, $Q_3$, dan IQR (E salah).</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 10 : peluang kejadian saling bebas ---------------- */
+  {
+    id: 10,
+    type: 'single',
+    question_text: String.raw`<p>Seorang pemain basket memiliki peluang 0,7 untuk memasukkan bola pada setiap tembakan bebas, dan hasil setiap tembakan tidak saling memengaruhi. Dalam suatu pertandingan ia melakukan 3 kali tembakan bebas.</p>
+<p>Peluang ia berhasil memasukkan bola paling sedikit 2 kali adalah ….</p>`,
+    image: '',
+    options: [
+      { label: 'A', text: '0,343' },
+      { label: 'B', text: '0,441' },
+      { label: 'C', text: '0,657' },
+      { label: 'D', text: '0,784' },
+      { label: 'E', text: '0,973' }
+    ],
+    correct_answer: 'D',
+    pembahasan_images: [],
+    pembahasan: String.raw`<p>"Paling sedikit 2 kali" berarti tepat 2 kali atau tepat 3 kali. Tiap tembakan saling bebas, sehingga peluangnya dikalikan. Misalkan B = berhasil (0,7) dan G = gagal (0,3).</p>
+$$\begin{aligned}
+P(\text{tepat 2 kali}) &= 3 \times (0{,}7)^2 \times 0{,}3 = 3 \times 0{,}49 \times 0{,}3 = 0{,}441 \\
+P(\text{tepat 3 kali}) &= (0{,}7)^3 = 0{,}343 \\
+P(\text{paling sedikit 2 kali}) &= 0{,}441 + 0{,}343 = 0{,}784
+\end{aligned}$$
+<p>Faktor 3 pada "tepat 2 kali" berasal dari urutan BBG, BGB, dan GBB.</p>`,
+    cara_cepat: String.raw`<p>Pakai komplemen: paling sedikit 2 kali = 1 dikurangi (0 kali atau 1 kali).</p>
+$$\begin{aligned}
+P(0) &= (0{,}3)^3 = 0{,}027 \\
+P(1) &= 3 \times 0{,}7 \times (0{,}3)^2 = 0{,}189 \\
+\text{Jawaban} &= 1 - 0{,}027 - 0{,}189 = 0{,}784
+\end{aligned}$$
+<p>Jebakan: 0,441 adalah peluang <em>tepat</em> 2 kali, 0,343 adalah tepat 3 kali.</p>`
+  }
+];
+
+/* =========================================================
+   3. STATE & UTILITAS
+   ========================================================= */
+const state = { current: 0, answers: {}, startTime: Date.now(), elapsed: 0, timer: null, finished: false };
+const $ = (id) => document.getElementById(id);
+const IMG_CLASS = 'max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block mx-auto';
+
+const imgTag = (src, alt = 'Gambar soal') => src ? `<img src="${src}" alt="${alt}" class="${IMG_CLASS}">` : '';
+const fmtTime = (sec) => String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+
+function typeset(node) {
+  if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+    MathJax.typesetPromise(node ? [node] : undefined).catch(() => {});
+  }
+}
+
+function isAnswered(q) {
+  const a = state.answers[q.id];
+  if (q.type === 'single') return !!a;
+  if (q.type === 'multi') return Array.isArray(a) && a.length > 0;
+  if (q.type === 'bs') return Array.isArray(a) && q.statements.every((_, i) => a[i]);
+  return false;
+}
+function isCorrect(q, a) {
+  if (!a) return false;
+  if (q.type === 'single') return a === q.correct_answer;
+  if (q.type === 'multi') return a.length === q.correct_answer.length && q.correct_answer.every(k => a.includes(k));
+  if (q.type === 'bs') return q.correct_answer.every((k, i) => a[i] === k);
+  return false;
+}
+const unansweredList = () => questions.filter(q => !isAnswered(q)).map(q => q.id);
+
+/* =========================================================
+   4. STOPWATCH (naik terus, tidak memaksa submit)
+   ========================================================= */
+function startTimer() {
+  state.startTime = Date.now();
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    $('stopwatch').textContent = fmtTime(state.elapsed);
+  }, 500);
+}
+function stopTimer() {
+  clearInterval(state.timer);
+  state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+}
+
+/* =========================================================
+   5. RENDER: MENGERJAKAN
+   ========================================================= */
+function typeBadge(q) {
+  const map = {
+    multi: ['fa-square-check', 'Pilih lebih dari satu jawaban'],
+    single: ['fa-circle-dot', 'Pilih satu jawaban'],
+    bs: ['fa-scale-balanced', 'Tentukan Benar atau Salah']
+  }[q.type];
+  return `<span class="text-xs sm:text-sm text-brand-cyan"><i class="fa-regular ${map[0].replace('fa-', 'fa-')} mr-1"></i>${map[1]}</span>`;
+}
+
+function renderQuestion() {
+  const q = questions[state.current];
+  $('qCounter').textContent = `Soal ${state.current + 1} dari ${questions.length}`;
+  $('qTypeBadge').innerHTML = typeBadge(q);
+  $('qContent').innerHTML =
+    `<div class="text-[15px] sm:text-base">${q.question_text}</div>` +
+    imgTag(q.image) +
+    (q.question_after ? `<div class="text-[15px] sm:text-base">${q.question_after}</div>` : '') +
+    `<div id="optsBox" class="mt-5"></div>`;
+  renderOptions();
+  renderNav();
+  updateBottomNav();
+  updateFinishUI();
+  typeset($('qContent'));
+  const active = $('navGrid').querySelector('[data-idx="' + state.current + '"]');
+  if (active) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+}
+
+function renderOptions() {
+  const q = questions[state.current];
+  const a = state.answers[q.id];
+  const box = $('optsBox');
+
+  if (q.type === 'bs') {
+    box.innerHTML = q.statements.map((st, i) => {
+      const pick = a ? a[i] : null;
+      const btn = (val, label) => {
+        const on = pick === val;
+        return `<label class="flex-1 sm:flex-none sm:w-28 text-center px-3 py-2 rounded-lg border cursor-pointer font-semibold transition ${on ? 'bg-brand-cyan/30 border-brand-cyan text-white shadow-glow' : 'bg-white/5 border-white/25 hover:border-brand-cyan hover:bg-brand-cyan/10'}">
+          <input type="radio" class="sr-only" name="st${i}" value="${val}" data-stmt="${i}" ${on ? 'checked' : ''}>${label}</label>`;
+      };
+      return `<div class="w-full rounded-xl border border-white/20 bg-white/5 p-3 sm:p-4 mb-3 flex flex-col sm:flex-row sm:items-center gap-3">
+        <p class="flex-1 text-[15px]"><span class="font-bold text-brand-cyan mr-1">${i + 1}.</span>${st}</p>
+        <div class="flex gap-2">${btn('B', 'Benar')}${btn('S', 'Salah')}</div>
+      </div>`;
+    }).join('');
+  } else {
+    const multi = q.type === 'multi';
+    box.innerHTML = q.options.map(o => {
+      const on = multi ? (a || []).includes(o.label) : a === o.label;
+      return `<label class="w-full flex items-start gap-3 p-3 sm:p-4 mb-3 rounded-xl border cursor-pointer transition ${on ? 'bg-brand-cyan/25 border-brand-cyan shadow-glow' : 'bg-white/5 border-white/25 hover:border-brand-cyan hover:bg-brand-cyan/10'}">
+        <input type="${multi ? 'checkbox' : 'radio'}" class="sr-only" name="opt${q.id}" value="${o.label}" data-opt="${o.label}" ${on ? 'checked' : ''}>
+        <span class="shrink-0 w-8 h-8 rounded-lg grid place-items-center font-bold ${on ? 'bg-brand-cyan text-brand-navy' : 'bg-white/10'}">${o.label}</span>
+        <span class="flex-1 pt-1 min-w-0 break-words">${o.text}</span>
+      </label>`;
+    }).join('');
+  }
+  typeset(box);
+}
+
+function renderNav() {
+  $('navGrid').innerHTML = questions.map((q, i) => {
+    const done = isAnswered(q), cur = i === state.current;
+    const cls = done
+      ? 'bg-brand-yellow text-black border-brand-yellow'
+      : 'bg-transparent text-white border-brand-cyan/60 hover:bg-brand-cyan/20';
+    return `<button data-idx="${i}" class="shrink-0 snap-center w-12 h-12 lg:w-full lg:h-11 rounded-lg border-2 font-bold transition ${cls} ${cur ? 'ring-2 ring-brand-cyan shadow-glow scale-105' : ''}">${i + 1}</button>`;
+  }).join('');
+  const n = questions.filter(isAnswered).length;
+  $('progressText').textContent = `${n}/${questions.length} terjawab`;
+}
+
+function updateBottomNav() {
+  const last = state.current === questions.length - 1;
+  $('btnPrev').disabled = state.current === 0;
+  $('btnNext').classList.toggle('hidden', last);
+  $('btnFinishBottom').classList.toggle('hidden', !last);
+}
+
+function setFinishBtn(btn, ok) {
+  btn.setAttribute('aria-disabled', String(!ok));
+  const base = btn.id === 'btnFinishSide' ? 'mt-4 w-full px-4 py-3 rounded-xl font-bold transition ' : 'px-5 py-2.5 rounded-xl font-bold transition ' + (btn.classList.contains('hidden') ? 'hidden ' : '');
+  btn.className = base + (ok
+    ? 'bg-brand-yellow text-black hover:shadow-glowy hover:brightness-110'
+    : 'bg-gray-500/40 text-gray-300 cursor-not-allowed');
+}
+
+function updateFinishUI() {
+  const left = unansweredList();
+  const ok = left.length === 0;
+  const last = state.current === questions.length - 1;
+  const bottom = $('btnFinishBottom');
+  bottom.classList.toggle('hidden', !last);
+  setFinishBtn($('btnFinishSide'), ok);
+  setFinishBtn(bottom, ok);
+  bottom.classList.toggle('hidden', !last);
+  document.querySelectorAll('.finish-hint').forEach(h => {
+    if (ok) { h.classList.add('hidden'); }
+    else {
+      h.classList.remove('hidden');
+      h.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>Belum bisa selesai. Masih ada ${left.length} soal yang belum dijawab (no. ${left.join(', ')}). Kerjakan semua soal agar tombol Selesai &amp; Lihat Pembahasan aktif.`;
+    }
+  });
+}
+
+function goTo(i) {
+  state.current = Math.max(0, Math.min(questions.length - 1, i));
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function askConfirm(message, yesLabel, onYes) {
+  $('confirmMsg').textContent = message;
+  $('confirmYes').textContent = yesLabel || 'OK';
+  const m = $('confirmModal');
+  const close = () => { m.classList.add('hidden'); $('confirmYes').onclick = null; $('confirmNo').onclick = null; };
+  $('confirmYes').onclick = () => { close(); onYes(); };
+  $('confirmNo').onclick = close;
+  m.classList.remove('hidden');
+}
+
+function tryFinish() {
+  const left = unansweredList();
+  if (left.length) {
+    document.querySelectorAll('.finish-hint').forEach(h => { h.classList.remove('hidden', 'shake'); void h.offsetWidth; h.classList.add('shake'); });
+    $('btnFinishSide').classList.remove('shake'); void $('btnFinishSide').offsetWidth; $('btnFinishSide').classList.add('shake');
+    return;
+  }
+  askConfirm('Semua soal sudah dijawab. Selesai dan lihat pembahasan sekarang?', 'Ya, selesai', finishPractice);
+}
+
+/* =========================================================
+   6. RENDER: PEMBAHASAN & EVALUASI
+   ========================================================= */
+function finishPractice() {
+  stopTimer();
+  state.finished = true;
+  $('practiceView').classList.add('hidden');
+  $('resultView').classList.remove('hidden');
+  renderResults();
+  window.scrollTo({ top: 0 });
+}
+
+function renderResults() {
+  const total = questions.length;
+  const benar = questions.filter(q => isCorrect(q, state.answers[q.id])).length;
+  const salah = total - benar;
+  const skor = Math.round(benar / total * 100);
+
+  $('resultBanner').innerHTML = `
+    <div class="rounded-2xl border border-brand-cyan/50 bg-gradient-to-br from-brand-card to-brand-deep p-5 sm:p-8 shadow-glow text-center">
+      <p class="text-brand-cyan font-semibold tracking-wide"><i class="fa-solid fa-trophy mr-1"></i> Ringkasan Hasil Latihan</p>
+      <p class="mt-2 text-6xl sm:text-7xl font-extrabold text-brand-yellow">${skor}</p>
+      <p class="text-sm text-gray-300">Skor Akhir (dari 100)</p>
+      <div class="mt-5 grid grid-cols-3 gap-3 max-w-xl mx-auto">
+        <div class="rounded-xl bg-emerald-500/15 border border-emerald-400/50 p-3"><p class="text-2xl font-bold text-emerald-300">${benar}</p><p class="text-xs sm:text-sm">Total Benar</p></div>
+        <div class="rounded-xl bg-rose-500/15 border border-rose-400/50 p-3"><p class="text-2xl font-bold text-rose-300">${salah}</p><p class="text-xs sm:text-sm">Total Salah</p></div>
+        <div class="rounded-xl bg-brand-cyan/15 border border-brand-cyan/50 p-3"><p class="text-2xl font-bold text-brand-cyan">${fmtTime(state.elapsed)}</p><p class="text-xs sm:text-sm">Waktu Pengerjaan</p></div>
+      </div>
+      <p class="mt-4 text-xs text-gray-300">Satu soal dihitung benar jika seluruh jawabannya tepat (termasuk soal pilih lebih dari satu dan soal Benar/Salah).</p>
+    </div>`;
+
+  $('resultList').innerHTML = questions.map((q, idx) => resultCard(q, idx)).join('');
+  typeset($('resultView'));
+}
+
+function badge(ok) {
+  return ok
+    ? '<span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-sm font-bold"><i class="fa-solid fa-circle-check mr-1"></i>Benar</span>'
+    : '<span class="px-3 py-1 rounded-full bg-rose-500/20 border border-rose-400 text-rose-300 text-sm font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i>Salah</span>';
+}
+
+function reviewBlock(q, a) {
+  if (q.type === 'bs') {
+    const name = (v) => v === 'B' ? 'Benar' : 'Salah';
+    return q.statements.map((st, i) => {
+      const ok = a[i] === q.correct_answer[i];
+      return `<div class="rounded-xl border p-3 mb-3 ${ok ? 'border-emerald-400 bg-emerald-500/10' : 'border-rose-400 bg-rose-500/10'}">
+        <p><span class="font-bold text-brand-cyan mr-1">${i + 1}.</span>${st}</p>
+        <p class="text-sm mt-1">Jawabanmu: <strong>${name(a[i])}</strong> <i class="fa-solid ${ok ? 'fa-circle-check text-emerald-300' : 'fa-circle-xmark text-rose-300'}"></i>
+        &nbsp;|&nbsp; Kunci: <strong class="text-emerald-300">${name(q.correct_answer[i])}</strong></p></div>`;
+    }).join('');
+  }
+  const keys = q.type === 'multi' ? q.correct_answer : [q.correct_answer];
+  const picks = q.type === 'multi' ? a : [a];
+  return q.options.map(o => {
+    const isKey = keys.includes(o.label), isPick = picks.includes(o.label);
+    const cls = isKey ? 'border-emerald-400 bg-emerald-500/15' : (isPick ? 'border-rose-400 bg-rose-500/15' : 'border-white/20 bg-white/5');
+    const tag = (isKey ? '<span class="ml-2 text-xs px-2 py-0.5 rounded bg-emerald-500 text-black font-bold">Kunci</span>' : '') +
+                (isPick ? `<span class="ml-2 text-xs px-2 py-0.5 rounded ${isKey ? 'bg-brand-yellow' : 'bg-rose-400'} text-black font-bold">Jawabanmu</span>` : '');
+    return `<div class="w-full flex items-start gap-3 p-3 mb-2 rounded-xl border ${cls}">
+      <span class="shrink-0 w-8 h-8 rounded-lg grid place-items-center font-bold bg-white/10">${o.label}</span>
+      <span class="flex-1 pt-1 min-w-0 break-words">${o.text}${tag}</span></div>`;
+  }).join('');
+}
+
+function resultCard(q, idx) {
+  const a = state.answers[q.id];
+  const ok = isCorrect(q, a);
+  let ringkas = '';
+  if (q.type !== 'bs') {
+    const mine = q.type === 'multi' ? [...a].sort().join(', ') : a;
+    const key = q.type === 'multi' ? q.correct_answer.join(', ') : q.correct_answer;
+    ringkas = `<p class="mt-3 text-sm">Jawabanmu: <strong class="${ok ? 'text-emerald-300' : 'text-rose-300'}">${mine}</strong> &nbsp;|&nbsp; Jawaban kunci: <strong class="text-emerald-300">${key}</strong></p>`;
+  }
+  return `
+  <article class="rounded-2xl bg-brand-card border ${ok ? 'border-emerald-400/50' : 'border-rose-400/50'} p-4 sm:p-6 shadow-lg">
+    <div class="flex items-center justify-between gap-2 mb-3">
+      <span class="px-3 py-1 rounded-full bg-brand-cyan text-brand-navy font-bold text-sm">Soal ${idx + 1}</span>${badge(ok)}
+    </div>
+    <div class="rich text-[15px] sm:text-base">
+      ${q.question_text}${imgTag(q.image)}${q.question_after || ''}
+    </div>
+    <div class="mt-4">${reviewBlock(q, a)}</div>
+    ${ringkas}
+
+    <div class="rich mt-5 rounded-xl border border-brand-cyan/50 bg-brand-deep/60 p-4">
+      <h3 class="font-bold text-brand-cyan mb-2"><i class="fa-solid fa-book-open mr-1"></i> Pembahasan Lengkap</h3>
+      ${q.pembahasan}
+      ${(q.pembahasan_images || []).map(src => imgTag(src, 'Gambar pembahasan')).join('')}
+    </div>
+
+    <div class="rich mt-4 rounded-xl border border-brand-cyan/40 bg-brand-cyan/10 p-4">
+      <h3 class="font-bold text-brand-yellow mb-2">🔥 Cara Cepat / Trik</h3>
+      ${q.cara_cepat}
+    </div>
+  </article>`;
+}
+
+/* =========================================================
+   7. EVENT LISTENER
+   ========================================================= */
+$('qContent').addEventListener('change', (e) => {
+  const t = e.target, q = questions[state.current];
+  if (t.dataset.opt) {
+    if (q.type === 'multi') {
+      const cur = new Set(state.answers[q.id] || []);
+      cur.has(t.dataset.opt) ? cur.delete(t.dataset.opt) : cur.add(t.dataset.opt);
+      state.answers[q.id] = [...cur].sort();
+      if (!state.answers[q.id].length) delete state.answers[q.id];
+    } else {
+      state.answers[q.id] = t.dataset.opt;
+    }
+  } else if (t.dataset.stmt !== undefined) {
+    const arr = state.answers[q.id] ? [...state.answers[q.id]] : [];
+    arr[Number(t.dataset.stmt)] = t.value;
+    state.answers[q.id] = arr;
+  } else return;
+  renderOptions();
+  renderNav();
+  updateFinishUI();
+});
+
+$('navGrid').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-idx]');
+  if (b) goTo(Number(b.dataset.idx));
+});
+$('btnPrev').addEventListener('click', () => goTo(state.current - 1));
+$('btnNext').addEventListener('click', () => goTo(state.current + 1));
+$('btnFinishSide').addEventListener('click', tryFinish);
+$('btnFinishBottom').addEventListener('click', tryFinish);
+
+$('btnRetry').addEventListener('click', () => {
+  state.answers = {}; state.current = 0; state.finished = false; state.elapsed = 0;
+  $('stopwatch').textContent = '00:00';
+  $('resultView').classList.add('hidden');
+  $('practiceView').classList.remove('hidden');
+  renderQuestion();
+  startTimer();
+  window.scrollTo({ top: 0 });
+});
+
+$('btnDashboard').addEventListener('click', (e) => {
+  if (!state.finished && Object.keys(state.answers).length) {
+    e.preventDefault();
+    askConfirm('Latihan belum selesai. Jawabanmu akan hilang jika keluar. Tetap kembali ke Dashboard?', 'Ya, keluar', () => { location.href = 'data-peluang.html'; });
+  }
+});
+
+/* =========================================================
+   8. INISIALISASI
+   ========================================================= */
+renderQuestion();
+startTimer();
+</script>
+</body>
+</html>
