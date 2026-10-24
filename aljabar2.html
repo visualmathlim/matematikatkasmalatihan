@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualMath.Lim - Latihan Prediksi HOTS Aljabar TKA SMA Kelas 12</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+  };
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { navy: '#022050', navyDeep: '#01173a', cyanx: '#00d6d8', gold: '#ffd300' },
+    fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] }
+  } } };
+</script>
+<style>
+  body { background: #022050; color: #fff; }
+  .glow:hover { box-shadow: 0 0 14px rgba(0,214,216,.55); border-color: #00d6d8; }
+  .nav-scroll { scrollbar-width: thin; scrollbar-color: #00d6d8 transparent; }
+  mjx-container { color: inherit; max-width: 100%; }
+  mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; padding: .5em 0; margin: .6em 0 !important; }
+  .rich { overflow-wrap: anywhere; line-height: 1.75; }
+  .rich p { margin: .6rem 0; }
+  @media (max-width: 640px) {
+    mjx-container[display="true"] { font-size: 86%; }
+    mjx-container:not([display="true"]) { font-size: 95%; }
+  }
+  :focus-visible { outline: 2px solid #00d6d8; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body class="font-sans min-h-screen">
+
+<header class="bg-navyDeep border-b border-cyanx/30 sticky top-0 z-20">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <a href="index.html" class="font-extrabold text-sm sm:text-lg leading-tight hover:text-cyanx transition">
+      VisualMath.Lim - Latihan Aljabar <span class="block sm:inline text-cyanx">TKA SMA Kelas 12 (Prediksi HOTS)</span>
+    </a>
+    <a href="aljabar.html" class="flex items-center gap-2 border border-cyanx/60 rounded-lg px-3 py-2 text-xs sm:text-sm font-bold glow transition shrink-0">
+      <img src="logo.png" alt="Logo VisualMath.Lim" class="h-7 w-7 object-contain" onerror="this.style.display='none'">
+      <span>Kembali ke Dashboard Aljabar</span>
+    </a>
+  </div>
+</header>
+
+<main id="app" class="max-w-7xl mx-auto px-4 py-5"></main>
+
+<script>
+/* ============ DATA SOAL (dari prediksi-questions.js) ============ */
+/* VisualMath.Lim - 10 Soal Prediksi HOTS Aljabar (TKA SMA)
+   Delimiter: $...$ inline, $$...$$ display. correct = index 0..4 (A..E).
+   Gambar yang perlu dibuat:
+   - assets/prediksi/prediksi-soal-05.png
+     Bidang koordinat, daerah segitiga diarsir dengan titik sudut A(-3,0), B(0,6), C(6,0),
+     garis AB, BC, dan sumbu-x terlihat jelas; label titik A, B, C. */
+
+const questions = [
+  /* ---------- 1. Dua fungsi linear berpotongan ---------- */
+  {
+    id: 1,
+    text: String.raw`Peningkatan suhu di kota A dan kota B dimodelkan dengan fungsi linear
+$$y_A = 0{,}02x - 39{,}9 \qquad y_B = 0{,}03x - 60{,}4$$
+dengan $x$ menyatakan tahun dan $y$ peningkatan suhu dalam °C. Pada saat kedua kota mengalami peningkatan suhu yang sama, besar peningkatan suhu tersebut adalah ... °C.`,
+    image: "",
+    options: [String.raw`$0{,}9$`, String.raw`$1{,}1$`, String.raw`$1{,}3$`, String.raw`$41$`, String.raw`$2.050$`],
+    correct: 1,
+    pembahasan: String.raw`<p><b>Konsep:</b> dua fungsi bernilai sama di titik potongnya, sehingga $y_A = y_B$. Cari tahun $x$ lebih dulu, lalu hitung $y$.</p>
+$$\begin{aligned}
+0{,}02x - 39{,}9 &= 0{,}03x - 60{,}4\\
+60{,}4 - 39{,}9 &= 0{,}03x - 0{,}02x\\
+20{,}5 &= 0{,}01x\\
+x &= 2050
+\end{aligned}$$
+Substitusikan ke fungsi kota A:
+$$\begin{aligned}
+y &= 0{,}02(2050) - 39{,}9\\
+&= 41 - 39{,}9\\
+&= 1{,}1
+\end{aligned}$$
+Cek kota B: $0{,}03(2050) - 60{,}4 = 61{,}5 - 60{,}4 = 1{,}1$ (sama).
+<p><b>Jebakan:</b> berhenti di $x=2050$ (yang ditanya adalah $y$), atau lupa mengurangi $39{,}9$ sehingga mendapat $41$.</p>`,
+    cara_cepat: String.raw`Pada tahun 2025: kota A $=0{,}6$ dan kota B $=0{,}35$, selisih $0{,}25$. Kota B naik $0{,}01$ lebih cepat per tahun, sehingga menyusul dalam
+$$\frac{0{,}25}{0{,}01} = 25 \text{ tahun}$$
+Nilai saat itu: $0{,}6 + 0{,}02 \times 25 = 1{,}1$.`
+  },
+
+  /* ---------- 2. Fungsi sepotong dibalik ---------- */
+  {
+    id: 2,
+    text: String.raw`Toko Sinar memberi diskon 20% kepada 30 pembeli pertama, sehingga harga setelah diskon adalah $y = 0{,}8x$ dengan $x$ harga normal. Pembeli ke-31 dan seterusnya membayar harga normal. Setelah itu, setiap pembeli mendapat voucher
+$$g(y) = \begin{cases} y - 20.000, & y \ge 150.000\\ 0{,}9y, & y < 150.000 \end{cases}$$
+Budi adalah pembeli ke-40 dan membayar Rp189.000,00 setelah memakai voucher. Harga normal barang yang dibeli Budi adalah ....`,
+    image: "",
+    options: ['Rp169.000,00', 'Rp209.000,00', 'Rp210.000,00', 'Rp226.800,00', 'Rp236.250,00'],
+    correct: 1,
+    pembahasan: String.raw`<p><b>Konsep:</b> fungsi sepotong harus diuji per cabang. Hasil suatu cabang hanya sah jika memenuhi syarat cabangnya.</p>
+Budi pembeli ke-40, jadi tidak mendapat diskon 20%, sehingga $y = x$.
+<p><b>Cabang 1</b> ($y \ge 150.000$):</p>
+$$\begin{aligned}
+x - 20.000 &= 189.000\\
+x &= 209.000
+\end{aligned}$$
+Syarat $209.000 \ge 150.000$ terpenuhi (sah).
+<p><b>Cabang 2</b> ($y < 150.000$):</p>
+$$\begin{aligned}
+0{,}9x &= 189.000\\
+x &= 210.000
+\end{aligned}$$
+Syarat $210.000 < 150.000$ tidak terpenuhi (tidak sah).
+Jadi harga normal barang adalah <b>Rp209.000,00</b>.
+<p><b>Jebakan:</b> memakai $0{,}8x$ untuk Budi (hasil $261.250$), memakai cabang kedua tanpa menguji syarat, atau membagi $189.000$ dengan $0{,}8$.</p>`,
+    cara_cepat: String.raw`Cabang $0{,}9y$ hanya berlaku untuk $y<150.000$, sehingga hasilnya paling besar $0{,}9 \times 150.000 = 135.000$. Karena $189.000 > 135.000$, pasti cabang $y - 20.000$:
+$$189.000 + 20.000 = 209.000$$`
+  },
+
+  /* ---------- 3. Aritmetika: dua suku diketahui, cari S7 ---------- */
+  {
+    id: 3,
+    text: String.raw`Pada sebuah tribun, banyak penonton yang memegang kertas koreo di baris ke-3 adalah 700 orang dan di baris ke-7 adalah 1.300 orang. Banyak pemegang kertas bertambah dengan selisih yang sama dari satu baris ke baris berikutnya. Total pemegang kertas koreo dari baris ke-1 sampai baris ke-7 adalah ... orang.`,
+    image: "",
+    options: ['$4.650$', '$5.600$', '$5.950$', '$7.000$', '$11.900$'],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> barisan aritmetika $U_n = a + (n-1)b$ dan jumlah $S_n = \frac{n}{2}(a + U_n)$.</p>
+Cari beda $b$ dari dua suku yang diketahui:
+$$\begin{aligned}
+U_7 - U_3 &= 4b\\
+1.300 - 700 &= 4b\\
+b &= 150
+\end{aligned}$$
+Cari suku pertama:
+$$\begin{aligned}
+a &= U_3 - 2b\\
+&= 700 - 300\\
+&= 400
+\end{aligned}$$
+Hitung jumlah 7 baris:
+$$\begin{aligned}
+S_7 &= \frac{7}{2}(400 + 1.300)\\
+&= 3{,}5 \times 1.700\\
+&= 5.950
+\end{aligned}$$
+<p><b>Jebakan:</b> menganggap $b=200$ (membagi 600 dengan 3), memakai $U_3$ sebagai $a$, lupa faktor $\frac12$ (hasil $11.900$), atau hanya menjumlah 6 baris ($4.650$).</p>`,
+    cara_cepat: String.raw`Suku ke-5 tepat di tengah suku ke-3 dan ke-7:
+$$U_5 = \frac{700 + 1.300}{2} = 1.000$$
+Maka $b = \frac{1.000 - 700}{2} = 150$ dan $U_4 = 850$. Untuk 7 suku, jumlah $=$ banyak suku $\times$ suku tengah:
+$$S_7 = 7 \times 850 = 5.950$$`
+  },
+
+  /* ---------- 4. Geometri: rasio dicari dari dua suku ---------- */
+  {
+    id: 4,
+    text: String.raw`Kadar suatu zat dalam darah seorang pasien turun dengan persentase yang sama setiap hari. Pada hari ke-2 kadarnya 120 mg/dL dan pada hari ke-4 kadarnya 76,8 mg/dL. Pasien dinyatakan membaik jika kadar zat kurang dari 50 mg/dL. Pasien pertama kali dinyatakan membaik pada hari ke-....`,
+    image: "",
+    options: ['Hari ke-4', 'Hari ke-5', 'Hari ke-6', 'Hari ke-7', 'Hari ke-8'],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> penurunan dengan persentase tetap membentuk barisan geometri dengan rasio positif $r$, dan $U_n = ar^{n-1}$.</p>
+Cari rasio dari $U_2$ dan $U_4$:
+$$\begin{aligned}
+\frac{U_4}{U_2} &= r^2\\
+r^2 &= \frac{76{,}8}{120} = 0{,}64\\
+r &= 0{,}8
+\end{aligned}$$
+Cari kadar hari ke-1 dan lanjutkan:
+$$\begin{aligned}
+U_1 &= \frac{120}{0{,}8} = 150\\
+U_4 &= 76{,}8\\
+U_5 &= 76{,}8 \times 0{,}8 = 61{,}44\\
+U_6 &= 61{,}44 \times 0{,}8 = 49{,}152
+\end{aligned}$$
+Hari ke-5 ($61{,}44$) belum di bawah 50, sedangkan hari ke-6 ($49{,}152 < 50$) sudah. Jawaban: <b>hari ke-6</b>.
+<p><b>Jebakan:</b> memakai $r=0{,}64$ (lupa akar), atau mengira hari ke-5 sudah memenuhi karena nilainya "mendekati" 50.</p>`,
+    cara_cepat: String.raw`Mulai dari hari ke-4 dan kalikan 0,8 sampai di bawah 50:
+$$76{,}8 \to 61{,}4 \to 49{,}2$$
+Dua kali kalikan, jadi hari ke-6.`
+  },
+
+  /* ---------- 5. Program linear dari gambar ---------- */
+  {
+    id: 5,
+    text: String.raw`Daerah yang diarsir pada gambar berikut merupakan himpunan penyelesaian suatu sistem pertidaksamaan linear. Nilai maksimum dari $f(x,y) = 3x + y$ pada daerah tersebut adalah ....`,
+    image: "assets/prediksi/prediksi-soal-05.png",
+    options: ['$-9$', '$6$', '$12$', '$18$', '$24$'],
+    correct: 3,
+    pembahasan: String.raw`<p><b>Konsep:</b> nilai maksimum fungsi objektif pada daerah segitiga selalu berada di salah satu titik sudutnya. Baca titik sudut dari gambar: $A(-3,0)$, $B(0,6)$, dan $C(6,0)$.</p>
+$$\begin{aligned}
+f(A) &= 3(-3) + 0 = -9\\
+f(B) &= 3(0) + 6 = 6\\
+f(C) &= 3(6) + 0 = 18
+\end{aligned}$$
+Nilai terbesar adalah $18$ di titik $C$.
+<p><b>Jebakan:</b> memilih titik yang terlihat paling tinggi ($B$), atau memakai titik $(6,6)$ yang berada di luar daerah (hasil $24$).</p>`,
+    cara_cepat: String.raw`Koefisien $x$ paling besar ($3$), jadi nilai $f$ makin besar ke arah kanan. Titik paling kanan adalah $C(6,0)$:
+$$f(C) = 3(6) + 0 = 18$$`
+  },
+
+  /* ---------- 6. SPLTV: kombinasi satu paket ---------- */
+  {
+    id: 6,
+    text: String.raw`Di sebuah toko alat tulis, harga 2 pensil, 1 buku, dan 3 penghapus adalah Rp12.000,00. Harga 3 pensil, 2 buku, dan 1 penghapus adalah Rp17.000,00. Harga 1 pensil, 3 buku, dan 2 penghapus adalah Rp19.000,00. Dina membeli 5 paket, setiap paket berisi 1 pensil, 1 buku, dan 1 penghapus, lalu membayar dengan uang Rp50.000,00. Uang kembalian yang diterima Dina adalah ....`,
+    image: "",
+    options: ['Rp2.000,00', 'Rp8.000,00', 'Rp10.000,00', 'Rp12.000,00', 'Rp18.000,00'],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> SPLTV dengan $p$ = harga pensil, $b$ = harga buku, $h$ = harga penghapus.</p>
+$$\begin{cases}
+2p + b + 3h = 12.000 & (1)\\
+3p + 2b + h = 17.000 & (2)\\
+p + 3b + 2h = 19.000 & (3)
+\end{cases}$$
+Jumlahkan ketiga persamaan:
+$$\begin{aligned}
+6p + 6b + 6h &= 48.000\\
+p + b + h &= 8.000 \quad (4)
+\end{aligned}$$
+(Untuk memeriksa, selesaikan lengkap: dari (1) dan (4) diperoleh $p + 2h = 4.000$, dari (2) dan (4) diperoleh $p - h = 1.000$, sehingga $h = 1.000$, $p = 2.000$, $b = 5.000$.)
+Biaya 5 paket dan kembalian:
+$$\begin{aligned}
+5 \times 8.000 &= 40.000\\
+50.000 - 40.000 &= 10.000
+\end{aligned}$$
+<p><b>Jebakan:</b> menganggap $48.000$ sebagai harga satu paket (kembalian $2.000$), memberi jawaban harga satu paket ($8.000$), atau salah menghitung banyak paket ($4$ paket, kembalian $18.000$).</p>`,
+    cara_cepat: String.raw`Jumlahkan ketiga harga: $12.000 + 17.000 + 19.000 = 48.000$. Setiap jenis barang muncul 6 kali, sehingga satu paket $= 48.000 \div 6 = 8.000$.
+$$50.000 - 5 \times 8.000 = 10.000$$`
+  },
+
+  /* ---------- 7. Fungsi kuadrat dengan batas kapasitas ---------- */
+  {
+    id: 7,
+    text: String.raw`Laba (dalam ribu rupiah) dari produksi dan penjualan $x$ unit barang dinyatakan dengan
+$$L(x) = -2x^2 + 120x - 1.000$$
+Karena keterbatasan mesin, pabrik hanya mampu memproduksi paling banyak 25 unit. Laba maksimum yang dapat diperoleh adalah ... ribu rupiah.`,
+    image: "",
+    options: ['$-1.000$', '$750$', '$800$', '$1.000$', '$2.600$'],
+    correct: 1,
+    pembahasan: String.raw`<p><b>Konsep:</b> titik puncak fungsi kuadrat hanya berlaku jika berada di dalam domain. Jika di luar domain, maksimum ada di ujung domain.</p>
+Titik puncak:
+$$x = -\frac{b}{2a} = -\frac{120}{2(-2)} = 30$$
+Karena $30 > 25$ (di luar kapasitas) dan parabola terbuka ke bawah, $L$ terus naik pada $0 \le x \le 25$. Maksimum terjadi di $x = 25$:
+$$\begin{aligned}
+L(25) &= -2(25)^2 + 120(25) - 1.000\\
+&= -1.250 + 3.000 - 1.000\\
+&= 750
+\end{aligned}$$
+Jadi laba maksimum adalah <b>750 ribu rupiah</b>.
+<p><b>Jebakan:</b> memakai titik puncak $x=30$ langsung (hasil $800$), atau menghitung $120x - 1.000$ saja (hasil $2.600$ di $x=30$).</p>`,
+    cara_cepat: String.raw`Puncak di $x=30$, di luar batas 25, jadi cukup hitung di ujung $x=25$:
+$$-1.250 + 3.000 - 1.000 = 750$$`
+  },
+
+  /* ---------- 8. Eksponen: pertumbuhan ---------- */
+  {
+    id: 8,
+    text: String.raw`Populasi bakteri pada suatu biakan menjadi dua kali lipat setiap 3 jam. Populasi awalnya 500 bakteri. Jika pengamatan dilakukan setiap 3 jam, populasi pertama kali melampaui 10.000 bakteri pada pengamatan setelah ... jam.`,
+    image: "",
+    options: ['$9$ jam', '$12$ jam', '$15$ jam', '$18$ jam', '$21$ jam'],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> pertumbuhan berlipat dua per 3 jam dimodelkan $N(t) = 500 \cdot 2^{t/3}$.</p>
+Syarat melampaui 10.000:
+$$\begin{aligned}
+500 \cdot 2^{t/3} &> 10.000\\
+2^{t/3} &> 20
+\end{aligned}$$
+Karena $2^4 = 16 < 20$ dan $2^5 = 32 > 20$, nilai terkecil adalah
+$$\begin{aligned}
+\frac{t}{3} &= 5\\
+t &= 15
+\end{aligned}$$
+Cek: $t=12$ menghasilkan $500 \times 16 = 8.000$ (belum), $t=15$ menghasilkan $500 \times 32 = 16.000$ (sudah).
+<p><b>Jebakan:</b> memilih $12$ jam karena $8.000$ terlihat "hampir" 10.000, atau memakai $t=5$ tanpa mengalikan 3.</p>`,
+    cara_cepat: String.raw`Gandakan tiap 3 jam:
+$$500 \to 1.000 \to 2.000 \to 4.000 \to 8.000 \to 16.000$$
+Dibutuhkan 5 kali penggandaan, yaitu $5 \times 3 = 15$ jam.`
+  },
+
+  /* ---------- 9. Deret geometri tak hingga ---------- */
+  {
+    id: 9,
+    text: String.raw`Sebuah bola dijatuhkan dari ketinggian 10 m. Setiap kali memantul, bola mencapai ketinggian $\frac{3}{5}$ dari ketinggian sebelumnya. Panjang seluruh lintasan bola sampai berhenti adalah ... m.`,
+    image: "",
+    options: ['$25$', '$30$', '$40$', '$45$', '$50$'],
+    correct: 2,
+    pembahasan: String.raw`<p><b>Konsep:</b> deret geometri tak hingga $S_\infty = \frac{a}{1-r}$ dengan $|r| < 1$. Lintasan terdiri dari lintasan turun dan naik.</p>
+Lintasan turun: $10 + 6 + 3{,}6 + \dots$
+$$S_{turun} = \frac{10}{1 - \frac35} = \frac{10}{\frac25} = 25$$
+Lintasan naik: $6 + 3{,}6 + 2{,}16 + \dots$
+$$S_{naik} = \frac{6}{1 - \frac35} = \frac{6}{\frac25} = 15$$
+Total lintasan:
+$$25 + 15 = 40$$
+<p><b>Jebakan:</b> hanya menghitung lintasan turun ($25$), mengalikan dua seluruh lintasan turun ($50$), atau menghitung dua kali lintasan naik ($30$).</p>`,
+    cara_cepat: String.raw`Rumus pintas untuk bola memantul:
+$$\text{Total} = h \cdot \frac{1 + r}{1 - r} = 10 \cdot \frac{\frac85}{\frac25} = 10 \cdot 4 = 40$$`
+  },
+
+  /* ---------- 10. Pertidaksamaan kuadrat ---------- */
+  {
+    id: 10,
+    text: String.raw`Tinggi sebuah bola yang ditendang vertikal ke atas dinyatakan dengan $h(t) = -5t^2 + 40t$, dengan $h$ dalam meter dan $t$ dalam detik. Bola berada pada ketinggian tidak kurang dari 60 m selama ... detik.`,
+    image: "",
+    options: ['$2$', '$4$', '$6$', '$8$', '$12$'],
+    correct: 1,
+    pembahasan: String.raw`<p><b>Konsep:</b> pertidaksamaan kuadrat. Cari akar batasnya, lalu tentukan daerah yang memenuhi.</p>
+$$\begin{aligned}
+-5t^2 + 40t &\ge 60\\
+-5t^2 + 40t - 60 &\ge 0\\
+t^2 - 8t + 12 &\le 0 \quad (\text{dibagi } -5, \text{ tanda dibalik})\\
+(t - 2)(t - 6) &\le 0\\
+2 \le t &\le 6
+\end{aligned}$$
+Lama bola berada di ketinggian $\ge 60$ m:
+$$6 - 2 = 4 \text{ detik}$$
+<p><b>Jebakan:</b> lupa membalik tanda saat membagi dengan $-5$, atau menjawab batas waktu ($2$, $6$), jumlah akar ($8$), atau hasil kali akar ($12$) alih-alih selisih akar.</p>`,
+    cara_cepat: String.raw`Parabola simetris terhadap puncak $t=4$ dengan $h(4)=80$. Karena $h(2)=h(6)=60$, durasi di atas 60 m adalah selisih dua akar:
+$$6 - 2 = 4$$`
+  }
+];
+
+
+/* ============ GAMBAR CADANGAN (SVG) ============
+   Jika file assets/prediksi/prediksi-soal-XX.png belum ada, gambar dibuat dengan kode ini. */
+const svgUri = s => 'data:image/svg+xml;utf8,' + encodeURIComponent(s);
+const fallbackImages = {
+  5: svgUri(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320" width="520" height="320" font-family="sans-serif" font-size="13">
+  <g stroke="#ffffff" stroke-opacity=".12">
+    ${Array.from({length:14},(_,i)=>`<line x1="${i*40}" y1="0" x2="${i*40}" y2="320"/>`).join('')}
+    ${Array.from({length:9},(_,i)=>`<line x1="0" y1="${i*40}" x2="520" y2="${i*40}"/>`).join('')}
+  </g>
+  <polygon points="80,280 200,40 440,280" fill="#00d6d8" fill-opacity=".45"/>
+  <line x1="60" y1="320" x2="220" y2="0" stroke="#fff" stroke-width="2"/>
+  <line x1="160" y1="0" x2="480" y2="320" stroke="#fff" stroke-width="2"/>
+  <line x1="0" y1="280" x2="520" y2="280" stroke="#fff" stroke-width="1.5"/>
+  <line x1="200" y1="0" x2="200" y2="320" stroke="#fff" stroke-width="1.5"/>
+  <g fill="#ffd300"><circle cx="80" cy="280" r="5"/><circle cx="200" cy="40" r="5"/><circle cx="440" cy="280" r="5"/></g>
+  <g fill="#fff" font-weight="700">
+    <text x="52" y="302">A(-3,0)</text><text x="210" y="38">B(0,6)</text><text x="428" y="302">C(6,0)</text>
+    <text x="505" y="274">x</text><text x="206" y="14">y</text>
+  </g>
+</svg>`)
+};
+
+/* ============ STATE & HELPER ============ */
+const state = { current: 0, answers: {}, seconds: 0, finished: false, timer: null };
+const $app = document.getElementById('app');
+const letters = ['A', 'B', 'C', 'D', 'E'];
+const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+const imgClass = 'max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block';
+
+const isAnswered = q => state.answers[q.id] !== undefined;
+const isCorrect = q => state.answers[q.id] === q.correct;
+const unanswered = () => questions.map((q, i) => isAnswered(q) ? null : i + 1).filter(Boolean);
+const imgTag = q => q.image
+  ? `<img src="${q.image}" alt="Gambar soal ${q.id}" class="${imgClass}" onerror="${fallbackImages[q.id] ? `this.onerror=null;this.src=fallbackImages[${q.id}]` : `this.style.display='none'`}">`
+  : '';
+
+const typeset = () => { if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([$app]).catch(() => {}); };
+window.addEventListener('load', () => setTimeout(typeset, 300));
+
+/* ============ STATE 1: MENGERJAKAN ============ */
+function noticeHtml(flash) {
+  const left = unanswered();
+  if (!left.length) {
+    return `<div class="rounded-lg border border-green-400/60 bg-green-500/15 text-green-200 text-sm p-3">
+      <i class="fa-solid fa-circle-check mr-1"></i> Semua soal sudah dijawab. Kamu bisa menekan "Selesai &amp; Lihat Pembahasan".</div>`;
+  }
+  return `<div class="rounded-lg border ${flash ? 'border-red-400 bg-red-500/20 text-red-100' : 'border-gold/60 bg-gold/10 text-gold'} text-sm p-3 leading-relaxed">
+    <i class="fa-solid fa-circle-exclamation mr-1"></i>
+    <b>Pembahasan belum bisa dibuka.</b> Kerjakan semua soal terlebih dahulu. Belum dijawab: soal nomor <b>${left.join(', ')}</b>.</div>`;
+}
+
+function renderPractice(flash = false) {
+  const q = questions[state.current];
+  const last = state.current === questions.length - 1;
+  const answeredCount = questions.filter(isAnswered).length;
+  const allDone = answeredCount === questions.length;
+  const finishCls = allDone ? 'bg-gold text-black hover:brightness-110' : 'bg-white/10 text-white/50 cursor-not-allowed border border-white/20';
+
+  $app.innerHTML = `
+  <div class="flex flex-col lg:flex-row gap-5">
+    <section class="lg:w-3/4 min-w-0">
+      <div class="flex items-center justify-between mb-3">
+        <span class="font-bold text-cyanx">Soal ${state.current + 1} dari ${questions.length}</span>
+        <span class="bg-navyDeep border border-cyanx/50 rounded-full px-4 py-1 font-bold tabular-nums">
+          <i class="fa-regular fa-clock text-cyanx mr-1"></i><span id="stopwatch">${fmt(state.seconds)}</span>
+        </span>
+      </div>
+
+      <article class="bg-navyDeep/70 border border-cyanx/25 rounded-2xl p-5 sm:p-7">
+        <div class="rich text-base sm:text-lg">${q.text}</div>
+        ${imgTag(q)}
+        <div class="mt-4 space-y-3">
+          ${q.options.map((opt, i) => {
+            const on = state.answers[q.id] === i;
+            return `
+            <label class="w-full flex items-start gap-3 rounded-xl border px-4 py-3 cursor-pointer transition glow
+              ${on ? 'bg-cyanx/25 border-cyanx' : 'bg-white/5 border-white/20'}">
+              <input type="radio" name="opt" value="${i}" class="sr-only" ${on ? 'checked' : ''}>
+              <span class="h-8 w-8 shrink-0 rounded-full grid place-items-center font-bold ${on ? 'bg-gold text-black' : 'bg-white/10'}">${letters[i]}</span>
+              <span class="rich min-w-0 flex-1 pt-0.5">${opt}</span>
+            </label>`;
+          }).join('')}
+        </div>
+      </article>
+
+      <div class="flex items-center justify-between gap-3 mt-5">
+        <button id="prev" class="px-5 py-3 rounded-lg border border-cyanx/60 font-bold glow transition disabled:opacity-30 disabled:pointer-events-none" ${state.current === 0 ? 'disabled' : ''}>
+          <i class="fa-solid fa-chevron-left mr-1"></i> Sebelumnya
+        </button>
+        ${last
+          ? `<span class="text-sm text-white/60 hidden sm:inline">Soal terakhir</span>`
+          : `<button id="next" class="px-5 py-3 rounded-lg border border-cyanx/60 font-bold glow transition">Selanjutnya <i class="fa-solid fa-chevron-right ml-1"></i></button>`}
+      </div>
+
+      <div class="mt-5 space-y-3">
+        <div data-notice>${noticeHtml(flash)}</div>
+        <button data-finish aria-disabled="${!allDone}" class="w-full sm:w-auto px-5 py-3 rounded-lg font-extrabold transition ${finishCls}">
+          <i class="fa-solid ${allDone ? 'fa-flag-checkered' : 'fa-lock'} mr-1"></i> Selesai &amp; Lihat Pembahasan
+        </button>
+      </div>
+    </section>
+
+    <aside class="lg:w-1/4 min-w-0">
+      <div class="bg-navyDeep/70 border border-cyanx/25 rounded-2xl p-4 lg:sticky lg:top-24">
+        <h2 class="font-bold mb-3">Navigasi Soal <span class="text-sm font-normal text-white/60">(${answeredCount}/${questions.length} terjawab)</span></h2>
+        <div class="nav-scroll flex lg:grid lg:grid-cols-5 gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+          ${questions.map((x, i) => {
+            const done = isAnswered(x), cur = i === state.current;
+            return `<button data-go="${i}" aria-label="Soal ${i + 1}${done ? ' sudah dijawab' : ''}"
+              class="h-11 w-11 min-w-[44px] shrink-0 rounded-lg font-bold border-2 transition
+              ${done ? 'bg-gold text-black border-gold' : 'bg-white/5 border-white/25 hover:border-cyanx'}
+              ${cur ? 'ring-2 ring-cyanx ring-offset-2 ring-offset-navy' : ''}">${i + 1}</button>`;
+          }).join('')}
+        </div>
+        <p class="hidden lg:block text-xs text-white/60 mt-3">Stopwatch berjalan terus sebagai pengukur kecepatan, tanpa batas waktu. Pembahasan terbuka setelah semua soal dijawab.</p>
+      </div>
+    </aside>
+  </div>`;
+
+  $app.querySelectorAll('input[name=opt]').forEach(r => r.addEventListener('change', e => {
+    state.answers[q.id] = +e.target.value;
+    renderPractice();
+  }));
+  $app.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { state.current = +b.dataset.go; renderPractice(); });
+  $app.querySelectorAll('[data-finish]').forEach(b => b.onclick = finish);
+  const prev = document.getElementById('prev'), next = document.getElementById('next');
+  if (prev) prev.onclick = () => { state.current--; renderPractice(); };
+  if (next) next.onclick = () => { state.current++; renderPractice(); };
+  typeset();
+}
+
+/* ============ STOPWATCH ============ */
+function startTimer() {
+  state.timer = setInterval(() => {
+    state.seconds++;
+    const el = document.getElementById('stopwatch');
+    if (el) el.textContent = fmt(state.seconds);
+  }, 1000);
+}
+
+function finish() {
+  if (unanswered().length) {
+    renderPractice(true);
+    const n = document.querySelector('[data-notice]');
+    if (n) n.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  clearInterval(state.timer);
+  state.finished = true;
+  renderReview();
+  window.scrollTo({ top: 0 });
+}
+
+/* ============ STATE 2: PEMBAHASAN & EVALUASI ============ */
+function renderReview() {
+  const total = questions.length;
+  const benar = questions.filter(isCorrect).length;
+  const salah = total - benar;
+  const skor = Math.round((benar / total) * 100);
+
+  const stat = (label, val, cls = '') => `
+    <div class="bg-white/5 border border-white/15 rounded-xl p-4 text-center">
+      <div class="text-2xl sm:text-3xl font-extrabold ${cls}">${val}</div>
+      <div class="text-xs sm:text-sm text-white/70 mt-1">${label}</div>
+    </div>`;
+
+  $app.innerHTML = `
+  <div class="max-w-4xl mx-auto">
+    <section class="bg-navyDeep border border-cyanx/50 rounded-2xl p-5 sm:p-7 mb-6" style="box-shadow:0 0 24px rgba(0,214,216,.18)">
+      <h1 class="text-xl sm:text-2xl font-extrabold mb-4">Ringkasan Hasil Latihan</h1>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        ${stat('Skor Akhir', skor, 'text-gold')}
+        ${stat('Total Benar', benar, 'text-green-400')}
+        ${stat('Total Salah', salah, 'text-red-400')}
+        ${stat('Waktu Pengerjaan', fmt(state.seconds), 'text-cyanx')}
+      </div>
+      <div class="flex flex-wrap gap-3 mt-5">
+        <button id="retry" class="px-5 py-3 rounded-lg bg-gold text-black font-extrabold hover:brightness-110 transition"><i class="fa-solid fa-rotate-right mr-1"></i> Ulangi Latihan</button>
+        <a href="aljabar.html" class="px-5 py-3 rounded-lg border border-cyanx/60 font-bold glow transition">Kembali ke Dashboard Aljabar</a>
+      </div>
+    </section>
+
+    ${questions.map((q, i) => {
+      const mine = state.answers[q.id], ok = isCorrect(q);
+      return `
+      <article class="bg-navyDeep/70 border border-cyanx/25 rounded-2xl p-5 sm:p-7 mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-cyanx">Soal ${i + 1}</span>
+          <span class="text-sm font-bold px-3 py-1 rounded-full ${ok ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}">
+            <i class="fa-solid ${ok ? 'fa-circle-check' : 'fa-circle-xmark'} mr-1"></i>${ok ? 'Benar' : 'Salah'}
+          </span>
+        </div>
+        <div class="rich text-base sm:text-lg">${q.text}</div>
+        ${imgTag(q)}
+
+        <div class="mt-4 space-y-2">
+          ${q.options.map((opt, k) => {
+            const isKey = k === q.correct, isMine = k === mine;
+            const cls = isKey ? 'border-green-400 bg-green-500/15' : isMine ? 'border-red-400 bg-red-500/15' : 'border-white/15 bg-white/5';
+            const tag = isKey && isMine ? 'Jawabanmu • Kunci' : isKey ? 'Kunci jawaban' : isMine ? 'Jawabanmu (salah)' : '';
+            return `<div class="w-full flex items-start gap-3 rounded-xl border px-4 py-2 ${cls}">
+              <span class="h-8 w-8 shrink-0 rounded-full grid place-items-center font-bold bg-white/10">${letters[k]}</span>
+              <span class="rich min-w-0 flex-1 pt-0.5">${opt}</span>
+              ${tag ? `<span class="text-xs font-bold ${isKey ? 'text-green-300' : 'text-red-300'} shrink-0 text-right max-w-[6.5rem] pt-1">${tag}</span>` : ''}
+            </div>`;
+          }).join('')}
+        </div>
+
+        <div class="mt-5 rounded-xl border border-white/20 bg-white/5 p-4 sm:p-5">
+          <h3 class="font-extrabold mb-2"><i class="fa-solid fa-book-open text-cyanx mr-2"></i>Pembahasan Lengkap</h3>
+          <div class="rich">${q.pembahasan}</div>
+        </div>
+        <div class="mt-4 rounded-xl border border-cyanx/50 bg-cyanx/10 p-4 sm:p-5">
+          <h3 class="font-extrabold mb-2">🔥 Cara Cepat / Trik</h3>
+          <div class="rich">${q.cara_cepat}</div>
+        </div>
+      </article>`;
+    }).join('')}
+  </div>`;
+
+  document.getElementById('retry').onclick = () => {
+    Object.assign(state, { current: 0, answers: {}, seconds: 0, finished: false });
+    startTimer(); renderPractice(); window.scrollTo({ top: 0 });
+  };
+  typeset();
+}
+
+/* ============ INIT ============ */
+startTimer();
+renderPractice();
+</script>
+</body>
+</html>
