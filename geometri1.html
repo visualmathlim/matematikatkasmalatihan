@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Latihan Geometri dan Pengukuran – VisualMath.Lim</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+body{background:#022050;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.fig line,.fig polygon,.fig path,.fig rect,.fig ellipse,.fig circle{stroke:#fff;stroke-width:1.5;fill:none}
+.fig text{fill:#fff;font:12px sans-serif;stroke:none}
+.fig .y{stroke:#ffd300}.fig .c{stroke:#00d6d8}
+label.opt{display:flex;gap:.75rem;align-items:center;width:100%;padding:.75rem 1rem;border:1px solid rgba(255,255,255,.2);border-radius:.75rem;cursor:pointer;transition:.15s}
+label.opt:hover{border-color:#00d6d8;box-shadow:0 0 12px rgba(0,214,216,.35)}
+label.opt:has(input:checked){background:rgba(0,214,216,.22);border-color:#00d6d8}
+label.opt input{accent-color:#00d6d8}
+mjx-container[display="true"]{text-align:left!important;margin:.6rem 0!important;overflow-x:auto;overflow-y:hidden}
+.nb{min-width:2.75rem;height:2.75rem}
+</style>
+</head>
+<body>
+<header class="sticky top-0 z-20 bg-[#011a42] border-b border-[#00d6d8]/40 px-3 md:px-6 py-3 flex items-center justify-between gap-3">
+  <div class="text-sm md:text-base font-bold leading-tight">VisualMath.Lim - Latihan Geometri dan Pengukuran <span class="text-[#00d6d8]">TKA SMA Kelas 12</span></div>
+  <a href="geometri.html" class="shrink-0 flex items-center gap-2 text-xs md:text-sm border border-[#00d6d8] rounded-lg px-3 py-2 hover:bg-[#00d6d8]/20">
+    <img src="logo.png" alt="Logo" class="h-6 w-auto" onerror="this.style.display='none'">
+    <span>Kembali ke Dashboard Geometri dan Pengukuran</span>
+  </a>
+</header>
+<main id="app" class="max-w-7xl mx-auto p-3 md:p-6"></main>
+
+<script>
+/* ===== Helper gambar (SVG kode) ===== */
+const IMG='fig max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block';
+const F=(vb,w,b)=>`<svg viewBox="${vb}" width="${w}">${b}</svg>`;
+const T=(x,y,t)=>`<text x="${x}" y="${y}">${t}</text>`;
+const PS=(x,y,l)=>F('-65 -65 130 130',130,[...Array(13)].map((_,i)=>`<path d="M${i*10-60} -60v120M-60 ${i*10-60}h120" style="stroke-opacity:.2;stroke-width:.5"/>`).join('')+`<path d="M-62 0H62M0 -62V62"/><circle cx="${x*10}" cy="${-y*10}" r="3.5" style="fill:#ffd300;stroke:none"/>`+T(x*10+5,-y*10-5,l));
+const PO=(x,y)=>`<span class="fig inline-block">${PS(x,y,'B')}</span>`;
+
+const questions=[
+{id:1,type:'multi',
+question_text:'Perhatikan gambar. Pasangan sudut manakah yang membentuk sudut $180^\\circ$? <em class="text-[#00d6d8]">(Jawaban benar lebih dari satu.)</em> Garis mendatar sejajar dengan alas segitiga siku-siku.',
+image:F('0 0 260 170',300,'<polygon points="40,10 40,150 240,150"/><line x1="10" y1="80" x2="230" y2="80"/>'+T(46,36,'A')+T(114,74,'F')+T(147,74,'E')+T(114,96,'B')+T(150,96,'D')+T(212,145,'C')),
+options:{A:'$\\angle A$ dan $\\angle B$',B:'$\\angle A$ dan $\\angle E$',C:'$\\angle B$ dan $\\angle C$',D:'$\\angle B$ dan $\\angle D$',E:'$\\angle E$ dan $\\angle C$'},
+correct_answer:['C','D','E'],
+pembahasan:String.raw`<p>Misalkan $\angle C=\alpha$. Garis mendatar sejajar alas, sehingga $\angle F$ sehadap dengan $\angle C$.</p>
+$$\begin{aligned}\angle F&=\angle C=\alpha\\ \angle D&=\angle F=\alpha\quad(\text{bertolak belakang})\\ \angle E&=180^\circ-\alpha\quad(\text{berpelurus dengan }\angle F)\\ \angle B&=\angle E=180^\circ-\alpha\\ \angle A&=90^\circ-\alpha\quad(\text{segitiga siku-siku})\end{aligned}$$
+<p>Periksa tiap pasangan:</p>
+$$\begin{aligned}\angle B+\angle C&=(180^\circ-\alpha)+\alpha=180^\circ\ \checkmark\\ \angle B+\angle D&=180^\circ\ \checkmark\\ \angle E+\angle C&=180^\circ\ \checkmark\\ \angle A+\angle B&=\angle A+\angle E=270^\circ-2\alpha\ne180^\circ\end{aligned}$$`,
+cara_cepat:String.raw`<p>Sudut tumpul ($B,E$) $=180^\circ-\alpha$, sudut lancip kembar ($C,D,F$) $=\alpha$. Tumpul + lancip kembar selalu $180^\circ$. $\angle A=90^\circ-\alpha$ tidak pernah berpasangan, jadi coret semua pilihan yang memuat $\angle A$.</p>`},
+
+{id:2,type:'multi',
+question_text:'Zara menambahkan papan jadwal di dinding kamarnya. Papan jadwal <b>tidak</b> diletakkan pada dinding yang sejajar dengan rak buku gantung (rak ditandai pada gambar). Pada dinding manakah papan jadwal akan diletakkan? <em class="text-[#00d6d8]">(Jawaban benar lebih dari satu.)</em>',
+image:F('0 0 240 195',300,'<path d="M40 150L130 170L200 140M40 150V60L130 80L200 50V140M130 170V80M40 60L110 30L200 50"/><path d="M40 150L110 120L200 140M110 120V30" stroke-dasharray="4"/><polygon class="c" points="132,80 178,90 178,72 132,62" style="fill:rgba(0,214,216,.4)"/>'+T(28,156,'A')+T(126,188,'B')+T(205,145,'C')+T(100,136,'D')+T(26,58,'E')+T(120,76,'F')+T(205,48,'G')+T(104,24,'H')+T(136,56,'Rak')),
+options:{A:'CDHG',B:'BCGF',C:'ABFE',D:'BCFA',E:'ADHE'},
+correct_answer:['B','E'],
+pembahasan:String.raw`<p>Lantai $ABCD$, atap $EFGH$. Empat dinding: $ABFE$, $BCGF$, $CDHG$, $ADHE$. Rak menempel di dinding $CDHG$.</p>
+$$\begin{aligned}CDHG&:\text{dinding rak itu sendiri}\to\text{coret}\\ ABFE&:\text{berhadapan dengan }CDHG\Rightarrow\text{sejajar}\to\text{coret}\\ BCFA&:\text{bukan dinding (}F\text{ di atap, }A,B,C\text{ di lantai)}\to\text{coret}\\ BCGF,\ ADHE&:\text{bersebelahan (tegak lurus) dengan }CDHG\to\text{boleh}\end{aligned}$$`,
+cara_cepat:String.raw`<p>Coret dinding rak ($CDHG$), dinding di seberangnya ($ABFE$), dan pilihan yang bukan sisi kubus ($BCFA$). Sisanya: $BCGF$ dan $ADHE$.</p>`},
+
+{id:3,type:'single',
+question_text:'Diketahui trapesium $KLMN$ dan $NMPO$ sebangun. Berdasarkan gambar, berapakah panjang sisi $LM$?',
+image:F('-5 -15 250 205',300,'<polygon points="20,170 212,170 128,2 20,2"/><line x1="20" y1="74" x2="164" y2="74"/><line x1="128" y1="2" x2="128" y2="170"/><path d="M20 158h12v12"/>'+T(6,8,'O')+T(124,-4,'P')+T(6,80,'N')+T(168,78,'M')+T(132,68,'Q')+T(6,176,'K')+T(124,186,'R')+T(216,176,'L')+T(60,-4,'OP = 18 cm')+T(26,125,'KN = 16 cm')+T(80,184,'KL = 32 cm')),
+options:{A:'$6\\sqrt5$ cm',B:'$8\\sqrt5$ cm',C:'$9\\sqrt5$ cm',D:'$10\\sqrt5$ cm',E:'$14\\sqrt5$ cm'},
+correct_answer:'B',
+pembahasan:String.raw`<p>Sebangun: $K\leftrightarrow N,\ L\leftrightarrow M,\ M\leftrightarrow P,\ N\leftrightarrow O$, sehingga $KL\leftrightarrow NM$ dan $NM\leftrightarrow OP$.</p>
+$$\begin{aligned}\frac{KL}{NM}&=\frac{NM}{OP}\\ NM^2&=32\times18=576\\ NM&=24\text{ cm}\end{aligned}$$
+<p>Tarik garis dari $M$ tegak lurus $KL$ di $S$. Maka $MS=16$ dan $KS=NM=24$.</p>
+$$\begin{aligned}SL&=32-24=8\\ LM&=\sqrt{16^2+8^2}=\sqrt{320}\\ &=\sqrt{64\times5}=8\sqrt5\text{ cm}\end{aligned}$$`,
+cara_cepat:String.raw`<p>$NM=\sqrt{32\times18}=24$. Selisih sisi sejajar $=8$, tinggi $=16$, perbandingan $1:2$. Maka $LM=8\sqrt{1^2+2^2}=8\sqrt5$.</p>`},
+
+{id:4,type:'tf',
+question_text:'Pot tanaman diletakkan berjajar pada sisi miring kebun (trapesium siku-siku). Diameter pot: jahe 15 cm, kunyit 26 cm, lengkuas 30 cm. Tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan tentang banyak <u>maksimum</u> tanaman yang dapat ditanam.',
+image:F('0 0 250 245',250,'<polygon points="20,20 20,220 164,220 164,80"/>'+[0,1,2,3,4,5].map(i=>`<circle class="y" cx="${32+i*22}" cy="${17+9.17*i}" r="9"/>`).join('')+T(26,140,'500 cm')+T(168,155,'350 cm')+T(70,238,'360 cm')),
+options:{A:'Banyak maksimum jahe yang dapat ditanam adalah 25.',B:'Banyak maksimum kunyit yang dapat ditanam adalah 15.',C:'Banyak maksimum lengkuas yang dapat ditanam adalah 10.'},
+correct_answer:{A:'S',B:'B',C:'S'},
+pembahasan:String.raw`<p>Selisih tinggi sisi tegak $=500-350=150$ cm. Sisi miring tempat pot:</p>
+$$\begin{aligned}s&=\sqrt{360^2+150^2}\\ &=\sqrt{129.600+22.500}\\ &=\sqrt{152.100}=390\text{ cm}\end{aligned}$$
+$$\begin{aligned}\text{Jahe}&:390\div15=26\ \Rightarrow\text{“25” Salah}\\ \text{Kunyit}&:390\div26=15\ \Rightarrow\text{“15” Benar}\\ \text{Lengkuas}&:390\div30=13\ \Rightarrow\text{“10” Salah}\end{aligned}$$`,
+cara_cepat:String.raw`<p>Kenali tripel $12:5:13$. $360=30\times12$ dan $150=30\times5$, maka sisi miring $=30\times13=390$. Bagi 390 dengan tiap diameter.</p>`},
+
+{id:5,type:'single',
+question_text:'Titik $B$ direfleksikan terhadap garis $y=1$, kemudian dirotasi dengan pusat $O(0,0)$ sebesar $180^\\circ$ searah jarum jam. Titik $B\'$ pada gambar adalah bayangan hasil kedua transformasi. Gambar titik $B$ yang sesuai adalah ....',
+image:PS(-4,1,"B'"),
+options:{A:PO(4,-1),B:PO(4,3),C:PO(-6,-1),D:PO(-2,-1),E:PO(2,4)},
+correct_answer:'B',
+pembahasan:String.raw`<p>Dari gambar, $B'=(-4,1)$. Bekerja mundur dari transformasi terakhir.</p>
+$$\begin{aligned}\text{Balik rotasi: }(x,y)&\to(-x,-y)=(-4,1)\\ \Rightarrow(x,y)&=(4,-1)\\ \text{Balik refleksi: }(4,\,2-b)&=(4,-1)\\ 2-b&=-1\\ b&=3\end{aligned}$$
+$$B=(4,3)\ \Rightarrow\ (4,3)\xrightarrow{y=1}(4,-1)\xrightarrow{180^\circ}(-4,1)=B'\ \checkmark$$`,
+cara_cepat:String.raw`<p>$B'(-4,1)\to$ balik tanda $(4,-1)$. Titik ini 2 satuan di bawah garis $y=1$, jadi titik awal 2 satuan di atasnya: $y=1+2=3$. Hasil $(4,3)$.</p>`},
+
+{id:6,type:'single',
+question_text:'Tali hiasan dipasang di langit-langit dari pojok dinding pintu ke titik tengah langit-langit dinding papan tulis. Lebar ruangan 4 m, panjang dinding 6 m, tinggi ruangan 5 m. Tali kedua yang sama dipasang ke pojok lain dinding pintu. Jika gulungan tali 20 m, berapakah sisa tali yang tidak terpakai?',
+image:F('0 0 230 220',230,'<rect x="40" y="20" width="120" height="180"/><line class="y" x1="160" y1="20" x2="40" y2="110"/><line class="y" x1="160" y1="200" x2="40" y2="110"/>'+T(166,24,'Pojok 1')+T(166,206,'Pojok 2')+T(166,114,'Pintu')+T(2,58,'Papan')+T(2,70,'tulis')+T(88,14,'4 m')+T(6,88,'3 m')+T(6,140,'3 m')+T(60,230,'Denah langit-langit')),
+options:{A:'6 m',B:'10 m',C:'11 m',D:'13 m',E:'15 m'},
+correct_answer:'B',
+pembahasan:String.raw`<p>Tali berada di langit-langit, jadi tinggi 5 m tidak dipakai (pengecoh). Dilihat dari atas, selisih mendatar tali pertama $4$ m dan $\tfrac12\times6=3$ m.</p>
+$$\begin{aligned}\text{Tali 1}&=\sqrt{4^2+3^2}=\sqrt{25}=5\text{ m}\\ \text{Tali 2}&=\sqrt{4^2+(6-3)^2}=5\text{ m}\\ \text{Terpakai}&=5+5=10\text{ m}\\ \text{Sisa}&=20-10=10\text{ m}\end{aligned}$$`,
+cara_cepat:String.raw`<p>Abaikan 5 m (tinggi). Tripel $3-4-5$ membuat tiap tali $5$ m. Dua tali $=10$ m, sisa $=20-10=10$ m.</p>`},
+
+{id:7,type:'single',
+question_text:'Ornamen jam dinding berbentuk gabungan segitiga sama kaki dan lingkaran (pusat lingkaran pada alas segitiga). Di sekeliling ornamen akan ditempel kayu tipis. Jika Arif membuat dua ornamen, berapa panjang kayu tipis yang diperlukan? (gunakan $\\pi=3{,}14$)',
+image:F('0 0 260 245',260,'<polygon points="100,10 25,190 175,190"/><circle cx="100" cy="190" r="30"/><path d="M195 10V220M190 10h10M190 220h10"/>'+T(200,118,'70 cm')+T(70,240,'alas = 50 cm')+T(80,194,'d = 20 cm')),
+options:{A:'322,8 cm',B:'352,8 cm',C:'362,8 cm',D:'382,8 cm',E:'445,6 cm'},
+correct_answer:'D',
+pembahasan:String.raw`<p>Tinggi segitiga $=70-10=60$ cm. Setengah alas $=25$ cm.</p>
+$$\begin{aligned}s&=\sqrt{25^2+60^2}=\sqrt{4225}=65\text{ cm}\end{aligned}$$
+<p>Tepi luar: dua sisi miring, sisa alas di luar lingkaran, dan setengah lingkaran bawah.</p>
+$$\begin{aligned}\text{Satu ornamen}&=2(65)+(50-20)+\pi(10)\\ &=130+30+31{,}4=191{,}4\text{ cm}\\ \text{Dua ornamen}&=2\times191{,}4=382{,}8\text{ cm}\end{aligned}$$`,
+cara_cepat:String.raw`<p>$(25,60,65)$ adalah kelipatan 5 dari $(5,12,13)$. Satu ornamen $=130+30+10\pi=191{,}4$. Kalikan 2 $\to 382{,}8$ cm.</p>`},
+
+{id:8,type:'single',
+question_text:'Panjang salah satu diagonal suatu layang-layang adalah 20 cm. Berapakah keliling layang-layang tersebut? Putuskan apakah pernyataan (1) dan (2) cukup untuk menjawab.<br>1) Luas layang-layang adalah $160\\text{ cm}^2$.<br>2) Panjang salah satu sisi layang-layang adalah 10 cm.',
+image:F('0 0 200 200',200,'<polygon points="100,10 160,75 100,190 40,75"/><path d="M100 10V190M40 75H160"/>'),
+options:{A:'Pernyataan (1) SAJA cukup, tetapi pernyataan (2) SAJA tidak cukup.',B:'Pernyataan (2) SAJA cukup, tetapi pernyataan (1) SAJA tidak cukup.',C:'DUA pernyataan BERSAMA-SAMA cukup, tetapi SATU pernyataan SAJA tidak cukup.',D:'Pernyataan (1) SAJA cukup dan pernyataan (2) SAJA cukup.',E:'Pernyataan (1) dan (2) tidak cukup untuk menjawab pertanyaan.'},
+correct_answer:'C',
+pembahasan:String.raw`<p>Diagonal simetri terbagi $a$ dan $b$; diagonal lain terbagi dua sama panjang $h$. Sisi pendek $=\sqrt{a^2+h^2}$, sisi panjang $=\sqrt{b^2+h^2}$.</p>
+<p><b>(1) saja:</b> $\tfrac12\cdot20\cdot d_2=160\Rightarrow d_2=16$. Letak titik potong ($a,b$) bebas, keliling tidak tunggal. Tidak cukup.</p>
+<p><b>(2) saja:</b> hanya satu sisi, diagonal lain dan letak titik potong tidak diketahui. Tidak cukup.</p>
+<p><b>(1)+(2):</b> jika 20 cm diagonal yang terbagi dua, $h=10$ sehingga setiap sisi $\ge10$ dan sisi $=10$ hanya bila $a=0$ (bukan layang-layang). Maka 20 cm adalah diagonal simetri: $a+b=20,\ h=8$.</p>
+$$\begin{aligned}\sqrt{a^2+8^2}&=10\Rightarrow a=6,\ b=14\\ \text{sisi panjang}&=\sqrt{14^2+8^2}=2\sqrt{65}\\ K&=2\,(10+2\sqrt{65})=20+4\sqrt{65}\text{ cm}\end{aligned}$$
+<p>Nilainya tunggal, jadi keduanya bersama-sama cukup.</p>`,
+cara_cepat:String.raw`<p>Keliling butuh dua panjang sisi berbeda. (1) hanya memberi diagonal lain, (2) hanya memberi satu sisi. Digabung, $a=6,\ b=14$ terkunci dan kedua sisi diketahui. Pilih C.</p>`},
+
+{id:9,type:'single',
+question_text:'Kardus helm berukuran $20\\times20\\times30$ cm. Bak truk berukuran panjang 240 cm, lebar 150 cm, tinggi 120 cm. Atas kardus tidak boleh dibalik (tinggi kardus tetap 20 cm); kardus hanya boleh diputar mendatar. Berapa paling banyak kardus helm yang dapat dimuat di truk?',
+image:F('0 0 340 140',340,'<rect x="10" y="20" width="144" height="72"/><rect x="230" y="40" width="36" height="24"/>'+T(40,60,'Bak truk')+T(50,108,'p = 240 cm')+T(50,126,'l = 150 cm')+T(160,60,'t = 120 cm')+T(205,86,'Kardus 20 × 20 × 30')),
+options:{A:'336 kardus',B:'360 kardus',C:'384 kardus',D:'432 kardus',E:'504 kardus'},
+correct_answer:'B',
+pembahasan:String.raw`<p>Tinggi kardus tetap 20 cm, alas $20\times30$ cm, lantai bak $150\times240$ cm.</p>
+$$\begin{aligned}\text{Lapisan}&=\frac{120}{20}=6\\ \text{Batas per lapisan}&=\frac{150\times240}{20\times30}=60\end{aligned}$$
+<p>Susun sisi 30 cm sejajar lebar 150 cm dan sisi 20 cm sejajar panjang 240 cm:</p>
+$$\begin{aligned}\tfrac{150}{30}\times\tfrac{240}{20}&=5\times12=60\ \text{(pas, tanpa sisa)}\\ \text{Total}&=60\times6=360\text{ kardus}\end{aligned}$$`,
+cara_cepat:String.raw`<p>$\dfrac{150\times240\times120}{20\times20\times30}=\dfrac{4.320.000}{12.000}=360$. Karena $150=5\times30,\ 240=12\times20,\ 120=6\times20$, susunan penuh tanpa sisa mungkin.</p>`},
+
+{id:10,type:'single',
+question_text:'Hiasan lampu tidur berbentuk tabung berongga tanpa alas dan tutup, diameter 14 cm, tinggi 25 cm. Bagian luarnya dilapisi stiker vinil. Satu lembar stiker (Rp9.000,00) menutupi $300\\text{ cm}^2$. Jika dibuat 8 hiasan, berapakah biaya minimal untuk membeli stiker? (gunakan $\\pi=\\tfrac{22}{7}$)',
+image:F('0 0 190 165',190,'<ellipse cx="70" cy="25" rx="40" ry="10"/><path d="M30 25V140M110 25V140M30 140a40 10 0 0 0 80 0"/><path class="y" d="M30 25H110M125 25V140"/>'+T(48,40,'d = 14 cm')+T(130,85,'t = 25 cm')),
+options:{A:'Rp72.000,00',B:'Rp108.000,00',C:'Rp252.000,00',D:'Rp270.000,00',E:'Rp288.000,00'},
+correct_answer:'D',
+pembahasan:String.raw`<p>Tabung tanpa alas dan tutup hanya memiliki selimut.</p>
+$$\begin{aligned}L_1&=\pi dt=\tfrac{22}{7}\times14\times25=1.100\text{ cm}^2\\ L_8&=8\times1.100=8.800\text{ cm}^2\\ \text{Lembar}&=\tfrac{8.800}{300}\approx29{,}33\to30\\ \text{Biaya}&=30\times9.000=\text{Rp}270.000\end{aligned}$$
+<p>Pengecoh: membeli per hiasan ($4$ lembar $\times8=32$ lembar $=$ Rp288.000) bukan biaya minimal karena sisa stiker bisa dipakai lagi.</p>`,
+cara_cepat:String.raw`<p>Selimut $=\pi dt=1.100$. Total $8.800\div300\approx29{,}3\to30$ lembar. $30\times9.000=$ Rp270.000.</p>`}
+];
+
+const PI={
+3:[F('-5 -15 250 205',300,'<polygon points="20,170 212,170 164,74 20,74" style="fill:rgba(0,214,216,.3)"/><polygon points="20,74 164,74 128,2 20,2" style="fill:rgba(255,160,90,.35)"/>'+T(6,8,'O')+T(124,-4,'P')+T(6,80,'N')+T(168,78,'M')+T(6,176,'K')+T(216,176,'L')+T(50,128,'Trapesium KLMN')+T(40,42,'Trapesium NMPO')+T(70,70,'NM = 24')),
+F('0 0 250 200',300,'<rect x="20" y="74" width="144" height="96" style="fill:rgba(0,214,216,.3)"/><polygon points="164,74 164,170 212,170" style="fill:rgba(255,211,0,.35)"/><path d="M164 158h12v12"/>'+T(6,78,'N')+T(166,70,'M')+T(6,176,'K')+T(158,186,'S')+T(216,176,'L')+T(40,125,'Persegi panjang KSMN')+T(60,190,'KS = 24')+T(182,196,'SL = 8')+T(168,122,'MS = 16')+T(188,110,'LM = ?'))],
+7:[F('0 0 240 245',240,'<polygon points="100,10 25,190 175,190"/><path class="c" d="M100 10V190" stroke-dasharray="4"/><path d="M100 178h12v12"/>'+T(104,100,'t = 60')+T(20,95,'s = ?')+T(48,206,'25 cm')+T(120,206,'25 cm')),
+F('0 0 220 245',240,'<path d="M100 10L25 190M100 10L175 190" style="stroke:#ff6b6b;stroke-width:3"/><path d="M25 190H70M130 190H175" style="stroke:#4ade80;stroke-width:3"/><path d="M70 190A30 30 0 0 0 130 190" style="stroke:#c084fc;stroke-width:3"/><path d="M70 190A30 30 0 0 1 130 190" stroke-dasharray="3" style="stroke-opacity:.5"/>'+T(38,95,'65')+T(150,95,'65')+T(38,206,'15')+T(145,206,'15')+T(40,238,'½ keliling = 31,4'))]
+};
+/* ===== State ===== */
+const $=s=>document.querySelector(s), Q=questions;
+let cur=0, ans={}, secs=0, tm;
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const done=i=>{const a=ans[i];return a!==undefined&&(typeof a==='string'||(Array.isArray(a)?a.length>0:Object.keys(a).length>=Object.keys(Q[i].options).length))};
+const isOk=(q,a)=>{if(a===undefined)return false;
+  if(q.type==='single')return a===q.correct_answer;
+  if(q.type==='multi')return [...a].sort().join()===[...q.correct_answer].sort().join();
+  return Object.keys(q.correct_answer).every(k=>a[k]===q.correct_answer[k]);};
+const typeset=()=>{window.MathJax&&MathJax.typesetPromise&&MathJax.typesetPromise([$('#app')]).catch(()=>{});};
+const imgH=q=>!q.image?'':q.image.startsWith('<svg')?q.image.replace('<svg','<svg class="'+IMG+'"'):`<img src="${q.image}" alt="Gambar soal" class="${IMG}">`;
+const hint={single:'Pilih satu jawaban.',multi:'Pilih satu atau lebih jawaban.',tf:'Pilih Benar atau Salah untuk tiap pernyataan.'};
+
+/* ===== State 1: Mengerjakan ===== */
+function navH(){return Q.map((_,i)=>`<button data-go="${i}" class="nb shrink-0 rounded-lg font-bold border ${done(i)?'bg-[#ffd300] text-black border-[#ffd300]':'bg-white/10 text-white border-white/30'} ${i===cur?'ring-2 ring-[#00d6d8] shadow-[0_0_10px_#00d6d8]':''}">${i+1}</button>`).join('');}
+function optsH(q){
+  if(q.type==='tf'){const a=ans[cur]||{};
+    return Object.entries(q.options).map(([k,t])=>`<div class="border border-white/20 rounded-xl p-3"><div class="mb-2">${t}</div><div class="flex gap-2">${[['B','Benar'],['S','Salah']].map(([v,l])=>`<label class="opt !w-auto flex-1 justify-center"><input type="radio" name="t_${k}" value="${v}" data-k="${k}" ${a[k]===v?'checked':''}>${l}</label>`).join('')}</div></div>`).join('');}
+  const m=q.type==='multi',a=ans[cur];
+  return Object.entries(q.options).map(([k,t])=>`<label class="opt"><input type="${m?'checkbox':'radio'}" name="o" value="${k}" ${(m?(a||[]).includes(k):a===k)?'checked':''}><b class="text-[#00d6d8]">${k}.</b><span class="flex-1">${t}</span></label>`).join('');}
+function renderQuiz(){const q=Q[cur],last=cur===Q.length-1;
+  $('#app').innerHTML=`<div class="grid lg:grid-cols-4 gap-4">
+  <section class="lg:col-span-3 bg-[#03317a]/60 border border-[#00d6d8]/30 rounded-2xl p-4 md:p-6">
+    <div class="flex justify-between items-center text-sm mb-3"><span class="text-[#00d6d8] font-bold">Soal ${cur+1} dari ${Q.length}</span><span id="sw" class="font-mono bg-black/30 rounded-lg px-3 py-1"><i class="fa-regular fa-clock"></i> ${fmt(secs)}</span></div>
+    <div class="text-base md:text-lg leading-relaxed">${q.question_text}</div>${imgH(q)}
+    <p class="text-xs text-white/60 mb-2">${hint[q.type]}</p>
+    <div id="opts" class="space-y-2">${optsH(q)}</div>
+    <div class="flex justify-between gap-2 mt-6">
+      <button data-d="-1" ${cur?'':'disabled'} class="px-4 py-2 rounded-lg border border-[#00d6d8] hover:bg-[#00d6d8]/20 disabled:opacity-30"><i class="fa-solid fa-chevron-left"></i> Sebelumnya</button>
+      ${last?'<button data-fin class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold">Selesai &amp; Lihat Pembahasan</button>':'<button data-d="1" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold">Selanjutnya <i class="fa-solid fa-chevron-right"></i></button>'}
+    </div>
+    <p class="warn text-sm mt-3 text-yellow-300"></p>
+  </section>
+  <aside class="lg:col-span-1 bg-[#03317a]/60 border border-[#00d6d8]/30 rounded-2xl p-4 h-fit">
+    <div class="text-sm font-bold mb-2">Navigasi Soal <span id="cnt" class="text-white/60 font-normal"></span></div>
+    <div id="nav" class="flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-5 lg:overflow-visible">${navH()}</div>
+    <button data-fin class="w-full mt-3 px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold">Selesai &amp; Lihat Pembahasan</button>
+    <p class="warn text-sm mt-2 text-yellow-300"></p>
+  </aside></div>`;
+  upd();typeset();}
+function upd(){const left=Q.filter((_,i)=>!done(i)).length;document.querySelectorAll('[data-fin]').forEach(b=>{b.disabled=left>0;b.classList.toggle('opacity-40',left>0);b.classList.toggle('cursor-not-allowed',left>0)});document.querySelectorAll('.warn').forEach(w=>w.innerHTML=left?`<i class="fa-solid fa-circle-info"></i> Tombol &ldquo;Selesai &amp; Lihat Pembahasan&rdquo; baru aktif setelah semua soal dijawab. Masih ${left} soal belum selesai.`:'<span class="text-green-300"><i class="fa-solid fa-circle-check"></i> Semua soal sudah dijawab. Silakan klik Selesai.</span>');$('#nav').innerHTML=navH();$('#cnt').textContent=`(${Q.filter((_,i)=>done(i)).length}/${Q.length} terjawab)`;}
+
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'),d=e.target.closest('[data-d]'),f=e.target.closest('[data-fin]');
+  if(g){cur=+g.dataset.go;renderQuiz();window.scrollTo(0,0)}
+  else if(d){cur+=+d.dataset.d;renderQuiz();window.scrollTo(0,0)}
+  else if(f)finish();});
+document.addEventListener('change',e=>{
+  const i=e.target,q=Q[cur];if(!i.closest('#opts'))return;
+  if(q.type==='single')ans[cur]=i.value;
+  else if(q.type==='multi')ans[cur]=[...document.querySelectorAll('#opts input:checked')].map(x=>x.value);
+  else{ans[cur]=ans[cur]||{};ans[cur][i.dataset.k]=i.value}
+  upd();});
+tm=setInterval(()=>{secs++;const s=$('#sw');if(s)s.innerHTML=`<i class="fa-regular fa-clock"></i> ${fmt(secs)}`},1000);
+
+/* ===== State 2: Pembahasan ===== */
+function finish(){if(Q.some((_,i)=>!done(i)))return;
+  clearInterval(tm);renderResult();window.scrollTo(0,0);}
+const tfL={B:'Benar',S:'Salah'};
+function reviewH(q,i){const a=ans[i];
+  if(q.type==='tf')return Object.entries(q.options).map(([k,t])=>{const u=a&&a[k],ok=u===q.correct_answer[k];
+    return `<div class="border rounded-xl p-3 ${ok?'border-green-400 bg-green-500/15':'border-red-400 bg-red-500/15'}"><div>${t}</div><div class="text-sm mt-1">Jawaban Anda: <b>${u?tfL[u]:'Kosong'}</b> ${ok?'<i class="fa-solid fa-circle-check text-green-400"></i>':'<i class="fa-solid fa-circle-xmark text-red-400"></i>'} · Kunci: <b>${tfL[q.correct_answer[k]]}</b></div></div>`}).join('');
+  const key=[].concat(q.correct_answer),mine=[].concat(a||[]);
+  return Object.entries(q.options).map(([k,t])=>{const isK=key.includes(k),isM=mine.includes(k);
+    const c=isK?'border-green-400 bg-green-500/15':isM?'border-red-400 bg-red-500/15':'border-white/20';
+    return `<div class="flex gap-3 items-center border rounded-xl px-4 py-3 ${c}"><b class="text-[#00d6d8]">${k}.</b><span class="flex-1">${t}</span>${isK?'<span class="text-green-300 text-xs whitespace-nowrap"><i class="fa-solid fa-key"></i> Kunci</span>':''}${isM?`<span class="${isK?'text-green-300':'text-red-300'} text-xs whitespace-nowrap">Jawaban Anda</span>`:''}</div>`}).join('');}
+function renderResult(){
+  const ok=Q.filter((q,i)=>isOk(q,ans[i])).length,sc=Math.round(ok/Q.length*100),wr=Q.length-ok;
+  const st=(l,v,c)=>`<div class="bg-black/25 rounded-xl p-3 text-center"><div class="text-xs text-white/70">${l}</div><div class="text-2xl font-bold ${c}">${v}</div></div>`;
+  $('#app').innerHTML=`<div class="max-w-4xl mx-auto">
+  <div class="bg-gradient-to-r from-[#03317a] to-[#044a8f] border border-[#00d6d8] rounded-2xl p-5 mb-6 shadow-[0_0_25px_rgba(0,214,216,.3)]">
+    <h2 class="text-xl font-bold mb-3"><i class="fa-solid fa-flag-checkered text-[#ffd300]"></i> Ringkasan Hasil Latihan</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">${st('Skor Akhir',sc,'text-[#ffd300]')}${st('Total Benar',ok,'text-green-400')}${st('Total Salah',wr,'text-red-400')}${st('Waktu Pengerjaan',fmt(secs),'text-[#00d6d8]')}</div>
+    <div class="flex flex-wrap gap-2 mt-4"><button onclick="location.reload()" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold"><i class="fa-solid fa-rotate-right"></i> Ulangi Latihan</button><a href="geometri.html" class="px-4 py-2 rounded-lg border border-[#00d6d8]">Kembali ke Dashboard</a></div>
+  </div>`+Q.map((q,i)=>{const o=isOk(q,ans[i]),un=!done(i);
+  const key=q.type==='tf'?Object.entries(q.correct_answer).map(([k,v])=>k+': '+tfL[v]).join(', '):[].concat(q.correct_answer).join(', ');
+  return `<article class="bg-[#03317a]/60 border border-white/20 rounded-2xl p-4 md:p-6 mb-6">
+    <div class="flex justify-between items-center mb-2"><span class="font-bold text-[#00d6d8]">Soal ${i+1}</span>
+    <span class="text-sm font-bold ${o?'text-green-400':un?'text-yellow-300':'text-red-400'}">${o?'<i class="fa-solid fa-circle-check"></i> Benar':un?'<i class="fa-solid fa-triangle-exclamation"></i> Tidak dijawab':'<i class="fa-solid fa-circle-xmark"></i> Salah'}</span></div>
+    <div class="leading-relaxed">${q.question_text}</div>${imgH(q)}
+    <div class="space-y-2">${reviewH(q,i)}</div>
+    <p class="mt-3 text-sm">Jawaban kunci: <b class="text-[#ffd300]">${key}</b></p>
+    <div class="bg-[#022050] border border-white/20 rounded-xl p-4 mt-4 overflow-x-auto"><h4 class="font-bold mb-2"><i class="fa-solid fa-book-open text-[#00d6d8]"></i> Pembahasan Lengkap</h4>${(PI[q.id]||[]).map(f=>f.replace('<svg','<svg class="'+IMG+'"')).join('')}${q.pembahasan}</div>
+    <div class="bg-[#00d6d8]/15 border border-[#00d6d8]/60 rounded-xl p-4 mt-4"><h4 class="font-bold mb-2">🔥 Cara Cepat / Trik</h4>${q.cara_cepat}</div>
+  </article>`}).join('')+'</div>';
+  typeset();}
+
+renderQuiz();
+window.addEventListener('load',typeset);
+</script>
+</body>
+</html>
