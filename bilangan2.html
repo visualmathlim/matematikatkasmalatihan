@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualMath.Lim - Latihan Bilangan Real</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  body { background: #022050; color: #fff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .nav-scroll::-webkit-scrollbar { height: 6px; }
+  .nav-scroll::-webkit-scrollbar-thumb { background: #00d6d8; border-radius: 9px; }
+  mjx-container { color: inherit; }
+  mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: .6em 0; margin: .3em 0 !important; }
+  mjx-container:not([display="true"]) { padding: .15em 0; }
+  .math-text { overflow-wrap: anywhere; }
+  .opt:focus-within { outline: 2px solid #00d6d8; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- NAVBAR -->
+<header class="sticky top-0 z-30 bg-[#022050]/95 backdrop-blur border-b border-[#00d6d8]/30">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <a href="index.html" title="Home"><img src="logo.png" alt="Logo VisualMath.Lim" class="h-9 w-9 object-contain" onerror="this.style.display='none'"></a>
+      <h1 class="font-bold text-sm sm:text-lg truncate">VisualMath.Lim - <span class="text-[#00d6d8]">Latihan bilangan</span></h1>
+    </div>
+    <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+      <div id="timerBox" class="font-mono text-[#00d6d8] border border-[#00d6d8]/60 rounded-lg px-3 py-1 text-sm sm:text-base">
+        <i class="fa-regular fa-clock mr-1"></i><span id="timer">00:00</span>
+      </div>
+      <a href="bilangan.html" class="bg-[#ffd300] text-black font-semibold rounded-lg px-3 py-1.5 text-xs sm:text-sm hover:brightness-95">
+        <i class="fa-solid fa-arrow-left mr-1"></i><span class="hidden sm:inline">Kembali ke </span>Dashboard bilangan
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="app" class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6"></main>
+
+<script>
+/* ===================== DATA SOAL: Prediksi Bilangan Real ===================== */
+// Gambar (jika ada) dibuat dengan kode SVG lewat svgToUri(), tanpa upload file.
+const svgToUri = (svg) => 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+
+const questions = [
+  {
+    id: 1,
+    question_text: String.raw`Bentuk sederhana dari $\dfrac{(2^{3})^{2}\times 4^{-1}}{8^{-1}\times 2^{5}}$ adalah ....`,
+    image: '',
+    options: { A: String.raw`$2$`, B: String.raw`$4$`, C: String.raw`$8$`, D: String.raw`$16$`, E: String.raw`$32$` },
+    konsep: String.raw`mengubah semua bilangan ke basis yang sama, $(a^m)^n=a^{mn}$, $\frac{a^m}{a^n}=a^{m-n}$, dan pangkat negatif $a^{-n}=\frac{1}{a^n}$.`,
+    analisis_salah: {
+      A: String.raw`Hasil $2=2^{1}$ berarti selisih pangkat kurang satu dari seharusnya ($4-2=2$). Kemungkinan $4^{-1}$ atau $8^{-1}$ salah diubah ke basis 2.`,
+      C: String.raw`Hasil $8=2^{3}$ muncul bila $4^{-1}$ ditulis $2^{-1}$ (lupa $4=2^{2}$). Pangkat atas menjadi $6-1=5$, sehingga $2^{5-2}=8$.`,
+      D: String.raw`Hasil $16=2^{4}$ sama dengan pembilang saja. Penyebut $2^{2}$ belum ikut membagi.`,
+      E: String.raw`Hasil $32=2^{5}$ menunjukkan salah memproses tanda pada suku berpangkat negatif ($4^{-1}$ atau $8^{-1}$). Periksa tanda setiap pangkat sebelum dijumlahkan atau dikurangkan.`
+    },
+    correct_answer: 'B',
+    pembahasan: String.raw`Samakan semua bilangan ke basis $2$: $(2^{3})^{2}=2^{6}$, $4^{-1}=(2^{2})^{-1}=2^{-2}$, dan $8^{-1}=(2^{3})^{-1}=2^{-3}$.
+$$\dfrac{2^{6}\times 2^{-2}}{2^{-3}\times 2^{5}}$$
+$$=\dfrac{2^{6+(-2)}}{2^{-3+5}}$$
+$$=\dfrac{2^{4}}{2^{2}}$$
+$$=2^{4-2}=2^{2}=4$$`,
+    cara_cepat: String.raw`Jumlahkan pangkat di atas ($6-2=4$) dan di bawah ($-3+5=2$), lalu kurangkan.
+$$2^{4-2}=2^{2}=4$$`
+  },
+  {
+    id: 2,
+    question_text: String.raw`Nilai dari $27^{\frac{2}{3}}+16^{\frac{3}{4}}-25^{\frac{1}{2}}$ adalah ....`,
+    image: '',
+    options: { A: String.raw`$8$`, B: String.raw`$10$`, C: String.raw`$11$`, D: String.raw`$12$`, E: String.raw`$14$` },
+    konsep: String.raw`pangkat pecahan $a^{\frac{m}{n}}=\sqrt[n]{a^{m}}=(\sqrt[n]{a})^{m}$.`,
+    analisis_salah: {
+      A: String.raw`Hasil 8 muncul bila $25^{\frac{1}{2}}$ dianggap $9$ ($9+8-9=8$). Ingat $25^{\frac{1}{2}}=\sqrt{25}=5$.`,
+      B: String.raw`Hasil 10 muncul bila $16^{\frac{3}{4}}$ dihitung $6$: $\sqrt[4]{16}=2$ lalu dikalikan 3, padahal harus dipangkatkan 3 ($2^{3}=8$).`,
+      C: String.raw`Hasil 11 kemungkinan dari salah hitung satu suku (misalnya $25^{\frac{1}{2}}$ dianggap $6$) atau salah menjumlahkan $9+8-5$.`,
+      E: String.raw`Hasil 14 sama dengan $9+5$: suku $16^{\frac{3}{4}}$ terlewat.`
+    },
+    correct_answer: 'D',
+    pembahasan: String.raw`Ubah ke basis prima, lalu gunakan $(a^{m})^{n}=a^{mn}$.
+$$27^{\frac{2}{3}}=(3^{3})^{\frac{2}{3}}=3^{2}=9$$
+$$16^{\frac{3}{4}}=(2^{4})^{\frac{3}{4}}=2^{3}=8$$
+$$25^{\frac{1}{2}}=\sqrt{25}=5$$
+$$9+8-5=12$$`,
+    cara_cepat: String.raw`Pada $a^{\frac{m}{n}}$, tarik akar pangkat $n$ dulu, baru pangkatkan $m$: $\sqrt[3]{27}=3 \to 3^{2}=9$; $\sqrt[4]{16}=2 \to 2^{3}=8$; $\sqrt{25}=5$.
+$$9+8-5=12$$`
+  },
+  {
+    id: 3,
+    question_text: String.raw`Untuk setiap bilangan bulat $n$, nilai dari $\dfrac{4^{n+1}-4^{n}}{2^{2n-1}}$ adalah ....`,
+    image: '',
+    options: { A: String.raw`$3$`, B: String.raw`$4$`, C: String.raw`$6$`, D: String.raw`$12$`, E: String.raw`$24$` },
+    konsep: String.raw`faktorisasi bentuk pangkat ($4^{n+1}=4\cdot 4^{n}$), mengubah $2^{2n}=4^{n}$, dan pembagian pangkat.`,
+    analisis_salah: {
+      A: String.raw`Pembilang $3\cdot 4^{n}$ sudah benar, tetapi penyebut $2^{2n-1}$ dianggap $4^{n}$. Lupa pengurang 1: $2^{2n-1}=\frac{4^{n}}{2}$.`,
+      B: String.raw`Kemungkinan $4^{n+1}-4^{n}$ dianggap $4^{(n+1)-n}=4$ (pengurangan diperlakukan seperti pembagian) dan penyebut diabaikan. Pengurangan harus difaktorkan: $4\cdot 4^{n}-4^{n}=3\cdot 4^{n}$.`,
+      D: String.raw`Hasil 12 adalah nilai pembilang saat $n=1$ ($4^{2}-4^{1}=12$). Penyebut $2^{2n-1}=2$ lupa membagi.`,
+      E: String.raw`Hasil 24 muncul bila pembagian dengan $2^{2n-1}$ dikerjakan sebagai perkalian ($12\times 2$). Penyebut harus membagi.`
+    },
+    correct_answer: 'C',
+    pembahasan: String.raw`Ubah semua suku ke bentuk $4^{n}$.
+$$4^{n+1}-4^{n}=4\cdot 4^{n}-4^{n}=3\cdot 4^{n}$$
+$$2^{2n-1}=\dfrac{2^{2n}}{2^{1}}=\dfrac{4^{n}}{2}$$
+$$\dfrac{3\cdot 4^{n}}{\dfrac{4^{n}}{2}}=3\cdot 4^{n}\cdot\dfrac{2}{4^{n}}$$
+$$=6$$`,
+    cara_cepat: String.raw`Hasilnya konstan untuk semua bilangan bulat $n$, jadi cukup substitusi $n=1$:
+$$\dfrac{4^{2}-4^{1}}{2^{1}}=\dfrac{12}{2}=6$$`
+  },
+  {
+    id: 4,
+    question_text: String.raw`Operasi biner $\oplus$ didefinisikan sebagai $a\oplus b=a+b+ab$ untuk setiap bilangan real $a$ dan $b$. Perhatikan pernyataan berikut.<br>(1) $a\oplus b=b\oplus a$ untuk setiap bilangan real $a$ dan $b$.<br>(2) Bilangan $1$ adalah elemen identitas, yaitu $a\oplus 1=a$ untuk setiap bilangan real $a$.<br>(3) $(1\oplus 2)\oplus 3=24$.<br>Pernyataan yang benar adalah ....`,
+    image: '',
+    options: {
+      A: 'Hanya (1)',
+      B: 'Hanya (2)',
+      C: 'Hanya (3)',
+      D: '(1) dan (2)',
+      E: '(2) dan (3)'
+    },
+    konsep: String.raw`sifat komutatif dan elemen identitas pada operasi biner, serta menghitung operasi bertingkat dari dalam kurung.`,
+    analisis_salah: {
+      B: String.raw`Kamu menganggap $1$ sebagai identitas karena identitas perkalian adalah 1. Padahal $a\oplus 1=2a+1\neq a$. Identitas operasi ini adalah $0$ ($a\oplus 0=a$).`,
+      C: String.raw`Pernyataan (3) salah: $1\oplus 2=5$ dan $5\oplus 3=5+3+15=23$, bukan 24. Pernyataan (1) yang benar juga terlewat.`,
+      D: String.raw`(1) memang benar, tetapi (2) salah karena $a\oplus 1=2a+1$. Identitas bergantung pada definisi operasi, bukan selalu 1.`,
+      E: String.raw`Keduanya salah. $a\oplus 1=2a+1\neq a$ dan $(1\oplus 2)\oplus 3=23\neq 24$. Pernyataan (1) yang benar justru tidak dipilih.`
+    },
+    correct_answer: 'A',
+    pembahasan: String.raw`Pernyataan (1): penjumlahan dan perkalian bilangan real bersifat komutatif, maka
+$$a\oplus b=a+b+ab=b+a+ba=b\oplus a$$
+Jadi (1) **benar**.
+Pernyataan (2): substitusikan $b=1$.
+$$a\oplus 1=a+1+a\cdot 1=2a+1$$
+Hasilnya tidak sama dengan $a$ (kecuali $a=-1$), jadi (2) **salah**. Elemen identitasnya $0$ karena $a\oplus 0=a$.
+Pernyataan (3): hitung dari dalam kurung.
+$$1\oplus 2=1+2+(1)(2)=5$$
+$$5\oplus 3=5+3+(5)(3)=23$$
+Hasilnya $23$, bukan $24$, jadi (3) **salah**. Hanya (1) yang benar.`,
+    cara_cepat: String.raw`Faktorkan operasinya: $a\oplus b=(a+1)(b+1)-1$. Bentuk ini langsung menunjukkan sifat komutatif. Untuk (3):
+$$1\oplus 2=2\cdot 3-1=5,\qquad 5\oplus 3=6\cdot 4-1=23$$`
+  },
+  {
+    id: 5,
+    question_text: String.raw`Diberikan bilangan-bilangan berikut: $\sqrt{49}$, $\sqrt{18}$, $0{,}\overline{3}$, $\pi$, $\sqrt[3]{-8}$, dan $\dfrac{\sqrt{12}}{\sqrt{3}}$. Banyak bilangan rasional dari bilangan-bilangan tersebut adalah ....`,
+    image: '',
+    options: { A: String.raw`$0$`, B: String.raw`$1$`, C: String.raw`$2$`, D: String.raw`$3$`, E: String.raw`$4$` },
+    konsep: String.raw`jenis bilangan real: rasional (bentuk $\frac{p}{q}$, termasuk desimal berulang dan akar sempurna) dan irasional.`,
+    analisis_salah: {
+      A: String.raw`Kamu mungkin menganggap semua bentuk akar atau simbol khusus adalah irasional. Akar dari kuadrat atau kubik sempurna bernilai rasional.`,
+      B: String.raw`Hanya $\sqrt{49}=7$ yang dikenali rasional. Desimal berulang $0{,}\overline{3}=\frac{1}{3}$, $\sqrt[3]{-8}=-2$, dan $\frac{\sqrt{12}}{\sqrt{3}}=2$ juga rasional.`,
+      C: String.raw`Dua bilangan rasional terlewat, biasanya $\sqrt[3]{-8}$ (dikira tidak real karena negatif) dan $\frac{\sqrt{12}}{\sqrt{3}}$ (dikira irasional karena ada akar).`,
+      D: String.raw`Satu bilangan rasional terlewat. Yang paling sering: $\frac{\sqrt{12}}{\sqrt{3}}$ dianggap irasional, padahal $\sqrt{\frac{12}{3}}=\sqrt{4}=2$. Sederhanakan dulu sebelum menyimpulkan.`
+    },
+    correct_answer: 'E',
+    pembahasan: String.raw`Periksa tiap bilangan.
+$$\sqrt{49}=7\quad(\text{rasional})$$
+$$\sqrt{18}=3\sqrt{2}\quad(\text{irasional})$$
+$$0{,}\overline{3}=\dfrac{1}{3}\quad(\text{rasional})$$
+$$\pi\quad(\text{irasional})$$
+$$\sqrt[3]{-8}=-2\quad(\text{rasional})$$
+$$\dfrac{\sqrt{12}}{\sqrt{3}}=\sqrt{\dfrac{12}{3}}=\sqrt{4}=2\quad(\text{rasional})$$
+Banyak bilangan rasional adalah $4$.`,
+    cara_cepat: String.raw`Irasional hanya akar dari bilangan yang bukan kuadrat (atau kubik) sempurna, dan $\pi$. Di sini hanya $\sqrt{18}$ dan $\pi$.
+$$6-2=4$$`
+  },
+  {
+    id: 6,
+    question_text: String.raw`Jika $x=2^{\frac{1}{3}}$, nilai dari $x^{6}+x^{-3}$ adalah ....`,
+    image: '',
+    options: { A: String.raw`$\dfrac{9}{2}$`, B: String.raw`$5$`, C: String.raw`$6$`, D: String.raw`$8$`, E: String.raw`$9$` },
+    konsep: String.raw`pangkat dari pangkat $(a^m)^n=a^{mn}$ dan pangkat negatif $a^{-n}=\frac{1}{a^n}$.`,
+    analisis_salah: {
+      B: String.raw`Hasil 5 muncul bila $x^{-3}$ dianggap $1$ ($4+1$): tanda negatif pada pangkat diabaikan. Padahal $x^{-3}=\frac{1}{x^{3}}=\frac{1}{2}$.`,
+      C: String.raw`Hasil 6 muncul bila $x^{-3}$ dianggap $2$ ($4+2$). Pangkat negatif berarti kebalikan, bukan sekadar bilangan positif.`,
+      D: String.raw`Kemungkinan $x^{6}$ dihitung $2^{3}=8$ karena $\frac{1}{3}\times 6$ salah menjadi 3 (seharusnya 2), dan suku $x^{-3}$ terabaikan.`,
+      E: String.raw`Gabungan dua kesalahan: $x^{6}$ dihitung $8$ (pangkat salah kali) dan $x^{-3}$ dianggap $1$.`
+    },
+    correct_answer: 'A',
+    pembahasan: String.raw`Hitung tiap suku dengan $(a^{m})^{n}=a^{mn}$.
+$$x^{6}=\left(2^{\frac{1}{3}}\right)^{6}=2^{2}=4$$
+$$x^{-3}=\left(2^{\frac{1}{3}}\right)^{-3}=2^{-1}=\dfrac{1}{2}$$
+$$x^{6}+x^{-3}=4+\dfrac{1}{2}=\dfrac{9}{2}$$`,
+    cara_cepat: String.raw`Dari $x=2^{\frac{1}{3}}$ diperoleh $x^{3}=2$. Maka:
+$$x^{6}=(x^{3})^{2}=4,\qquad x^{-3}=\dfrac{1}{x^{3}}=\dfrac{1}{2}$$
+$$4+\dfrac{1}{2}=\dfrac{9}{2}$$`
+  },
+  {
+    id: 7,
+    question_text: String.raw`Nilai dari $\dfrac{73\times 128-73\times 28}{25}$ adalah ....`,
+    image: '',
+    options: { A: String.raw`$146$`, B: String.raw`$292$`, C: String.raw`$365$`, D: String.raw`$584$`, E: String.raw`$730$` },
+    konsep: String.raw`sifat distributif $ab-ac=a(b-c)$ dan penyederhanaan pecahan.`,
+    analisis_salah: {
+      A: String.raw`Hasil 146 adalah setengah dari yang benar. Kemungkinan $\frac{100}{25}$ dihitung $2$ atau pembagi salah menjadi $50$.`,
+      C: String.raw`Hasil $365=73\times 5$ muncul bila $\frac{100}{25}$ dianggap $5$. Yang benar $\frac{100}{25}=4$.`,
+      D: String.raw`Hasil $584=73\times 8$ muncul bila $\frac{100}{25}$ dianggap $8$ atau terjadi salah hitung perkalian.`,
+      E: String.raw`Hasil $730=73\times 10$ muncul bila $\frac{100}{25}$ dianggap $10$. Sederhanakan $\frac{100}{25}$ dengan hati-hati.`
+    },
+    correct_answer: 'B',
+    pembahasan: String.raw`Gunakan sifat distributif $ab-ac=a(b-c)$.
+$$\dfrac{73\times 128-73\times 28}{25}=\dfrac{73\times(128-28)}{25}$$
+$$=\dfrac{73\times 100}{25}$$
+$$=73\times 4=292$$`,
+    cara_cepat: String.raw`Faktorkan $73$ dulu, jangan hitung $73\times 128$ dan $73\times 28$ satu per satu.
+$$73\times\dfrac{100}{25}=73\times 4=292$$`
+  },
+  {
+    id: 8,
+    question_text: String.raw`Bentuk sederhana dari $\dfrac{(\sqrt{3})^{5}\times 9^{-\frac{1}{2}}}{27^{\frac{1}{6}}}$ adalah ....`,
+    image: '',
+    options: { A: String.raw`$1$`, B: String.raw`$\sqrt{3}$`, C: String.raw`$3$`, D: String.raw`$3\sqrt{3}$`, E: String.raw`$9$` },
+    konsep: String.raw`mengubah bentuk akar menjadi pangkat pecahan ($\sqrt{a}=a^{\frac{1}{2}}$) dan menyamakan basis.`,
+    analisis_salah: {
+      A: String.raw`Hasil $1=3^{0}$ muncul bila $9^{-\frac{1}{2}}$ ditulis $3^{-2}$ (pangkat $-\frac{1}{2}$ tidak dikalikan 2): $\frac{5}{2}-2-\frac{1}{2}=0$. Yang benar $9^{-\frac{1}{2}}=3^{-1}$.`,
+      B: String.raw`Hasil $\sqrt{3}=3^{\frac{1}{2}}$ muncul bila $27^{\frac{1}{6}}$ dianggap $3^{1}$ (pangkat $\frac{1}{6}$ terabaikan). Yang benar $27^{\frac{1}{6}}=3^{\frac{1}{2}}$.`,
+      D: String.raw`Hasil $3\sqrt{3}=3^{\frac{3}{2}}$ muncul bila penyebut $27^{\frac{1}{6}}$ terlupa: $\frac{5}{2}-1=\frac{3}{2}$.`,
+      E: String.raw`Hasil $9=3^{2}$ muncul bila suku $9^{-\frac{1}{2}}$ terlupa: $\frac{5}{2}-\frac{1}{2}=2$.`
+    },
+    correct_answer: 'C',
+    pembahasan: String.raw`Ubah semuanya ke basis $3$.
+$$(\sqrt{3})^{5}=\left(3^{\frac{1}{2}}\right)^{5}=3^{\frac{5}{2}}$$
+$$9^{-\frac{1}{2}}=\left(3^{2}\right)^{-\frac{1}{2}}=3^{-1}$$
+$$27^{\frac{1}{6}}=\left(3^{3}\right)^{\frac{1}{6}}=3^{\frac{1}{2}}$$
+$$\dfrac{3^{\frac{5}{2}}\times 3^{-1}}{3^{\frac{1}{2}}}=3^{\frac{5}{2}-1-\frac{1}{2}}$$
+$$=3^{1}=3$$`,
+    cara_cepat: String.raw`Cukup catat pangkat basis 3 tiap bagian: $\frac{5}{2}$, $-1$, dan $\frac{1}{2}$ (di penyebut, jadi dikurangkan).
+$$\dfrac{5}{2}-1-\dfrac{1}{2}=1\ \Rightarrow\ 3^{1}=3$$`
+  },
+  {
+    id: 9,
+    question_text: String.raw`Diketahui bilangan real $x$ memenuhi $2^{x}=3$. Perhatikan pernyataan berikut.<br>(1) $2^{x+1}=6$<br>(2) $4^{x}=6$<br>(3) $8^{x}=27$<br>Pernyataan yang benar adalah ....`,
+    image: '',
+    options: {
+      A: 'Hanya (1)',
+      B: 'Hanya (2)',
+      C: '(1) dan (3)',
+      D: '(2) dan (3)',
+      E: '(1), (2), dan (3)'
+    },
+    konsep: String.raw`sifat pangkat $a^{m+n}=a^{m}a^{n}$ dan $(a^{m})^{n}=a^{mn}$ untuk mengubah bentuk $4^{x}$ dan $8^{x}$ ke $2^{x}$.`,
+    analisis_salah: {
+      A: String.raw`(1) memang benar, tetapi (3) juga benar: $8^{x}=(2^{3})^{x}=(2^{x})^{3}=27$. Kemungkinan kamu berhenti setelah satu pernyataan benar.`,
+      B: String.raw`(2) salah. $4^{x}=(2^{2})^{x}=(2^{x})^{2}=9$, bukan 6. Kamu mungkin menganggap $4^{x}=2\cdot 2^{x}$.`,
+      D: String.raw`(2) dianggap benar karena $4^{x}=2\cdot 2^{x}=6$ (keliru). Yang benar $4^{x}=(2^{x})^{2}=9$. Pernyataan (1) yang benar juga terlewat.`,
+      E: String.raw`(2) ikut dipilih. $4^{x}=(2^{x})^{2}=9\neq 6$, jadi (2) salah.`
+    },
+    correct_answer: 'C',
+    pembahasan: String.raw`Nyatakan setiap bentuk dengan $2^{x}=3$.
+Pernyataan (1):
+$$2^{x+1}=2^{x}\cdot 2^{1}=3\cdot 2=6$$
+(1) **benar**.
+Pernyataan (2):
+$$4^{x}=(2^{2})^{x}=(2^{x})^{2}=3^{2}=9$$
+Hasilnya $9$, bukan $6$, jadi (2) **salah**.
+Pernyataan (3):
+$$8^{x}=(2^{3})^{x}=(2^{x})^{3}=3^{3}=27$$
+(3) **benar**. Jadi yang benar (1) dan (3).`,
+    cara_cepat: String.raw`Tidak perlu mencari nilai $x$. Ubah basis menjadi $2$, lalu ganti $2^{x}$ dengan $3$:
+$$4^{x}=(2^{x})^{2}=9,\qquad 8^{x}=(2^{x})^{3}=27$$`
+  },
+  {
+    id: 10,
+    question_text: String.raw`Banyak bakteri pada suatu biakan dinyatakan dengan $N(t)=500\times 2^{\frac{t}{3}}$, dengan $t$ adalah waktu dalam jam. Banyak bakteri mencapai $16.000$ setelah $t$ = .... jam.`,
+    image: '',
+    options: { A: String.raw`$6$`, B: String.raw`$9$`, C: String.raw`$12$`, D: String.raw`$15$`, E: String.raw`$18$` },
+    konsep: String.raw`persamaan eksponen: menyamakan basis lalu menyamakan pangkat, serta mengubah bilangan ke bentuk pangkat ($32=2^{5}$).`,
+    analisis_salah: {
+      A: String.raw`$t=6$ berarti $\frac{t}{3}=2$. Kemungkinan $32$ salah ditulis sebagai $2^{2}$, padahal $2^{2}=4$.`,
+      B: String.raw`$t=9$ berarti $\frac{t}{3}=3$. Kemungkinan $32$ dianggap $2^{3}=8$. Hitung ulang: $2^{5}=32$.`,
+      C: String.raw`$t=12$ berarti $\frac{t}{3}=4$. Kemungkinan $32$ dianggap $2^{4}=16$. Yang benar $2^{5}=32$.`,
+      E: String.raw`$t=18$ berarti $\frac{t}{3}=6$. Kemungkinan $32$ dianggap $2^{6}=64$. Cek dengan substitusi: $2^{6}\ne 32$.`
+    },
+    correct_answer: 'D',
+    pembahasan: String.raw`Substitusikan $N(t)=16000$.
+$$500\times 2^{\frac{t}{3}}=16000$$
+$$2^{\frac{t}{3}}=32$$
+$$2^{\frac{t}{3}}=2^{5}$$
+$$\dfrac{t}{3}=5\ \Rightarrow\ t=15$$`,
+    cara_cepat: String.raw`Bakteri berlipat dua setiap $3$ jam. Rasio $\frac{16000}{500}=32=2^{5}$, artinya berlipat dua sebanyak $5$ kali.
+$$5\times 3=15\text{ jam}$$`
+  }
+];
+
+/* ===================== STATE ===================== */
+const state = { current: 0, answers: {}, seconds: 0, finished: false, timerId: null };
+const $ = (id) => document.getElementById(id);
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+
+/* ===================== UTIL ===================== */
+function fmtTime(s) {
+  const m = String(Math.floor(s / 60)).padStart(2, '0');
+  const d = String(s % 60).padStart(2, '0');
+  return `${m}:${d}`;
+}
+
+function typeset(el) {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise(el ? [el] : undefined).catch(() => {});
+  } else {
+    window.addEventListener('load', () => MathJax.typesetPromise && MathJax.typesetPromise(el ? [el] : undefined));
+  }
+}
+
+// Ubah string pembahasan menjadi blok: baris teks biasa + persamaan $$...$$ (bertahap ke bawah)
+function renderSteps(text) {
+  const parts = text.split(/(\$\$[\s\S]*?\$\$)/g).filter((p) => p.trim() !== '');
+  return parts.map((p) => {
+    if (p.startsWith('$$')) return `<div class="my-1 text-center">${p}</div>`;
+    const html = p.trim().replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#ffd300]">$1</strong>').replace(/\n/g, '<br>');
+    return `<p class="leading-relaxed">${html}</p>`;
+  }).join('');
+}
+
+function imageTag(q) {
+  if (!q.image) return '';
+  return `<img src="${q.image}" alt="Gambar soal ${q.id}" class="max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block">`;
+}
+
+/* ===================== STOPWATCH ===================== */
+function startTimer() {
+  state.timerId = setInterval(() => {
+    state.seconds++;
+    $('timer').textContent = fmtTime(state.seconds);
+  }, 1000);
+}
+function stopTimer() { clearInterval(state.timerId); }
+
+/* ===================== STATE 1: LATIHAN ===================== */
+function renderPractice() {
+  const q = questions[state.current];
+  const isLast = state.current === questions.length - 1;
+  const answered = Object.keys(state.answers).length;
+  const allDone = answered === questions.length;
+  const missing = questions.map((x, i) => state.answers[x.id] === undefined ? i + 1 : null).filter(Boolean);
+  const note = allDone ? '' : `<p class="text-sm ${state.warn ? 'text-rose-300 font-semibold' : 'text-[#ffd300]'}"><i class="fa-solid fa-circle-info mr-1"></i>Jawab semua soal dulu untuk mengirim jawaban dan melihat pembahasan. Belum dijawab: nomor ${missing.join(', ')}.</p>`;
+  const banner = (state.warn && !allDone) ? `<div class="mb-4 rounded-xl border border-rose-400 bg-rose-500/15 p-3 text-rose-200 text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Belum bisa dikirim. Lengkapi dulu soal nomor ${missing.join(', ')}.</div>` : '';
+
+  const options = LETTERS.filter((l) => q.options[l]).map((l) => {
+    const sel = state.answers[q.id] === l;
+    return `
+    <label class="opt flex items-center gap-3 w-full cursor-pointer rounded-xl border px-4 py-3 transition
+      ${sel ? 'bg-[#00d6d8]/25 border-[#00d6d8]' : 'bg-white/5 border-white/15 hover:border-[#00d6d8] hover:bg-[#00d6d8]/10'}">
+      <input type="radio" name="opt" value="${l}" class="sr-only" ${sel ? 'checked' : ''}>
+      <span class="shrink-0 w-8 h-8 rounded-full grid place-items-center font-bold ${sel ? 'bg-[#00d6d8] text-[#022050]' : 'bg-white/10 text-[#00d6d8]'}">${l}</span>
+      <span class="min-w-0 py-1 math-text">${q.options[l]}</span>
+    </label>`;
+  }).join('');
+
+  const boxes = questions.map((x, i) => {
+    const done = state.answers[x.id] !== undefined;
+    const cur = i === state.current;
+    return `<button data-nav="${i}" aria-label="Soal ${i + 1}" class="shrink-0 w-11 h-11 rounded-lg font-bold border-2 transition
+      ${done ? 'bg-[#ffd300] text-black border-[#ffd300]' : 'bg-transparent text-white border-white/25 hover:border-[#00d6d8] hover:shadow-[0_0_10px_#00d6d8]'}
+      ${cur ? 'ring-2 ring-[#00d6d8] ring-offset-2 ring-offset-[#022050]' : ''}">${i + 1}</button>`;
+  }).join('');
+
+  $('app').innerHTML = `
+  ${banner}
+  <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+    <section class="lg:w-3/4 w-full">
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+        <div class="flex items-center justify-between mb-3 text-sm">
+          <span class="text-[#00d6d8] font-semibold">Soal ${state.current + 1} dari ${questions.length}</span>
+          <span class="text-white/60">${answered} terjawab</span>
+        </div>
+        <div class="text-base sm:text-lg leading-relaxed math-text">${q.question_text}</div>
+        ${imageTag(q)}
+        <div class="mt-4 space-y-3" id="options">${options}</div>
+      </div>
+      <div class="flex items-center justify-between gap-3 mt-4">
+        <button id="prevBtn" class="px-4 py-2.5 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8]/10 disabled:opacity-30 disabled:cursor-not-allowed" ${state.current === 0 ? 'disabled' : ''}>
+          <i class="fa-solid fa-chevron-left mr-1"></i> Sebelumnya
+        </button>
+        ${isLast
+          ? `<button data-finish ${allDone ? '' : 'aria-disabled="true"'} class="px-4 py-2.5 rounded-lg font-bold ${allDone ? 'bg-[#ffd300] text-black hover:brightness-95' : 'bg-white/10 text-white/40 cursor-not-allowed'}"><i class="fa-solid fa-flag-checkered mr-1"></i> Selesai &amp; Lihat Pembahasan</button>`
+          : `<button id="nextBtn" class="px-4 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-95">Selanjutnya <i class="fa-solid fa-chevron-right ml-1"></i></button>`}
+      </div>
+      <div class="mt-3">${note}</div>
+    </section>
+
+    <aside class="lg:w-1/4 w-full">
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 lg:sticky lg:top-24">
+        <h2 class="font-semibold text-[#00d6d8] mb-3"><i class="fa-solid fa-table-cells mr-1"></i> Navigasi Soal</h2>
+        <div class="nav-scroll flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">${boxes}</div>
+        <div class="hidden lg:flex flex-col gap-1 mt-4 text-xs text-white/70">
+          <span><span class="inline-block w-3 h-3 rounded bg-[#ffd300] mr-2 align-middle"></span>Sudah dijawab</span>
+          <span><span class="inline-block w-3 h-3 rounded border border-white/40 mr-2 align-middle"></span>Belum dijawab</span>
+        </div>
+        <button data-finish ${allDone ? '' : 'aria-disabled="true"'} class="w-full mt-4 px-4 py-2.5 rounded-lg font-bold text-sm ${allDone ? 'bg-[#ffd300] text-black hover:brightness-95' : 'bg-white/10 text-white/40 cursor-not-allowed'}">
+          Selesai &amp; Lihat Pembahasan
+        </button>
+        <div class="mt-3 lg:hidden">${note}</div>
+      </div>
+    </aside>
+  </div>`;
+
+  bindPractice();
+  typeset($('app'));
+}
+
+function bindPractice() {
+  document.querySelectorAll('#options input').forEach((inp) => {
+    inp.addEventListener('change', () => {
+      state.answers[questions[state.current].id] = inp.value;
+      renderPractice();
+    });
+  });
+  document.querySelectorAll('[data-nav]').forEach((b) =>
+    b.addEventListener('click', () => { state.current = +b.dataset.nav; renderPractice(); }));
+  const prev = $('prevBtn'), next = $('nextBtn');
+  if (prev) prev.addEventListener('click', () => { state.current--; renderPractice(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  if (next) next.addEventListener('click', () => { state.current++; renderPractice(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  document.querySelectorAll('[data-finish]').forEach((b) => b.addEventListener('click', finish));
+}
+
+function finish() {
+  const first = questions.findIndex((q) => state.answers[q.id] === undefined);
+  if (first !== -1) {
+    state.warn = true;
+    state.current = first;
+    renderPractice();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  state.warn = false;
+  state.finished = true;
+  stopTimer();
+  renderReview();
+  window.scrollTo({ top: 0 });
+}
+
+/* ===================== STATE 2: PEMBAHASAN & EVALUASI ===================== */
+function renderReview() {
+  const total = questions.length;
+  const benar = questions.filter((q) => state.answers[q.id] === q.correct_answer).length;
+  const salah = total - benar;
+  const skor = Math.round((benar / total) * 100);
+
+  const stat = (label, val, cls = '') => `
+    <div class="bg-[#022050]/60 rounded-xl p-3 text-center border border-white/10">
+      <div class="text-2xl sm:text-3xl font-extrabold ${cls}">${val}</div>
+      <div class="text-xs sm:text-sm text-white/70">${label}</div>
+    </div>`;
+
+  const banner = `
+  <section class="rounded-2xl p-4 sm:p-6 border border-[#00d6d8]/50 bg-gradient-to-br from-[#00d6d8]/15 to-white/5 shadow-[0_0_25px_rgba(0,214,216,0.15)]">
+    <h2 class="text-xl sm:text-2xl font-bold mb-4"><i class="fa-solid fa-trophy text-[#ffd300] mr-2"></i>Ringkasan Hasil Latihan</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      ${stat('Skor Akhir', skor, 'text-[#ffd300]')}
+      ${stat('Total Benar', benar, 'text-emerald-300')}
+      ${stat('Total Salah', salah, 'text-rose-300')}
+      ${stat('Waktu Pengerjaan', fmtTime(state.seconds), 'text-[#00d6d8] font-mono')}
+    </div>
+  </section>`;
+
+  const cards = questions.map((q, i) => {
+    const mine = state.answers[q.id];
+    const ok = mine === q.correct_answer;
+    const opts = LETTERS.filter((l) => q.options[l]).map((l) => {
+      const isKey = l === q.correct_answer, isMine = l === mine;
+      let cls = 'bg-white/5 border-white/15';
+      let tag = '';
+      if (isKey) { cls = 'bg-emerald-500/20 border-emerald-400'; tag = '<span class="ml-auto shrink-0 text-xs text-emerald-300"><i class="fa-solid fa-key mr-1"></i>Kunci</span>'; }
+      if (isMine && !isKey) { cls = 'bg-rose-500/20 border-rose-400'; tag = '<span class="ml-auto shrink-0 text-xs text-rose-300"><i class="fa-solid fa-user mr-1"></i>Jawabanmu</span>'; }
+      if (isMine && isKey) tag = '<span class="ml-auto shrink-0 text-xs text-emerald-300"><i class="fa-solid fa-user-check mr-1"></i>Jawabanmu &amp; Kunci</span>';
+      return `<div class="flex items-center gap-3 w-full rounded-xl border px-4 py-2.5 ${cls}">
+        <span class="shrink-0 w-7 h-7 rounded-full bg-white/10 grid place-items-center font-bold text-sm">${l}</span>
+        <span class="min-w-0 py-1 math-text">${q.options[l]}</span>${tag}</div>`;
+    }).join('');
+
+    const ana = (mine && !ok) ? `
+      <div class="mt-4 rounded-xl border border-rose-400/50 bg-rose-500/10 p-4">
+        <h4 class="font-bold text-rose-300 mb-2"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>Analisis Kesalahan</h4>
+        <p class="leading-relaxed math-text">Kamu memilih <strong>${mine}</strong>. ${q.analisis_salah[mine]}</p>
+        <p class="mt-2 text-sm text-white/80 math-text"><i class="fa-solid fa-lightbulb text-[#ffd300] mr-1"></i>Konsep yang perlu diulang: ${q.konsep}</p>
+      </div>` : '';
+
+    return `
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h3 class="font-bold text-[#00d6d8]">Soal ${i + 1}</h3>
+        <span class="text-sm font-semibold px-3 py-1 rounded-full ${mine === undefined ? 'bg-white/10 text-white/70' : ok ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+          <i class="fa-solid ${mine === undefined ? 'fa-minus' : ok ? 'fa-circle-check' : 'fa-circle-xmark'} mr-1"></i>
+          ${mine === undefined ? 'Tidak dijawab' : ok ? 'Benar' : 'Salah'}
+        </span>
+      </div>
+      <div class="text-base sm:text-lg leading-relaxed math-text">${q.question_text}</div>
+      ${imageTag(q)}
+      <div class="mt-3 space-y-2">${opts}</div>
+      <p class="mt-3 text-sm text-white/80">Jawabanmu: <strong class="${ok ? 'text-emerald-300' : 'text-rose-300'}">${mine || '-'}</strong> &nbsp;|&nbsp; Kunci: <strong class="text-emerald-300">${q.correct_answer}</strong></p>
+
+      ${ana}
+
+      <div class="mt-5 rounded-xl border border-white/15 bg-[#011538]/70 p-4">
+        <h4 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open mr-2"></i>Pembahasan Lengkap</h4>
+        <div class="space-y-2 math-text">${renderSteps(q.pembahasan)}</div>
+      </div>
+
+      <div class="mt-4 rounded-xl border border-[#00d6d8]/40 bg-[#00d6d8]/10 p-4">
+        <h4 class="font-bold text-[#00d6d8] mb-2">🔥 Cara Cepat / Trik</h4>
+        <div class="space-y-2 math-text">${renderSteps(q.cara_cepat)}</div>
+      </div>
+    </article>`;
+  }).join('');
+
+  $('app').innerHTML = `
+    <div class="max-w-4xl mx-auto space-y-5">
+      ${banner}
+      ${cards}
+      <div class="flex flex-wrap justify-center gap-3 pb-6">
+        <button id="retryBtn" class="px-5 py-2.5 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8]/10"><i class="fa-solid fa-rotate-right mr-1"></i> Ulangi Latihan</button>
+        <a href="bilangan.html" class="px-5 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-95">Kembali ke Dashboard bilangan</a>
+      </div>
+    </div>`;
+
+  $('retryBtn').addEventListener('click', () => {
+    state.current = 0; state.answers = {}; state.seconds = 0; state.finished = false; state.warn = false;
+    $('timer').textContent = '00:00';
+    startTimer();
+    renderPractice();
+  });
+  typeset($('app'));
+}
+
+/* ===================== INIT ===================== */
+document.addEventListener('DOMContentLoaded', () => {
+  renderPractice();
+  startTimer();
+});
+</script>
+</body>
+</html>
