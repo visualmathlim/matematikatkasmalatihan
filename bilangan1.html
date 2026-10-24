@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualMath.Lim - Latihan Bilangan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  body { background: #022050; color: #fff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .nav-scroll::-webkit-scrollbar { height: 6px; }
+  .nav-scroll::-webkit-scrollbar-thumb { background: #00d6d8; border-radius: 9px; }
+  mjx-container { color: inherit; }
+  mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: .6em 0; margin: .3em 0 !important; }
+  mjx-container:not([display="true"]) { padding: .15em 0; }
+  .math-text { overflow-wrap: anywhere; }
+  .opt:focus-within { outline: 2px solid #00d6d8; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- NAVBAR -->
+<header class="sticky top-0 z-30 bg-[#022050]/95 backdrop-blur border-b border-[#00d6d8]/30">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <a href="index.html" title="Home"><img src="logo.png" alt="Logo VisualMath.Lim" class="h-9 w-9 object-contain" onerror="this.style.display='none'"></a>
+      <h1 class="font-bold text-sm sm:text-lg truncate">VisualMath.Lim - <span class="text-[#00d6d8]">Latihan bilangan</span></h1>
+    </div>
+    <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+      <div id="timerBox" class="font-mono text-[#00d6d8] border border-[#00d6d8]/60 rounded-lg px-3 py-1 text-sm sm:text-base">
+        <i class="fa-regular fa-clock mr-1"></i><span id="timer">00:00</span>
+      </div>
+      <a href="bilangan.html" class="bg-[#ffd300] text-black font-semibold rounded-lg px-3 py-1.5 text-xs sm:text-sm hover:brightness-95">
+        <i class="fa-solid fa-arrow-left mr-1"></i><span class="hidden sm:inline">Kembali ke </span>Dashboard bilangan
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="app" class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6"></main>
+
+<script>
+/* ===================== DATA SOAL (Mockup) ===================== */
+// Gambar dibuat dengan kode (SVG), tanpa upload file.
+const svgToUri = (svg) => 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+
+const himpunanSVG = svgToUri(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" width="300" height="200" font-family="sans-serif">
+  <circle cx="105" cy="80" r="60" fill="#00d6d8" fill-opacity="0.18" stroke="#00d6d8" stroke-width="2"/>
+  <circle cx="195" cy="80" r="60" fill="#ffd300" fill-opacity="0.18" stroke="#ffd300" stroke-width="2"/>
+  <circle cx="150" cy="135" r="60" fill="#ffffff" fill-opacity="0.15" stroke="#ffffff" stroke-width="2"/>
+  <text x="70" y="62" fill="#00d6d8" font-size="22" font-weight="bold" text-anchor="middle">A</text>
+  <text x="230" y="62" fill="#ffd300" font-size="22" font-weight="bold" text-anchor="middle">B</text>
+  <text x="150" y="185" fill="#ffffff" font-size="22" font-weight="bold" text-anchor="middle">C</text>
+</svg>`);
+
+const questions = [
+  {
+    id: 1,
+    question_text: String.raw`Bentuk sederhana dari $\dfrac{3^{\frac{2}{3}} \times 8^{\frac{3}{2}}}{2^{\frac{5}{2}} \times 9^{\frac{5}{6}}}$ adalah ....`,
+    image: '',
+    options: {
+      A: String.raw`$\dfrac{1}{4}$`,
+      B: String.raw`$\dfrac{2}{3}$`,
+      C: String.raw`$\dfrac{4}{3}$`,
+      D: String.raw`$6$`,
+      E: String.raw`$12$`
+    },
+    konsep: String.raw`mengubah bilangan ke basis yang sama, sifat $(a^m)^n=a^{mn}$, pembagian pangkat $\frac{a^m}{a^n}=a^{m-n}$, dan pangkat negatif $a^{-n}=\frac{1}{a^n}$.`,
+    analisis_salah: {
+      A: String.raw`Hasil $\frac{1}{4}$ setara dengan $2^{-2}$. Kemungkinan basis 3 terabaikan dan pangkat basis 2 terbalik tandanya. Kurangkan pangkat selalu dengan urutan (pembilang $-$ penyebut) untuk setiap basis.`,
+      B: String.raw`Hasil $\frac{2}{3}$ setara dengan $3^{-1}\times 2^{1}$, artinya pangkat basis 2 salah hitung. Kemungkinan saat mengubah $8^{\frac{3}{2}}$ pangkat tidak dikalikan ($3\times\frac{3}{2}=\frac{9}{2}$), lalu hasil $\frac{9}{2}-\frac{5}{2}$ menjadi 1, padahal 2.`,
+      D: String.raw`Hasil 6 muncul bila tanda pangkat negatif hilang ($3^{-1}$ dianggap 3) dan $2^2$ salah dihitung. Ingat $3^{-1}=\frac{1}{3}$, bukan 3.`,
+      E: String.raw`Hasil 12 muncul dari $3^{-1}\times 2^{2}$ dengan $3^{-1}$ dianggap 3 ($3\times 4$). Pangkat negatif berarti kebalikan: $3^{-1}=\frac{1}{3}$, sehingga hasilnya $\frac{4}{3}$.`
+    },
+    correct_answer: 'C',
+    pembahasan: String.raw`Samakan basis: $8 = 2^3$ dan $9 = 3^2$. Gunakan $(a^m)^n = a^{mn}$.
+$$8^{\frac{3}{2}} = (2^3)^{\frac{3}{2}} = 2^{\frac{9}{2}}$$
+$$9^{\frac{5}{6}} = (3^2)^{\frac{5}{6}} = 3^{\frac{5}{3}}$$
+Substitusikan ke bentuk awal:
+$$\dfrac{3^{\frac{2}{3}} \times 2^{\frac{9}{2}}}{2^{\frac{5}{2}} \times 3^{\frac{5}{3}}}$$
+Gunakan aturan pembagian pangkat $\dfrac{a^m}{a^n} = a^{m-n}$ untuk tiap basis:
+$$= 3^{\frac{2}{3}-\frac{5}{3}} \times 2^{\frac{9}{2}-\frac{5}{2}}$$
+$$= 3^{-1} \times 2^{2}$$
+$$= \dfrac{1}{3} \times 4 = \dfrac{4}{3}$$`,
+    cara_cepat: String.raw`Ubah dulu $8 = 2^3$ dan $9 = 3^2$, lalu **kelompokkan basis yang sama**: kurangkan pangkat basis 3 dan basis 2 secara terpisah.
+$$3: \ \tfrac{2}{3}-\tfrac{5}{3} = -1 \qquad 2: \ \tfrac{9}{2}-\tfrac{5}{2} = 2$$
+$$3^{-1}\times 2^2 = \dfrac{4}{3}$$`
+  },
+  {
+    id: 2,
+    question_text: String.raw`Operasi biner $\odot$ didefinisikan sebagai $a \odot b = \dfrac{(a-b)^2 + 2ab}{a+b}$ untuk setiap bilangan real tidak negatif $a$ dan $b$. Jika $a \odot 2 = 5$, maka nilai $a \odot 0$ adalah ....`,
+    image: '',
+    options: {
+      A: String.raw`$0$`,
+      B: String.raw`$2$`,
+      C: String.raw`$3$`,
+      D: String.raw`$6$`,
+      E: String.raw`$9$`
+    },
+    konsep: String.raw`substitusi pada operasi biner, menjabarkan $(a-b)^2$, persamaan kuadrat dan faktorisasi, serta syarat bilangan tidak negatif.`,
+    analisis_salah: {
+      A: String.raw`Kamu mungkin menganggap seluruh pembilang menjadi 0 karena ada suku $2ab$ dengan $b=0$. Padahal hanya suku $2ab$ yang bernilai 0, sedangkan $(a-0)^2=a^2$ tetap ada.`,
+      B: String.raw`Nilai 2 kemungkinan diambil langsung dari angka $b=2$ pada soal. Soal meminta $a\odot 0$, sehingga $a$ harus dicari dulu dari persamaan $a\odot 2=5$.`,
+      C: String.raw`Nilai 3 muncul bila kamu menganggap $a+2=5$ (jadi $a=3$). Penyebut $a+2$ bukan hasil operasi; hasil operasi adalah seluruh pecahan $\frac{a^2+4}{a+2}=5$.`,
+      E: String.raw`Ada kesalahan aljabar saat menyelesaikan $a^2+4=5a+10$, misalnya salah memindahkan ruas atau salah memfaktorkan $a^2-5a-6$, sehingga akarnya bukan $6$. Cek dengan substitusi kembali ke $\frac{a^2+4}{a+2}$.`
+    },
+    correct_answer: 'D',
+    pembahasan: String.raw`Gunakan definisi operasi dengan $b = 2$:
+$$\dfrac{(a-2)^2 + 2(a)(2)}{a+2} = 5$$
+Jabarkan pembilang:
+$$\dfrac{a^2 - 4a + 4 + 4a}{a+2} = 5$$
+$$\dfrac{a^2 + 4}{a+2} = 5$$
+Kalikan silang:
+$$a^2 + 4 = 5a + 10$$
+$$a^2 - 5a - 6 = 0$$
+$$(a-6)(a+1) = 0$$
+$$a = 6 \ \text{ atau } \ a = -1$$
+Karena $a$ bilangan real tidak negatif, maka $a = 6$. Sekarang hitung $a \odot 0$:
+$$6 \odot 0 = \dfrac{(6-0)^2 + 2(6)(0)}{6+0} = \dfrac{36}{6} = 6$$`,
+    cara_cepat: String.raw`Perhatikan bahwa $(a-b)^2 + 2ab = a^2 + b^2$, sehingga:
+$$a \odot b = \dfrac{a^2 + b^2}{a+b}$$
+Untuk $b = 0$ diperoleh $a \odot 0 = \dfrac{a^2}{a} = a$. Jadi cukup cari nilai $a$ dari $\dfrac{a^2+4}{a+2} = 5$, yaitu $a = 6$.
+$$a \odot 0 = a = 6$$`
+  },
+  {
+    id: 3,
+    question_text: String.raw`Diberikan tiga himpunan bilangan: $A = \{x \mid x < 6,\ x \in \text{Bilangan Asli}\}$, $B = \{x \mid x \text{ bilangan genap},\ x \in \text{Bilangan Cacah}\}$, dan $C = \{x \mid x \le 10,\ x \in \text{Bilangan Prima}\}$. Hasil dari $(A \cap B) \cup C$ adalah ....`,
+    image: himpunanSVG,
+    options: {
+      A: String.raw`$\{2, 3, 5, 7\}$`,
+      B: String.raw`$\{0, 2, 3, 5, 7\}$`,
+      C: String.raw`$\{2, 3, 4, 5, 7\}$`,
+      D: String.raw`$\{0, 2, 3, 4, 5, 7\}$`,
+      E: String.raw`$\{2, 3, 4, 5, 7, 10\}$`
+    },
+    konsep: String.raw`perbedaan bilangan asli (mulai dari 1) dan bilangan cacah (mulai dari 0), bilangan prima, irisan $\cap$ dan gabungan $\cup$.`,
+    analisis_salah: {
+      A: String.raw`Kamu mungkin hanya menulis himpunan $C$ atau menganggap $A\cap B=\{2\}$. Anggota 4 terlewat: 4 genap dan 4 ada di $A$, jadi $4\in A\cap B$.`,
+      B: String.raw`Angka 0 ikut terbawa dari himpunan $B$. Padahal 0 bukan bilangan asli, jadi 0 tidak ada di $A$ dan tidak masuk $A\cap B$.`,
+      D: String.raw`Angka 0 masuk karena bilangan asli tertukar dengan bilangan cacah. $A$ memakai bilangan asli yang dimulai dari 1, sehingga 0 tidak termasuk.`,
+      E: String.raw`Angka 10 ikut masuk karena $10\le 10$ dan genap. Namun 10 bukan bilangan prima (tidak masuk $C$) dan 10 tidak kurang dari 6 (tidak masuk $A$).`
+    },
+    correct_answer: 'C',
+    pembahasan: String.raw`Langkah 1: tentukan anggota tiap himpunan.
+$$A = \{1, 2, 3, 4, 5\}$$
+$$B = \{0, 2, 4, 6, 8, 10, \dots\}$$
+$$C = \{2, 3, 5, 7\}$$
+Langkah 2: cari irisan $A \cap B$ (anggota yang ada di $A$ dan $B$):
+$$A \cap B = \{2, 4\}$$
+Langkah 3: gabungkan dengan $C$:
+$$(A \cap B) \cup C = \{2, 4\} \cup \{2, 3, 5, 7\}$$
+$$= \{2, 3, 4, 5, 7\}$$`,
+    cara_cepat: String.raw`Cari bilangan genap di $A$ saja (angka 1 sampai 5): hanya $2$ dan $4$. Lalu tambahkan semua bilangan prima $\le 10$, tanpa menulis angka yang sama dua kali.
+$$\{2, 4\} \cup \{2, 3, 5, 7\} = \{2, 3, 4, 5, 7\}$$`
+  }
+];
+
+/* ===================== STATE ===================== */
+const state = { current: 0, answers: {}, seconds: 0, finished: false, timerId: null };
+const $ = (id) => document.getElementById(id);
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+
+/* ===================== UTIL ===================== */
+function fmtTime(s) {
+  const m = String(Math.floor(s / 60)).padStart(2, '0');
+  const d = String(s % 60).padStart(2, '0');
+  return `${m}:${d}`;
+}
+
+function typeset(el) {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise(el ? [el] : undefined).catch(() => {});
+  } else {
+    window.addEventListener('load', () => MathJax.typesetPromise && MathJax.typesetPromise(el ? [el] : undefined));
+  }
+}
+
+// Ubah string pembahasan menjadi blok: baris teks biasa + persamaan $$...$$ (bertahap ke bawah)
+function renderSteps(text) {
+  const parts = text.split(/(\$\$[\s\S]*?\$\$)/g).filter((p) => p.trim() !== '');
+  return parts.map((p) => {
+    if (p.startsWith('$$')) return `<div class="my-1 text-center">${p}</div>`;
+    const html = p.trim().replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#ffd300]">$1</strong>').replace(/\n/g, '<br>');
+    return `<p class="leading-relaxed">${html}</p>`;
+  }).join('');
+}
+
+function imageTag(q) {
+  if (!q.image) return '';
+  return `<img src="${q.image}" alt="Gambar soal ${q.id}" class="max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block">`;
+}
+
+/* ===================== STOPWATCH ===================== */
+function startTimer() {
+  state.timerId = setInterval(() => {
+    state.seconds++;
+    $('timer').textContent = fmtTime(state.seconds);
+  }, 1000);
+}
+function stopTimer() { clearInterval(state.timerId); }
+
+/* ===================== STATE 1: LATIHAN ===================== */
+function renderPractice() {
+  const q = questions[state.current];
+  const isLast = state.current === questions.length - 1;
+  const answered = Object.keys(state.answers).length;
+  const allDone = answered === questions.length;
+  const missing = questions.map((x, i) => state.answers[x.id] === undefined ? i + 1 : null).filter(Boolean);
+  const note = allDone ? '' : `<p class="text-sm ${state.warn ? 'text-rose-300 font-semibold' : 'text-[#ffd300]'}"><i class="fa-solid fa-circle-info mr-1"></i>Jawab semua soal dulu untuk mengirim jawaban dan melihat pembahasan. Belum dijawab: nomor ${missing.join(', ')}.</p>`;
+  const banner = (state.warn && !allDone) ? `<div class="mb-4 rounded-xl border border-rose-400 bg-rose-500/15 p-3 text-rose-200 text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Belum bisa dikirim. Lengkapi dulu soal nomor ${missing.join(', ')}.</div>` : '';
+
+  const options = LETTERS.filter((l) => q.options[l]).map((l) => {
+    const sel = state.answers[q.id] === l;
+    return `
+    <label class="opt flex items-center gap-3 w-full cursor-pointer rounded-xl border px-4 py-3 transition
+      ${sel ? 'bg-[#00d6d8]/25 border-[#00d6d8]' : 'bg-white/5 border-white/15 hover:border-[#00d6d8] hover:bg-[#00d6d8]/10'}">
+      <input type="radio" name="opt" value="${l}" class="sr-only" ${sel ? 'checked' : ''}>
+      <span class="shrink-0 w-8 h-8 rounded-full grid place-items-center font-bold ${sel ? 'bg-[#00d6d8] text-[#022050]' : 'bg-white/10 text-[#00d6d8]'}">${l}</span>
+      <span class="min-w-0 py-1 math-text">${q.options[l]}</span>
+    </label>`;
+  }).join('');
+
+  const boxes = questions.map((x, i) => {
+    const done = state.answers[x.id] !== undefined;
+    const cur = i === state.current;
+    return `<button data-nav="${i}" aria-label="Soal ${i + 1}" class="shrink-0 w-11 h-11 rounded-lg font-bold border-2 transition
+      ${done ? 'bg-[#ffd300] text-black border-[#ffd300]' : 'bg-transparent text-white border-white/25 hover:border-[#00d6d8] hover:shadow-[0_0_10px_#00d6d8]'}
+      ${cur ? 'ring-2 ring-[#00d6d8] ring-offset-2 ring-offset-[#022050]' : ''}">${i + 1}</button>`;
+  }).join('');
+
+  $('app').innerHTML = `
+  ${banner}
+  <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+    <section class="lg:w-3/4 w-full">
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+        <div class="flex items-center justify-between mb-3 text-sm">
+          <span class="text-[#00d6d8] font-semibold">Soal ${state.current + 1} dari ${questions.length}</span>
+          <span class="text-white/60">${answered} terjawab</span>
+        </div>
+        <div class="text-base sm:text-lg leading-relaxed math-text">${q.question_text}</div>
+        ${imageTag(q)}
+        <div class="mt-4 space-y-3" id="options">${options}</div>
+      </div>
+      <div class="flex items-center justify-between gap-3 mt-4">
+        <button id="prevBtn" class="px-4 py-2.5 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8]/10 disabled:opacity-30 disabled:cursor-not-allowed" ${state.current === 0 ? 'disabled' : ''}>
+          <i class="fa-solid fa-chevron-left mr-1"></i> Sebelumnya
+        </button>
+        ${isLast
+          ? `<button data-finish ${allDone ? '' : 'aria-disabled="true"'} class="px-4 py-2.5 rounded-lg font-bold ${allDone ? 'bg-[#ffd300] text-black hover:brightness-95' : 'bg-white/10 text-white/40 cursor-not-allowed'}"><i class="fa-solid fa-flag-checkered mr-1"></i> Selesai &amp; Lihat Pembahasan</button>`
+          : `<button id="nextBtn" class="px-4 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-95">Selanjutnya <i class="fa-solid fa-chevron-right ml-1"></i></button>`}
+      </div>
+      <div class="mt-3">${note}</div>
+    </section>
+
+    <aside class="lg:w-1/4 w-full">
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 lg:sticky lg:top-24">
+        <h2 class="font-semibold text-[#00d6d8] mb-3"><i class="fa-solid fa-table-cells mr-1"></i> Navigasi Soal</h2>
+        <div class="nav-scroll flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">${boxes}</div>
+        <div class="hidden lg:flex flex-col gap-1 mt-4 text-xs text-white/70">
+          <span><span class="inline-block w-3 h-3 rounded bg-[#ffd300] mr-2 align-middle"></span>Sudah dijawab</span>
+          <span><span class="inline-block w-3 h-3 rounded border border-white/40 mr-2 align-middle"></span>Belum dijawab</span>
+        </div>
+        <button data-finish ${allDone ? '' : 'aria-disabled="true"'} class="w-full mt-4 px-4 py-2.5 rounded-lg font-bold text-sm ${allDone ? 'bg-[#ffd300] text-black hover:brightness-95' : 'bg-white/10 text-white/40 cursor-not-allowed'}">
+          Selesai &amp; Lihat Pembahasan
+        </button>
+        <div class="mt-3 lg:hidden">${note}</div>
+      </div>
+    </aside>
+  </div>`;
+
+  bindPractice();
+  typeset($('app'));
+}
+
+function bindPractice() {
+  document.querySelectorAll('#options input').forEach((inp) => {
+    inp.addEventListener('change', () => {
+      state.answers[questions[state.current].id] = inp.value;
+      renderPractice();
+    });
+  });
+  document.querySelectorAll('[data-nav]').forEach((b) =>
+    b.addEventListener('click', () => { state.current = +b.dataset.nav; renderPractice(); }));
+  const prev = $('prevBtn'), next = $('nextBtn');
+  if (prev) prev.addEventListener('click', () => { state.current--; renderPractice(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  if (next) next.addEventListener('click', () => { state.current++; renderPractice(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  document.querySelectorAll('[data-finish]').forEach((b) => b.addEventListener('click', finish));
+}
+
+function finish() {
+  const first = questions.findIndex((q) => state.answers[q.id] === undefined);
+  if (first !== -1) {
+    state.warn = true;
+    state.current = first;
+    renderPractice();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  state.warn = false;
+  state.finished = true;
+  stopTimer();
+  renderReview();
+  window.scrollTo({ top: 0 });
+}
+
+/* ===================== STATE 2: PEMBAHASAN & EVALUASI ===================== */
+function renderReview() {
+  const total = questions.length;
+  const benar = questions.filter((q) => state.answers[q.id] === q.correct_answer).length;
+  const salah = total - benar;
+  const skor = Math.round((benar / total) * 100);
+
+  const stat = (label, val, cls = '') => `
+    <div class="bg-[#022050]/60 rounded-xl p-3 text-center border border-white/10">
+      <div class="text-2xl sm:text-3xl font-extrabold ${cls}">${val}</div>
+      <div class="text-xs sm:text-sm text-white/70">${label}</div>
+    </div>`;
+
+  const banner = `
+  <section class="rounded-2xl p-4 sm:p-6 border border-[#00d6d8]/50 bg-gradient-to-br from-[#00d6d8]/15 to-white/5 shadow-[0_0_25px_rgba(0,214,216,0.15)]">
+    <h2 class="text-xl sm:text-2xl font-bold mb-4"><i class="fa-solid fa-trophy text-[#ffd300] mr-2"></i>Ringkasan Hasil Latihan</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      ${stat('Skor Akhir', skor, 'text-[#ffd300]')}
+      ${stat('Total Benar', benar, 'text-emerald-300')}
+      ${stat('Total Salah', salah, 'text-rose-300')}
+      ${stat('Waktu Pengerjaan', fmtTime(state.seconds), 'text-[#00d6d8] font-mono')}
+    </div>
+  </section>`;
+
+  const cards = questions.map((q, i) => {
+    const mine = state.answers[q.id];
+    const ok = mine === q.correct_answer;
+    const opts = LETTERS.filter((l) => q.options[l]).map((l) => {
+      const isKey = l === q.correct_answer, isMine = l === mine;
+      let cls = 'bg-white/5 border-white/15';
+      let tag = '';
+      if (isKey) { cls = 'bg-emerald-500/20 border-emerald-400'; tag = '<span class="ml-auto shrink-0 text-xs text-emerald-300"><i class="fa-solid fa-key mr-1"></i>Kunci</span>'; }
+      if (isMine && !isKey) { cls = 'bg-rose-500/20 border-rose-400'; tag = '<span class="ml-auto shrink-0 text-xs text-rose-300"><i class="fa-solid fa-user mr-1"></i>Jawabanmu</span>'; }
+      if (isMine && isKey) tag = '<span class="ml-auto shrink-0 text-xs text-emerald-300"><i class="fa-solid fa-user-check mr-1"></i>Jawabanmu &amp; Kunci</span>';
+      return `<div class="flex items-center gap-3 w-full rounded-xl border px-4 py-2.5 ${cls}">
+        <span class="shrink-0 w-7 h-7 rounded-full bg-white/10 grid place-items-center font-bold text-sm">${l}</span>
+        <span class="min-w-0 py-1 math-text">${q.options[l]}</span>${tag}</div>`;
+    }).join('');
+
+    const ana = (mine && !ok) ? `
+      <div class="mt-4 rounded-xl border border-rose-400/50 bg-rose-500/10 p-4">
+        <h4 class="font-bold text-rose-300 mb-2"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>Analisis Kesalahan</h4>
+        <p class="leading-relaxed math-text">Kamu memilih <strong>${mine}</strong>. ${q.analisis_salah[mine]}</p>
+        <p class="mt-2 text-sm text-white/80 math-text"><i class="fa-solid fa-lightbulb text-[#ffd300] mr-1"></i>Konsep yang perlu diulang: ${q.konsep}</p>
+      </div>` : '';
+
+    return `
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h3 class="font-bold text-[#00d6d8]">Soal ${i + 1}</h3>
+        <span class="text-sm font-semibold px-3 py-1 rounded-full ${mine === undefined ? 'bg-white/10 text-white/70' : ok ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+          <i class="fa-solid ${mine === undefined ? 'fa-minus' : ok ? 'fa-circle-check' : 'fa-circle-xmark'} mr-1"></i>
+          ${mine === undefined ? 'Tidak dijawab' : ok ? 'Benar' : 'Salah'}
+        </span>
+      </div>
+      <div class="text-base sm:text-lg leading-relaxed math-text">${q.question_text}</div>
+      ${imageTag(q)}
+      <div class="mt-3 space-y-2">${opts}</div>
+      <p class="mt-3 text-sm text-white/80">Jawabanmu: <strong class="${ok ? 'text-emerald-300' : 'text-rose-300'}">${mine || '-'}</strong> &nbsp;|&nbsp; Kunci: <strong class="text-emerald-300">${q.correct_answer}</strong></p>
+
+      ${ana}
+
+      <div class="mt-5 rounded-xl border border-white/15 bg-[#011538]/70 p-4">
+        <h4 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open mr-2"></i>Pembahasan Lengkap</h4>
+        <div class="space-y-2 math-text">${renderSteps(q.pembahasan)}</div>
+      </div>
+
+      <div class="mt-4 rounded-xl border border-[#00d6d8]/40 bg-[#00d6d8]/10 p-4">
+        <h4 class="font-bold text-[#00d6d8] mb-2">🔥 Cara Cepat / Trik</h4>
+        <div class="space-y-2 math-text">${renderSteps(q.cara_cepat)}</div>
+      </div>
+    </article>`;
+  }).join('');
+
+  $('app').innerHTML = `
+    <div class="max-w-4xl mx-auto space-y-5">
+      ${banner}
+      ${cards}
+      <div class="flex flex-wrap justify-center gap-3 pb-6">
+        <button id="retryBtn" class="px-5 py-2.5 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8]/10"><i class="fa-solid fa-rotate-right mr-1"></i> Ulangi Latihan</button>
+        <a href="bilangan.html" class="px-5 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-95">Kembali ke Dashboard bilangan</a>
+      </div>
+    </div>`;
+
+  $('retryBtn').addEventListener('click', () => {
+    state.current = 0; state.answers = {}; state.seconds = 0; state.finished = false; state.warn = false;
+    $('timer').textContent = '00:00';
+    startTimer();
+    renderPractice();
+  });
+  typeset($('app'));
+}
+
+/* ===================== INIT ===================== */
+document.addEventListener('DOMContentLoaded', () => {
+  renderPractice();
+  startTimer();
+});
+</script>
+</body>
+</html>
