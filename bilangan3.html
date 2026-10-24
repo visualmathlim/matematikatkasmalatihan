@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualMath.Lim - Latihan Bilangan 3 (Contoh Web)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  body { background: #022050; color: #fff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .nav-scroll::-webkit-scrollbar { height: 6px; }
+  .nav-scroll::-webkit-scrollbar-thumb { background: #00d6d8; border-radius: 9px; }
+  mjx-container { color: inherit; }
+  mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: .6em 0; margin: .3em 0 !important; }
+  mjx-container:not([display="true"]) { padding: .15em 0; }
+  .math-text { overflow-wrap: anywhere; }
+  .opt:focus-within { outline: 2px solid #00d6d8; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- NAVBAR -->
+<header class="sticky top-0 z-30 bg-[#022050]/95 backdrop-blur border-b border-[#00d6d8]/30">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <a href="index.html" title="Home"><img src="logo.png" alt="Logo VisualMath.Lim" class="h-9 w-9 object-contain" onerror="this.style.display='none'"></a>
+      <h1 class="font-bold text-sm sm:text-lg truncate">VisualMath.Lim - <span class="text-[#00d6d8]">Latihan bilangan</span></h1>
+    </div>
+    <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+      <div id="timerBox" class="font-mono text-[#00d6d8] border border-[#00d6d8]/60 rounded-lg px-3 py-1 text-sm sm:text-base">
+        <i class="fa-regular fa-clock mr-1"></i><span id="timer">00:00</span>
+      </div>
+      <a href="bilangan.html" class="bg-[#ffd300] text-black font-semibold rounded-lg px-3 py-1.5 text-xs sm:text-sm hover:brightness-95">
+        <i class="fa-solid fa-arrow-left mr-1"></i><span class="hidden sm:inline">Kembali ke </span>Dashboard bilangan
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="app" class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6"></main>
+
+<script>
+/* ===================== DATA SOAL: Contoh Web 2025-2026 Materi Bilangan ===================== */
+// Gambar (jika ada) dibuat dengan kode SVG lewat svgToUri(), tanpa upload file.
+const svgToUri = (svg) => 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+
+const questions = [
+  {
+    id: 1,
+    question_text: String.raw`Hasil dari $\dfrac{1}{4}+\dfrac{7}{4}\times\dfrac{8}{21}$ adalah ....`,
+    image: '',
+    options: {
+      A: String.raw`$\dfrac{8}{12}$`,
+      B: String.raw`$\dfrac{8}{11}$`,
+      C: String.raw`$\dfrac{11}{12}$`,
+      D: String.raw`$\dfrac{16}{21}$`,
+      E: String.raw`$2\dfrac{8}{21}$`
+    },
+    konsep: String.raw`urutan operasi (perkalian dikerjakan lebih dulu dari penjumlahan), perkalian pecahan, dan menyamakan penyebut pada penjumlahan pecahan.`,
+    analisis_salah: {
+      A: String.raw`$\frac{8}{12}=\frac{2}{3}$ adalah hasil perkalian $\frac{7}{4}\times\frac{8}{21}$ saja. Suku $\frac{1}{4}$ lupa dijumlahkan.`,
+      B: String.raw`$\frac{8}{11}$ tidak muncul dari satu langkah yang jelas. Kemungkinan salah saat menjumlahkan pecahan. Setelah penyebut sama ($12$), penyebut tetap dan hanya pembilang dijumlahkan: $\frac{3+8}{12}=\frac{11}{12}$.`,
+      D: String.raw`Urutan operasi terbalik: $\frac{1}{4}+\frac{7}{4}=2$ dikerjakan dulu, lalu dikali $\frac{8}{21}$ menjadi $\frac{16}{21}$. Perkalian harus lebih dulu daripada penjumlahan.`,
+      E: String.raw`Kemungkinan $\frac{1}{4}+\frac{7}{4}=2$ dijumlahkan dulu, lalu hasilnya ditambah $\frac{8}{21}$ (bukan dikali), sehingga $2\frac{8}{21}$. Tanda $\times$ pada soal tidak diperhatikan.`
+    },
+    correct_answer: 'C',
+    pembahasan: String.raw`Kerjakan perkalian terlebih dahulu, dengan aturan $\dfrac{A}{B}\times\dfrac{C}{D}=\dfrac{A\times C}{B\times D}$.
+$$\dfrac{7}{4}\times\dfrac{8}{21}=\dfrac{7\times 8}{4\times 21}=\dfrac{56}{84}=\dfrac{2}{3}$$
+Kemudian jumlahkan dengan menyamakan penyebut (bisa dengan kali silang atau KPK).
+$$\dfrac{1}{4}+\dfrac{2}{3}=\dfrac{1\times 3}{4\times 3}+\dfrac{4\times 2}{4\times 3}$$
+$$=\dfrac{3}{12}+\dfrac{8}{12}=\dfrac{11}{12}$$`,
+    cara_cepat: String.raw`Coret silang sebelum mengalikan: $7$ dengan $21$ menjadi $1$ dan $3$, serta $8$ dengan $4$ menjadi $2$ dan $1$.
+$$\dfrac{7}{4}\times\dfrac{8}{21}=\dfrac{1\times 2}{1\times 3}=\dfrac{2}{3}$$
+$$\dfrac{1}{4}+\dfrac{2}{3}=\dfrac{3+8}{12}=\dfrac{11}{12}$$`
+  },
+  {
+    id: 2,
+    question_text: String.raw`Diberikan $A=25\times 48$ dan $B=24\times 50$. Tanpa melakukan perkalian secara langsung, hubungan antara $A$ dan $B$ adalah ....`,
+    image: '',
+    options: {
+      A: String.raw`$A>B$`,
+      B: String.raw`$A<B$`,
+      C: String.raw`$A=B$`,
+      D: String.raw`$A=2B$`,
+      E: String.raw`$B=2A$`
+    },
+    konsep: String.raw`sifat asosiatif dan komutatif perkalian untuk membandingkan hasil kali tanpa menghitung.`,
+    analisis_salah: {
+      A: String.raw`Kemungkinan hanya melihat $48>24$ dan menyimpulkan $A$ lebih besar. Faktor $25$ dan $50$ juga harus dibandingkan.`,
+      B: String.raw`Kemungkinan hanya melihat $50>25$ dan menyimpulkan $B$ lebih besar. Faktor $48$ dan $24$ juga harus dibandingkan.`,
+      D: String.raw`Hanya membandingkan $48$ dengan $24$ ($48=2\times 24$) dan mengabaikan pasangan $25$ dengan $50$ yang justru dua kali lipat di sisi $B$.`,
+      E: String.raw`Hanya membandingkan $50$ dengan $25$ ($50=2\times 25$) dan mengabaikan pasangan $48$ dengan $24$ yang dua kali lipat di sisi $A$.`
+    },
+    correct_answer: 'C',
+    pembahasan: String.raw`Ubah $48=2\times 24$, sehingga:
+$$A=25\times 48=25\times(2\times 24)$$
+Dengan sifat asosiatif, kelompokkan $25\times 2$ terlebih dahulu:
+$$A=(25\times 2)\times 24=50\times 24$$
+Karena $B=24\times 50$ dan perkalian bersifat komutatif ($50\times 24=24\times 50$), maka:
+$$A=B$$`,
+    cara_cepat: String.raw`Bandingkan tiap pasangan faktor: $25\to 50$ berarti dikali $2$, dan $48\to 24$ berarti dibagi $2$. Perubahan itu saling meniadakan.
+$$25\times 48=\dfrac{50}{2}\times(24\times 2)=50\times 24=B$$`
+  },
+  {
+    id: 3,
+    question_text: String.raw`Bentuk rasional dari $\dfrac{2+\sqrt{2}}{\sqrt{6}-\sqrt{2}}$ adalah ....`,
+    image: '',
+    options: {
+      A: String.raw`$\dfrac{\sqrt{6}+\sqrt{2}-\sqrt{3}+1}{2}$`,
+      B: String.raw`$\dfrac{\sqrt{6}+\sqrt{2}+\sqrt{3}+1}{2}$`,
+      C: String.raw`$\dfrac{\sqrt{6}+\sqrt{2}+2\sqrt{3}+2}{2}$`,
+      D: String.raw`$\dfrac{\sqrt{6}+\sqrt{2}-\sqrt{3}+2}{4}$`,
+      E: String.raw`$\dfrac{\sqrt{6}+\sqrt{2}+\sqrt{3}+2}{4}$`
+    },
+    konsep: String.raw`merasionalkan penyebut dengan akar sekawan, selisih kuadrat $(a-b)(a+b)=a^{2}-b^{2}$, sifat $\sqrt{a}\times\sqrt{b}=\sqrt{ab}$, dan menyederhanakan bentuk akar.`,
+    analisis_salah: {
+      A: String.raw`Suku $\sqrt{3}$ bertanda negatif. Kemungkinan terjadi kesalahan tanda saat menjabarkan atau menyederhanakan $\sqrt{12}=2\sqrt{3}$ (yang bertanda $+$).`,
+      C: String.raw`Faktor $2$ hanya dicoret sebagian: suku $2\sqrt{6}$ dan $2\sqrt{2}$ dibagi 2, tetapi $2\sqrt{3}$ dan $2$ belum. Pembilang $2\sqrt{6}+2\sqrt{2}+2\sqrt{3}+2$ dan penyebut $4$ harus dibagi $2$ seluruhnya.`,
+      D: String.raw`Dua kesalahan sekaligus: suku $\sqrt{3}$ bertanda negatif, dan penyebut $4$ serta konstanta $2$ tidak disederhanakan secara konsisten.`,
+      E: String.raw`Suku-suku akar dibagi 2, tetapi konstanta $2$ dan penyebut $4$ tidak ikut disesuaikan. Jika pembilang dibagi 2, penyebut juga harus dibagi 2 ($\frac{4}{2}=2$) dan konstanta menjadi $1$.`
+    },
+    correct_answer: 'B',
+    pembahasan: String.raw`Kalikan pembilang dan penyebut dengan akar sekawan penyebut, yaitu $\sqrt{6}+\sqrt{2}$.
+$$\dfrac{2+\sqrt{2}}{\sqrt{6}-\sqrt{2}}\times\dfrac{\sqrt{6}+\sqrt{2}}{\sqrt{6}+\sqrt{2}}$$
+Pembilang, gunakan $\sqrt{a}\times\sqrt{b}=\sqrt{ab}$:
+$$(2+\sqrt{2})(\sqrt{6}+\sqrt{2})=2\sqrt{6}+2\sqrt{2}+\sqrt{12}+\sqrt{4}$$
+$$=2\sqrt{6}+2\sqrt{2}+2\sqrt{3}+2$$
+Penyebut, gunakan selisih kuadrat:
+$$(\sqrt{6}-\sqrt{2})(\sqrt{6}+\sqrt{2})=6-2=4$$
+Gabungkan dan sederhanakan:
+$$\dfrac{2\sqrt{6}+2\sqrt{2}+2\sqrt{3}+2}{4}=\dfrac{2(\sqrt{6}+\sqrt{2}+\sqrt{3}+1)}{4}$$
+$$=\dfrac{\sqrt{6}+\sqrt{2}+\sqrt{3}+1}{2}$$`,
+    cara_cepat: String.raw`Faktorkan $\sqrt{2}$ dari pembilang dan penyebut lebih dulu: $2+\sqrt{2}=\sqrt{2}(\sqrt{2}+1)$ dan $\sqrt{6}-\sqrt{2}=\sqrt{2}(\sqrt{3}-1)$. Coret $\sqrt{2}$:
+$$\dfrac{\sqrt{2}+1}{\sqrt{3}-1}\times\dfrac{\sqrt{3}+1}{\sqrt{3}+1}=\dfrac{\sqrt{6}+\sqrt{2}+\sqrt{3}+1}{3-1}$$`
+  },
+  {
+    id: 4,
+    question_text: String.raw`Seorang teknisi di bidang energi menghitung konsumsi energi sebuah alat listrik. Diketahui tegangan listrik sebesar $2^{4}\times 5^{2}$ volt, arus listrik sebesar $2^{-1}\times 5^{-1}$ ampere, dan waktu pemakaian selama $2^{3}\times 5$ detik. Energi listrik dirumuskan dengan $E=V\times I\times t$, dengan $E$ = energi listrik (Joule), $V$ = tegangan listrik (Volt), $I$ = kuat arus listrik (Ampere), dan $t$ = waktu penggunaan listrik (detik).<br>Karena adanya rugi sistem, energi bersih yang dihasilkan menjadi $E_{\text{bersih}}=E\times\dfrac{1}{2^{2}\times 5^{1}}$. Maka energi bersih sama dengan ....`,
+    image: '',
+    options: {
+      A: String.raw`$2^{8}\times 5^{5}$ J`,
+      B: String.raw`$2^{4}\times 5^{3}$ J`,
+      C: String.raw`$80$ J`,
+      D: String.raw`$32$ J`,
+      E: String.raw`$5$ J`
+    },
+    konsep: String.raw`$a^{m}\times a^{n}=a^{m+n}$, $\frac{a^{m}}{a^{n}}=a^{m-n}$, pangkat negatif $a^{-n}=\frac{1}{a^{n}}$, dan memproses tiap basis secara terpisah.`,
+    analisis_salah: {
+      A: String.raw`Pangkatnya lebih besar dari $E=2^{6}\times 5^{2}$. Kemungkinan faktor $\frac{1}{2^{2}\times 5^{1}}$ dikalikan sebagai $2^{2}\times 5^{1}$ (bukan membagi), dan pangkat basis 5 juga salah jumlah.`,
+      B: String.raw`Pangkat basis 2 sudah benar ($6-2=4$), tetapi pangkat basis 5 menjadi $3$. Kemungkinan $5^{1}$ di penyebut dijumlahkan ($2+1$) dan bukan dikurangkan ($2-1=1$).`,
+      D: String.raw`$32=2^{5}$ hanya memuat basis 2, jadi basis 5 hilang dan pangkat 2 pun keliru (seharusnya $2^{4}$). Hasil akhir harus memuat kedua basis: $2^{4}\times 5^{1}$.`,
+      E: String.raw`$5=5^{1}$ hanya memuat basis 5, jadi basis 2 hilang. Pangkat 2 seharusnya $2^{4}=16$ sehingga hasilnya $16\times 5=80$.`
+    },
+    correct_answer: 'C',
+    pembahasan: String.raw`Data: $V=2^{4}\times 5^{2}$, $I=2^{-1}\times 5^{-1}$, dan $t=2^{3}\times 5^{1}$.
+Hitung energi awal, lalu gabungkan basis yang sama dengan $a^{m}\times a^{n}=a^{m+n}$.
+$$E=(2^{4}\times 5^{2})\times(2^{-1}\times 5^{-1})\times(2^{3}\times 5^{1})$$
+$$E=2^{4-1+3}\times 5^{2-1+1}=2^{6}\times 5^{2}$$
+Selanjutnya hitung energi bersih:
+$$E_{\text{bersih}}=\dfrac{2^{6}\times 5^{2}}{2^{2}\times 5^{1}}$$
+Gunakan $\dfrac{a^{m}}{a^{n}}=a^{m-n}$ untuk tiap basis:
+$$E_{\text{bersih}}=2^{6-2}\times 5^{2-1}=2^{4}\times 5^{1}$$
+$$=16\times 5=80\text{ J}$$`,
+    cara_cepat: String.raw`Jumlahkan pangkat tiap basis dari $V$, $I$, $t$, lalu kurangkan pembagi $2^{2}\times 5^{1}$:
+$$\text{Basis }2:\ 4-1+3-2=4\qquad\text{Basis }5:\ 2-1+1-1=1$$
+$$2^{4}\times 5=80\text{ J}$$`
+  }
+];
+
+/* ===================== STATE ===================== */
+const state = { current: 0, answers: {}, seconds: 0, finished: false, timerId: null };
+const $ = (id) => document.getElementById(id);
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+
+/* ===================== UTIL ===================== */
+function fmtTime(s) {
+  const m = String(Math.floor(s / 60)).padStart(2, '0');
+  const d = String(s % 60).padStart(2, '0');
+  return `${m}:${d}`;
+}
+
+function typeset(el) {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise(el ? [el] : undefined).catch(() => {});
+  } else {
+    window.addEventListener('load', () => MathJax.typesetPromise && MathJax.typesetPromise(el ? [el] : undefined));
+  }
+}
+
+// Ubah string pembahasan menjadi blok: baris teks biasa + persamaan $$...$$ (bertahap ke bawah)
+function renderSteps(text) {
+  const parts = text.split(/(\$\$[\s\S]*?\$\$)/g).filter((p) => p.trim() !== '');
+  return parts.map((p) => {
+    if (p.startsWith('$$')) return `<div class="my-1 text-center">${p}</div>`;
+    const html = p.trim().replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#ffd300]">$1</strong>').replace(/\n/g, '<br>');
+    return `<p class="leading-relaxed">${html}</p>`;
+  }).join('');
+}
+
+function imageTag(q) {
+  if (!q.image) return '';
+  return `<img src="${q.image}" alt="Gambar soal ${q.id}" class="max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block">`;
+}
+
+/* ===================== STOPWATCH ===================== */
+function startTimer() {
+  state.timerId = setInterval(() => {
+    state.seconds++;
+    $('timer').textContent = fmtTime(state.seconds);
+  }, 1000);
+}
+function stopTimer() { clearInterval(state.timerId); }
+
+/* ===================== STATE 1: LATIHAN ===================== */
+function renderPractice() {
+  const q = questions[state.current];
+  const isLast = state.current === questions.length - 1;
+  const answered = Object.keys(state.answers).length;
+  const allDone = answered === questions.length;
+  const missing = questions.map((x, i) => state.answers[x.id] === undefined ? i + 1 : null).filter(Boolean);
+  const note = allDone ? '' : `<p class="text-sm ${state.warn ? 'text-rose-300 font-semibold' : 'text-[#ffd300]'}"><i class="fa-solid fa-circle-info mr-1"></i>Jawab semua soal dulu untuk mengirim jawaban dan melihat pembahasan. Belum dijawab: nomor ${missing.join(', ')}.</p>`;
+  const banner = (state.warn && !allDone) ? `<div class="mb-4 rounded-xl border border-rose-400 bg-rose-500/15 p-3 text-rose-200 text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Belum bisa dikirim. Lengkapi dulu soal nomor ${missing.join(', ')}.</div>` : '';
+
+  const options = LETTERS.filter((l) => q.options[l]).map((l) => {
+    const sel = state.answers[q.id] === l;
+    return `
+    <label class="opt flex items-center gap-3 w-full cursor-pointer rounded-xl border px-4 py-3 transition
+      ${sel ? 'bg-[#00d6d8]/25 border-[#00d6d8]' : 'bg-white/5 border-white/15 hover:border-[#00d6d8] hover:bg-[#00d6d8]/10'}">
+      <input type="radio" name="opt" value="${l}" class="sr-only" ${sel ? 'checked' : ''}>
+      <span class="shrink-0 w-8 h-8 rounded-full grid place-items-center font-bold ${sel ? 'bg-[#00d6d8] text-[#022050]' : 'bg-white/10 text-[#00d6d8]'}">${l}</span>
+      <span class="min-w-0 py-1 math-text">${q.options[l]}</span>
+    </label>`;
+  }).join('');
+
+  const boxes = questions.map((x, i) => {
+    const done = state.answers[x.id] !== undefined;
+    const cur = i === state.current;
+    return `<button data-nav="${i}" aria-label="Soal ${i + 1}" class="shrink-0 w-11 h-11 rounded-lg font-bold border-2 transition
+      ${done ? 'bg-[#ffd300] text-black border-[#ffd300]' : 'bg-transparent text-white border-white/25 hover:border-[#00d6d8] hover:shadow-[0_0_10px_#00d6d8]'}
+      ${cur ? 'ring-2 ring-[#00d6d8] ring-offset-2 ring-offset-[#022050]' : ''}">${i + 1}</button>`;
+  }).join('');
+
+  $('app').innerHTML = `
+  ${banner}
+  <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+    <section class="lg:w-3/4 w-full">
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+        <div class="flex items-center justify-between mb-3 text-sm">
+          <span class="text-[#00d6d8] font-semibold">Soal ${state.current + 1} dari ${questions.length}</span>
+          <span class="text-white/60">${answered} terjawab</span>
+        </div>
+        <div class="text-base sm:text-lg leading-relaxed math-text">${q.question_text}</div>
+        ${imageTag(q)}
+        <div class="mt-4 space-y-3" id="options">${options}</div>
+      </div>
+      <div class="flex items-center justify-between gap-3 mt-4">
+        <button id="prevBtn" class="px-4 py-2.5 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8]/10 disabled:opacity-30 disabled:cursor-not-allowed" ${state.current === 0 ? 'disabled' : ''}>
+          <i class="fa-solid fa-chevron-left mr-1"></i> Sebelumnya
+        </button>
+        ${isLast
+          ? `<button data-finish ${allDone ? '' : 'aria-disabled="true"'} class="px-4 py-2.5 rounded-lg font-bold ${allDone ? 'bg-[#ffd300] text-black hover:brightness-95' : 'bg-white/10 text-white/40 cursor-not-allowed'}"><i class="fa-solid fa-flag-checkered mr-1"></i> Selesai &amp; Lihat Pembahasan</button>`
+          : `<button id="nextBtn" class="px-4 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-95">Selanjutnya <i class="fa-solid fa-chevron-right ml-1"></i></button>`}
+      </div>
+      <div class="mt-3">${note}</div>
+    </section>
+
+    <aside class="lg:w-1/4 w-full">
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 lg:sticky lg:top-24">
+        <h2 class="font-semibold text-[#00d6d8] mb-3"><i class="fa-solid fa-table-cells mr-1"></i> Navigasi Soal</h2>
+        <div class="nav-scroll flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">${boxes}</div>
+        <div class="hidden lg:flex flex-col gap-1 mt-4 text-xs text-white/70">
+          <span><span class="inline-block w-3 h-3 rounded bg-[#ffd300] mr-2 align-middle"></span>Sudah dijawab</span>
+          <span><span class="inline-block w-3 h-3 rounded border border-white/40 mr-2 align-middle"></span>Belum dijawab</span>
+        </div>
+        <button data-finish ${allDone ? '' : 'aria-disabled="true"'} class="w-full mt-4 px-4 py-2.5 rounded-lg font-bold text-sm ${allDone ? 'bg-[#ffd300] text-black hover:brightness-95' : 'bg-white/10 text-white/40 cursor-not-allowed'}">
+          Selesai &amp; Lihat Pembahasan
+        </button>
+        <div class="mt-3 lg:hidden">${note}</div>
+      </div>
+    </aside>
+  </div>`;
+
+  bindPractice();
+  typeset($('app'));
+}
+
+function bindPractice() {
+  document.querySelectorAll('#options input').forEach((inp) => {
+    inp.addEventListener('change', () => {
+      state.answers[questions[state.current].id] = inp.value;
+      renderPractice();
+    });
+  });
+  document.querySelectorAll('[data-nav]').forEach((b) =>
+    b.addEventListener('click', () => { state.current = +b.dataset.nav; renderPractice(); }));
+  const prev = $('prevBtn'), next = $('nextBtn');
+  if (prev) prev.addEventListener('click', () => { state.current--; renderPractice(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  if (next) next.addEventListener('click', () => { state.current++; renderPractice(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  document.querySelectorAll('[data-finish]').forEach((b) => b.addEventListener('click', finish));
+}
+
+function finish() {
+  const first = questions.findIndex((q) => state.answers[q.id] === undefined);
+  if (first !== -1) {
+    state.warn = true;
+    state.current = first;
+    renderPractice();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  state.warn = false;
+  state.finished = true;
+  stopTimer();
+  renderReview();
+  window.scrollTo({ top: 0 });
+}
+
+/* ===================== STATE 2: PEMBAHASAN & EVALUASI ===================== */
+function renderReview() {
+  const total = questions.length;
+  const benar = questions.filter((q) => state.answers[q.id] === q.correct_answer).length;
+  const salah = total - benar;
+  const skor = Math.round((benar / total) * 100);
+
+  const stat = (label, val, cls = '') => `
+    <div class="bg-[#022050]/60 rounded-xl p-3 text-center border border-white/10">
+      <div class="text-2xl sm:text-3xl font-extrabold ${cls}">${val}</div>
+      <div class="text-xs sm:text-sm text-white/70">${label}</div>
+    </div>`;
+
+  const banner = `
+  <section class="rounded-2xl p-4 sm:p-6 border border-[#00d6d8]/50 bg-gradient-to-br from-[#00d6d8]/15 to-white/5 shadow-[0_0_25px_rgba(0,214,216,0.15)]">
+    <h2 class="text-xl sm:text-2xl font-bold mb-4"><i class="fa-solid fa-trophy text-[#ffd300] mr-2"></i>Ringkasan Hasil Latihan</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      ${stat('Skor Akhir', skor, 'text-[#ffd300]')}
+      ${stat('Total Benar', benar, 'text-emerald-300')}
+      ${stat('Total Salah', salah, 'text-rose-300')}
+      ${stat('Waktu Pengerjaan', fmtTime(state.seconds), 'text-[#00d6d8] font-mono')}
+    </div>
+  </section>`;
+
+  const cards = questions.map((q, i) => {
+    const mine = state.answers[q.id];
+    const ok = mine === q.correct_answer;
+    const opts = LETTERS.filter((l) => q.options[l]).map((l) => {
+      const isKey = l === q.correct_answer, isMine = l === mine;
+      let cls = 'bg-white/5 border-white/15';
+      let tag = '';
+      if (isKey) { cls = 'bg-emerald-500/20 border-emerald-400'; tag = '<span class="ml-auto shrink-0 text-xs text-emerald-300"><i class="fa-solid fa-key mr-1"></i>Kunci</span>'; }
+      if (isMine && !isKey) { cls = 'bg-rose-500/20 border-rose-400'; tag = '<span class="ml-auto shrink-0 text-xs text-rose-300"><i class="fa-solid fa-user mr-1"></i>Jawabanmu</span>'; }
+      if (isMine && isKey) tag = '<span class="ml-auto shrink-0 text-xs text-emerald-300"><i class="fa-solid fa-user-check mr-1"></i>Jawabanmu &amp; Kunci</span>';
+      return `<div class="flex items-center gap-3 w-full rounded-xl border px-4 py-2.5 ${cls}">
+        <span class="shrink-0 w-7 h-7 rounded-full bg-white/10 grid place-items-center font-bold text-sm">${l}</span>
+        <span class="min-w-0 py-1 math-text">${q.options[l]}</span>${tag}</div>`;
+    }).join('');
+
+    const ana = (mine && !ok) ? `
+      <div class="mt-4 rounded-xl border border-rose-400/50 bg-rose-500/10 p-4">
+        <h4 class="font-bold text-rose-300 mb-2"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>Analisis Kesalahan</h4>
+        <p class="leading-relaxed math-text">Kamu memilih <strong>${mine}</strong>. ${q.analisis_salah[mine]}</p>
+        <p class="mt-2 text-sm text-white/80 math-text"><i class="fa-solid fa-lightbulb text-[#ffd300] mr-1"></i>Konsep yang perlu diulang: ${q.konsep}</p>
+      </div>` : '';
+
+    return `
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h3 class="font-bold text-[#00d6d8]">Soal ${i + 1}</h3>
+        <span class="text-sm font-semibold px-3 py-1 rounded-full ${mine === undefined ? 'bg-white/10 text-white/70' : ok ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+          <i class="fa-solid ${mine === undefined ? 'fa-minus' : ok ? 'fa-circle-check' : 'fa-circle-xmark'} mr-1"></i>
+          ${mine === undefined ? 'Tidak dijawab' : ok ? 'Benar' : 'Salah'}
+        </span>
+      </div>
+      <div class="text-base sm:text-lg leading-relaxed math-text">${q.question_text}</div>
+      ${imageTag(q)}
+      <div class="mt-3 space-y-2">${opts}</div>
+      <p class="mt-3 text-sm text-white/80">Jawabanmu: <strong class="${ok ? 'text-emerald-300' : 'text-rose-300'}">${mine || '-'}</strong> &nbsp;|&nbsp; Kunci: <strong class="text-emerald-300">${q.correct_answer}</strong></p>
+
+      ${ana}
+
+      <div class="mt-5 rounded-xl border border-white/15 bg-[#011538]/70 p-4">
+        <h4 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open mr-2"></i>Pembahasan Lengkap</h4>
+        <div class="space-y-2 math-text">${renderSteps(q.pembahasan)}</div>
+      </div>
+
+      <div class="mt-4 rounded-xl border border-[#00d6d8]/40 bg-[#00d6d8]/10 p-4">
+        <h4 class="font-bold text-[#00d6d8] mb-2">🔥 Cara Cepat / Trik</h4>
+        <div class="space-y-2 math-text">${renderSteps(q.cara_cepat)}</div>
+      </div>
+    </article>`;
+  }).join('');
+
+  $('app').innerHTML = `
+    <div class="max-w-4xl mx-auto space-y-5">
+      ${banner}
+      ${cards}
+      <div class="flex flex-wrap justify-center gap-3 pb-6">
+        <button id="retryBtn" class="px-5 py-2.5 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8]/10"><i class="fa-solid fa-rotate-right mr-1"></i> Ulangi Latihan</button>
+        <a href="bilangan.html" class="px-5 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-95">Kembali ke Dashboard bilangan</a>
+      </div>
+    </div>`;
+
+  $('retryBtn').addEventListener('click', () => {
+    state.current = 0; state.answers = {}; state.seconds = 0; state.finished = false; state.warn = false;
+    $('timer').textContent = '00:00';
+    startTimer();
+    renderPractice();
+  });
+  typeset($('app'));
+}
+
+/* ===================== INIT ===================== */
+document.addEventListener('DOMContentLoaded', () => {
+  renderPractice();
+  startTimer();
+});
+</script>
+</body>
+</html>
