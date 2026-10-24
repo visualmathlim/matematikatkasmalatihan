@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan Data dan Peluang - VisualMath.Lim</title>
+
+<!-- Tailwind CSS via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          'brand-navy': '#022050',
+          'brand-deep': '#011842',
+          'brand-card': '#0a2f6b',
+          'brand-cyan': '#00d6d8',
+          'brand-yellow': '#ffd300'
+        },
+        boxShadow: {
+          glow: '0 0 14px rgba(0,214,216,.55)',
+          glowy: '0 0 14px rgba(255,211,0,.45)'
+        }
+      }
+    }
+  };
+</script>
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- MathJax (render LaTeX) -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #022050; color: #fff; font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif; }
+  /* konten kaya (soal & pembahasan) */
+  .rich p { margin: .55rem 0; line-height: 1.7; }
+  .rich ul { list-style: disc; padding-left: 1.4rem; margin: .5rem 0; }
+  .rich ol { list-style: decimal; padding-left: 1.4rem; margin: .5rem 0; }
+  .rich li { margin: .2rem 0; }
+  .rich strong { color: #fff; }
+  /* tabel di dalam soal/pembahasan */
+  .pb-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: .5rem 0; }
+  .pb-table th, .pb-table td { border: 1px solid rgba(255,255,255,.28); padding: 6px 9px; text-align: center; vertical-align: middle; }
+  .pb-table th { background: rgba(0,214,216,.18); }
+  .pb-table td.left, .pb-table th.left { text-align: left; }
+  /* rumus panjang bisa digeser agar tidak terpotong */
+  mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+  /* scrollbar navigasi mobile */
+  .nav-scroll::-webkit-scrollbar { height: 6px; }
+  .nav-scroll::-webkit-scrollbar-thumb { background: rgba(0,214,216,.5); border-radius: 9999px; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  .shake { animation: shake .35s ease-in-out 2; }
+</style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===================== NAVBAR ===================== -->
+<header class="sticky top-0 z-40 bg-brand-deep/95 backdrop-blur border-b border-brand-cyan/30">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2 flex items-center justify-between gap-3">
+    <p class="text-[11px] sm:text-base font-bold leading-tight min-w-0">
+      VisualMath.Lim - Latihan <span class="text-brand-cyan">Data dan Peluang</span> TKA SMA Kelas 12
+    </p>
+    <a id="btnDashboard" href="data-peluang.html"
+       class="shrink-0 flex items-center gap-2 px-2.5 sm:px-4 py-1.5 rounded-xl border border-brand-cyan/60 text-brand-cyan hover:bg-brand-cyan hover:text-brand-navy hover:shadow-glow transition">
+      <img src="logo.png" alt="Logo VisualMath.Lim" class="h-8 w-8 sm:h-9 sm:w-9 object-contain rounded-full" onerror="this.style.display='none'">
+      <span class="text-[11px] sm:text-sm font-semibold leading-tight text-right">Kembali ke Dashboard<br class="sm:hidden"> Data dan Peluang</span>
+    </a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-3 sm:px-6 py-4">
+
+  <!-- ===================== STATE 1: MENGERJAKAN ===================== -->
+  <section id="practiceView">
+
+    <div class="mb-4 rounded-xl border border-brand-yellow/60 bg-brand-yellow/10 p-3 text-sm flex gap-3 items-start">
+      <i class="fa-solid fa-circle-info text-brand-yellow mt-0.5"></i>
+      <p>
+        <strong class="text-brand-yellow">Info:</strong>
+        Kerjakan <strong>semua soal</strong> terlebih dahulu. Jika masih ada soal yang belum dijawab,
+        latihan <strong>tidak bisa diselesaikan</strong> dan tombol
+        <strong>“Selesai &amp; Lihat Pembahasan”</strong> belum aktif. Tidak ada batas waktu, stopwatch hanya untuk mengukur kecepatanmu.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
+
+      <!-- AREA SOAL (75%) -->
+      <div class="lg:col-span-3 order-1 flex flex-col gap-4 min-w-0">
+        <div class="rounded-2xl bg-brand-card border border-brand-cyan/30 p-4 sm:p-6 shadow-lg">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="qCounter" class="px-3 py-1 rounded-full bg-brand-cyan text-brand-navy font-bold text-sm"></span>
+              <span id="qTypeBadge"></span>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-1 rounded-full border border-brand-cyan/50 text-brand-cyan font-mono font-bold">
+              <i class="fa-regular fa-clock"></i><span id="stopwatch">00:00</span>
+            </div>
+          </div>
+
+          <div id="qContent" class="rich"></div>
+        </div>
+
+        <!-- Tombol navigasi bawah -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <button id="btnPrev" class="px-5 py-2.5 rounded-xl border border-brand-cyan text-brand-cyan font-semibold hover:bg-brand-cyan hover:text-brand-navy transition disabled:opacity-40 disabled:cursor-not-allowed">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya
+          </button>
+          <button id="btnNext" class="px-5 py-2.5 rounded-xl bg-brand-cyan text-brand-navy font-bold hover:shadow-glow transition">
+            Selanjutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+          <button id="btnFinishBottom" class="hidden px-5 py-2.5 rounded-xl font-bold transition">
+            <i class="fa-solid fa-flag-checkered mr-1"></i> Selesai &amp; Lihat Pembahasan
+          </button>
+        </div>
+        <p class="finish-hint hidden text-sm text-brand-yellow"></p>
+      </div>
+
+      <!-- PANEL NAVIGASI (25%) -->
+      <aside class="lg:col-span-1 order-2 lg:sticky lg:top-20 min-w-0">
+        <div class="rounded-2xl bg-brand-card border border-brand-cyan/30 p-4 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-bold text-brand-cyan"><i class="fa-solid fa-table-cells mr-1"></i> Navigasi Soal</h2>
+            <span id="progressText" class="text-xs px-2 py-0.5 rounded-full bg-brand-yellow text-black font-bold"></span>
+          </div>
+
+          <!-- Mobile: scroll horizontal | Laptop: grid -->
+          <div id="navGrid" class="nav-scroll flex gap-2 overflow-x-auto pb-2 snap-x lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0"></div>
+
+          <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-300">
+            <span><span class="inline-block w-3 h-3 rounded bg-brand-yellow align-middle"></span> Terjawab</span>
+            <span><span class="inline-block w-3 h-3 rounded border border-brand-cyan align-middle"></span> Belum</span>
+          </div>
+
+          <button id="btnFinishSide" class="mt-4 w-full px-4 py-3 rounded-xl font-bold transition">
+            <i class="fa-solid fa-flag-checkered mr-1"></i> Selesai &amp; Lihat Pembahasan
+          </button>
+          <p class="finish-hint hidden mt-2 text-xs text-brand-yellow"></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===================== STATE 2: PEMBAHASAN ===================== -->
+  <section id="resultView" class="hidden">
+    <div id="resultBanner"></div>
+    <div id="resultList" class="flex flex-col gap-6 mt-6"></div>
+    <div class="mt-8 mb-6 flex flex-wrap justify-center gap-3">
+      <button id="btnRetry" class="px-6 py-3 rounded-xl border border-brand-cyan text-brand-cyan font-semibold hover:bg-brand-cyan hover:text-brand-navy transition">
+        <i class="fa-solid fa-rotate-right mr-1"></i> Kerjakan Ulang
+      </button>
+      <a href="data-peluang.html" class="px-6 py-3 rounded-xl bg-brand-yellow text-black font-bold hover:shadow-glowy transition">
+        <i class="fa-solid fa-house mr-1"></i> Kembali ke Dashboard
+      </a>
+    </div>
+  </section>
+</main>
+
+<!-- Modal konfirmasi (pengganti dialog bawaan browser yang sering diblokir) -->
+<div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+  <div class="w-full max-w-sm rounded-2xl bg-brand-card border border-brand-cyan/60 p-5 shadow-glow">
+    <p id="confirmMsg" class="text-base"></p>
+    <div class="mt-5 flex justify-end gap-3">
+      <button id="confirmNo" type="button" class="px-4 py-2 rounded-xl border border-brand-cyan text-brand-cyan font-semibold hover:bg-brand-cyan hover:text-brand-navy transition">Batal</button>
+      <button id="confirmYes" type="button" class="px-4 py-2 rounded-xl bg-brand-yellow text-black font-bold hover:brightness-110 transition">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   1. GENERATOR GAMBAR (SVG dibuat dengan kode, tanpa upload)
+   ========================================================= */
+const svgUri = (s) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+const FONT = "font-family='Segoe UI, Arial, sans-serif'";
+
+/* --- Grafik garis lulusan (soal 1 & pembahasan 1) --- */
+function lineChartSVG(analysis = false) {
+  const years = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+  const series = [
+    { name: 'SMA 1 Bintang', color: '#16a34a', data: [301, 310, 310, 301, 308, 310, 315, 350, 360] },
+    { name: 'SMA 2 Bintang', color: '#ef4444', data: [255, 260, 290, 310, 315, 320, 300, 300, 300] },
+    { name: 'SMK Kejora',    color: '#2563eb', data: [250, 285, 301, 320, 320, 325, 320, 350, 400] }
+  ];
+  const W = 640, H = 410, L = 58, R = 22, T = 58, B = 52, yMin = 240, yMax = 420;
+  const pw = W - L - R, ph = H - T - B;
+  const X = (i) => L + i * pw / 8;
+  const Y = (v) => T + (yMax - v) / (yMax - yMin) * ph;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" ${FONT}>`;
+  s += `<rect width="${W}" height="${H}" fill="#ffffff"/>`;
+  // grid & sumbu Y
+  for (let v = yMin; v <= yMax; v += 20) {
+    s += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e5e7eb"/>`;
+    s += `<text x="${L - 8}" y="${Y(v) + 4}" font-size="12" fill="#374151" text-anchor="end">${v}</text>`;
+  }
+  years.forEach((yr, i) => {
+    s += `<line x1="${X(i)}" x2="${X(i)}" y1="${T}" y2="${T + ph}" stroke="#f1f5f9"/>`;
+    s += `<text x="${X(i)}" y="${T + ph + 20}" font-size="12" fill="#374151" text-anchor="middle">${yr}</text>`;
+  });
+  s += `<line x1="${L}" x2="${L}" y1="${T}" y2="${T + ph}" stroke="#6b7280"/>`;
+  s += `<line x1="${L}" x2="${W - R}" y1="${T + ph}" y2="${T + ph}" stroke="#6b7280"/>`;
+  s += `<text transform="translate(14 ${T + ph / 2}) rotate(-90)" font-size="13" fill="#111827" text-anchor="middle">Banyak lulusan</text>`;
+
+  // area analisis (hanya pembahasan)
+  if (analysis) {
+    s += `<rect x="${X(3)}" y="${T}" width="${X(8) - X(3)}" height="${ph}" fill="#16a34a" opacity="0.08"/>`;
+    s += `<text x="${X(3) + 8}" y="${T + 16}" font-size="12" font-weight="bold" fill="#15803d">A benar: SMA 1 naik terus sejak 2020</text>`;
+    s += `<rect x="${X(6)}" y="${Y(310)}" width="${X(8) - X(6)}" height="${Y(290) - Y(310)}" fill="#ef4444" opacity="0.15"/>`;
+    s += `<text x="${X(8)}" y="${Y(290) + 20}" font-size="12" font-weight="bold" fill="#b91c1c" text-anchor="end">D benar: SMA 2 tetap 300 (2023–2025)</text>`;
+  }
+  // garis & titik
+  series.forEach(se => {
+    const pts = se.data.map((v, i) => `${X(i)},${Y(v)}`).join(' ');
+    s += `<polyline points="${pts}" fill="none" stroke="${se.color}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    se.data.forEach((v, i) => { s += `<circle cx="${X(i)}" cy="${Y(v)}" r="3.8" fill="${se.color}"/>`; });
+  });
+  if (analysis) {
+    s += `<circle cx="${X(3)}" cy="${Y(301)}" r="9" fill="none" stroke="#dc2626" stroke-width="2"/>`;
+    s += `<text x="${X(3)}" y="${Y(301) + 27}" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">B salah</text>`;
+    s += `<circle cx="${X(6)}" cy="${Y(320)}" r="9" fill="none" stroke="#dc2626" stroke-width="2"/>`;
+    s += `<text x="${X(6) - 12}" y="${Y(320) - 18}" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="end">C salah</text>`;
+  }
+  // legenda
+  series.forEach((se, i) => {
+    const lx = 130 + i * 140;
+    s += `<circle cx="${lx}" cy="24" r="5" fill="${se.color}"/>`;
+    s += `<text x="${lx + 10}" y="28" font-size="13" fill="#111827">${se.name}</text>`;
+  });
+  s += `<text x="${W / 2}" y="${H - 10}" font-size="14" font-weight="bold" fill="#111827" text-anchor="middle">Data Banyak Lulusan Tahun 2017-2025</text>`;
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Ilustrasi bazar sekolah (soal 2) --- */
+function bazarSVG() {
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="270" viewBox="0 0 640 270" ${FONT}>`;
+  s += `<rect width="640" height="270" fill="#f6e3b4"/>`;
+  s += `<rect y="238" width="640" height="32" fill="#8fbf6a"/>`;
+  // spanduk
+  s += `<rect x="188" y="18" width="8" height="120" fill="#7c5a3a"/><rect x="444" y="18" width="8" height="120" fill="#7c5a3a"/>`;
+  s += `<rect x="150" y="14" width="340" height="62" rx="6" fill="#ffffff" stroke="#7c5a3a" stroke-width="3"/>`;
+  s += `<text x="320" y="55" font-size="28" font-weight="bold" fill="#1e3a5f" text-anchor="middle">BAZAR SEKOLAH</text>`;
+  // 5 stan
+  for (let i = 0; i < 5; i++) {
+    const x = 22 + i * 122;
+    s += `<rect x="${x + 6}" y="132" width="6" height="86" fill="#6b4a2b"/><rect x="${x + 98}" y="132" width="6" height="86" fill="#6b4a2b"/>`;
+    for (let k = 0; k < 5; k++) {
+      s += `<rect x="${x + k * 22}" y="104" width="22" height="30" fill="${k % 2 ? '#276749' : '#2f855a'}"/>`;
+    }
+    s += `<rect x="${x - 4}" y="98" width="118" height="9" rx="3" fill="#22543d"/>`;
+    s += `<rect x="${x + 2}" y="190" width="106" height="52" rx="3" fill="#d9a35b" stroke="#8a5a1f" stroke-width="2"/>`;
+    s += `<text x="${x + 55}" y="222" font-size="14" font-weight="bold" fill="#5b3a12" text-anchor="middle">Stan ${i + 1}</text>`;
+  }
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Pembahasan 2: contoh susunan --- */
+function bazarSolusiSVG() {
+  const rows = [
+    { title: 'Contoh 1: blok A-C-D berdampingan (memenuhi)', letters: ['A', 'C', 'D', 'B', 'E'], hl: [0, 1, 2], bad: false },
+    { title: 'Contoh 2: blok D-C-A berdampingan (memenuhi)', letters: ['B', 'D', 'C', 'A', 'E'], hl: [1, 2, 3], bad: false },
+    { title: 'Bukan susunan yang diminta: C di pinggir', letters: ['C', 'A', 'D', 'B', 'E'], hl: [], bad: true }
+  ];
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="270" viewBox="0 0 640 270" ${FONT}>`;
+  s += `<rect width="640" height="270" fill="#ffffff"/>`;
+  rows.forEach((r, ri) => {
+    const y0 = 8 + ri * 78;
+    s += `<text x="30" y="${y0 + 16}" font-size="14" font-weight="bold" fill="${r.bad ? '#b91c1c' : '#1e3a5f'}">${r.title}</text>`;
+    r.letters.forEach((l, i) => {
+      const fill = r.bad ? '#fecaca' : (r.hl.includes(i) ? '#ffd300' : '#dbeafe');
+      const x = 30 + i * 116;
+      s += `<rect x="${x}" y="${y0 + 24}" width="90" height="42" rx="6" fill="${fill}" stroke="#1e3a5f" stroke-width="1.5"/>`;
+      s += `<text x="${x + 45}" y="${y0 + 52}" font-size="20" font-weight="bold" fill="#111827" text-anchor="middle">${l}</text>`;
+    });
+  });
+  s += `<text x="320" y="256" font-size="13" fill="#374151" text-anchor="middle">Kuning = satu blok (ACD atau DCA) yang diperlakukan sebagai 1 unit bersama B dan E</text>`;
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Pembahasan 3: diagram batang kemungkinan (p, r) --- */
+function barKunjunganSVG() {
+  const panels = [
+    { x0: 40,  title: 'p = 9, r = 6 (rata-rata 6)', data: [4, 9, 5, 6, 6] },
+    { x0: 350, title: 'p = 6, r = 9 (rata-rata 6)', data: [4, 6, 5, 9, 6] }
+  ];
+  const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum'];
+  const base = 215, unit = 17;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="285" viewBox="0 0 640 285" ${FONT}>`;
+  s += `<rect width="640" height="285" fill="#ffffff"/>`;
+  panels.forEach(p => {
+    s += `<text x="${p.x0 + 128}" y="24" font-size="14" font-weight="bold" fill="#111827" text-anchor="middle">${p.title}</text>`;
+    s += `<line x1="${p.x0}" x2="${p.x0}" y1="${base - 10 * unit}" y2="${base}" stroke="#6b7280"/>`;
+    s += `<line x1="${p.x0}" x2="${p.x0 + 255}" y1="${base}" y2="${base}" stroke="#6b7280"/>`;
+    [0, 2, 4, 6, 8, 10].forEach(v => {
+      s += `<text x="${p.x0 - 6}" y="${base - v * unit + 4}" font-size="11" fill="#374151" text-anchor="end">${v}</text>`;
+      if (v > 0) s += `<line x1="${p.x0}" x2="${p.x0 + 255}" y1="${base - v * unit}" y2="${base - v * unit}" stroke="#f1f5f9"/>`;
+    });
+    p.data.forEach((v, i) => {
+      const bx = p.x0 + 12 + i * 48;
+      const hot = (i === 1 || i === 3);
+      s += `<rect x="${bx}" y="${base - v * unit}" width="36" height="${v * unit}" fill="${hot ? '#f59e0b' : '#60a5fa'}"/>`;
+      s += `<text x="${bx + 18}" y="${base - v * unit - 5}" font-size="12" font-weight="bold" fill="#111827" text-anchor="middle">${v}</text>`;
+      s += `<text x="${bx + 18}" y="${base + 17}" font-size="12" fill="#374151" text-anchor="middle">${days[i]}</text>`;
+    });
+    s += `<line x1="${p.x0}" x2="${p.x0 + 255}" y1="${base - 6 * unit}" y2="${base - 6 * unit}" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="5 4"/>`;
+  });
+  s += `<text x="320" y="262" font-size="12" fill="#374151" text-anchor="middle">Jingga = Selasa (p) dan Kamis (r) | garis merah putus-putus = rata-rata 6</text>`;
+  s += `<text x="320" y="278" font-size="12" fill="#374151" text-anchor="middle">Jumlah pengunjung (sumbu tegak) pada hari Senin sampai Jumat</text>`;
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Soal 5: isi kotak undian --- */
+function undianSVG() {
+  const ticket = (x, y, kind) => {
+    const c = {
+      min: { f: '#bfdbfe', st: '#3b82f6', tx: '#1e3a8a', l1: 'Minuman', l2: 'Gratis' },
+      mak: { f: '#bbf7d0', st: '#22c55e', tx: '#14532d', l1: 'Makanan', l2: 'Gratis' },
+      kos: { f: '#f3ece4', st: '#c9b8a6', tx: '#000', l1: '', l2: '' }
+    }[kind];
+    let t = `<rect x="${x}" y="${y}" width="96" height="40" rx="6" fill="${c.f}" stroke="${c.st}" stroke-width="2"/>`;
+    if (c.l1) {
+      t += `<text x="${x + 48}" y="${y + 17}" font-size="12" font-weight="bold" fill="${c.tx}" text-anchor="middle">${c.l1}</text>`;
+      t += `<text x="${x + 48}" y="${y + 32}" font-size="12" font-weight="bold" fill="${c.tx}" text-anchor="middle">${c.l2}</text>`;
+    }
+    return t;
+  };
+  const pill = (cx, txt) =>
+    `<rect x="${cx - 44}" y="204" width="88" height="28" rx="8" fill="#ffd300"/><text x="${cx}" y="223" font-size="14" font-weight="bold" fill="#000" text-anchor="middle">${txt}</text>`;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="664" height="246" viewBox="0 0 664 246" ${FONT}>`;
+  s += `<rect width="664" height="246" fill="#ffffff"/>`;
+  s += `<text x="332" y="26" font-size="16" font-weight="bold" fill="#111827" text-anchor="middle">Jumlah Kertas di Dalam Kotak Undian</text>`;
+  for (let i = 0; i < 6; i++) s += ticket(14 + (i % 2) * 104, 46 + Math.floor(i / 2) * 48, 'min');
+  for (let i = 0; i < 4; i++) s += ticket(232 + (i % 2) * 104, 70 + Math.floor(i / 2) * 48, 'mak');
+  for (let i = 0; i < 4; i++) s += ticket(450 + (i % 2) * 104, 46 + Math.floor(i / 2) * 48, 'kos');
+  s += ticket(502, 142, 'kos');
+  s += pill(114, '6 kertas') + pill(332, '4 kertas') + pill(550, '5 kertas');
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* --- Pembahasan 5: isi kotak saat Ani mengambil --- */
+function undianSolusiSVG() {
+  const box = (x, y, f, st) => `<rect x="${x}" y="${y}" width="26" height="26" rx="3" fill="${f}" stroke="${st}" stroke-width="1.5"/>`;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="660" height="190" viewBox="0 0 660 190" ${FONT}>`;
+  s += `<rect width="660" height="190" fill="#ffffff"/>`;
+  s += `<text x="330" y="26" font-size="14" font-weight="bold" fill="#111827" text-anchor="middle">Isi kotak saat Ani mengambil (4 orang sebelumnya hanya mengambil kertas kosong)</text>`;
+  for (let i = 0; i < 6; i++) s += box(24 + i * 31, 46, '#60a5fa', '#1d4ed8');
+  for (let i = 0; i < 4; i++) s += box(250 + i * 31, 46, '#4ade80', '#15803d');
+  for (let i = 0; i < 5; i++) s += box(410 + i * 31, 46, '#f3f4f6', '#9ca3af');
+  s += `<text x="24" y="98" font-size="12" fill="#374151">6 minuman</text>`;
+  s += `<text x="250" y="98" font-size="12" fill="#374151">4 makanan</text>`;
+  s += `<text x="410" y="98" font-size="12" fill="#374151">5 kosong (selalu dikembalikan)</text>`;
+  s += `<text x="330" y="132" font-size="13" fill="#374151" text-anchor="middle">Total kertas tetap 6 + 4 + 5 = 15, dengan 10 kertas hadiah.</text>`;
+  s += `<text x="330" y="166" font-size="17" font-weight="bold" fill="#15803d" text-anchor="middle">Peluang Ani = 10/15 = 2/3</text>`;
+  s += `</svg>`;
+  return svgUri(s);
+}
+
+/* =========================================================
+   2. DATA SOAL (mockup sesuai file PDF)
+   type: 'multi' (jawaban benar > 1) | 'single' | 'bs' (Benar/Salah)
+   ========================================================= */
+const questions = [
+  /* ---------------- SOAL 1 ---------------- */
+  {
+    id: 1,
+    type: 'multi',
+    question_text: String.raw`<p>Banyak siswa yang lulus di sekolah Yayasan Cahaya beragam setiap tahunnya. Berikut adalah data banyak lulusan di tiga sekolah menengah swasta milik Yayasan Cahaya.</p>`,
+    image: lineChartSVG(false),
+    question_after: String.raw`<p>Berdasarkan grafik tersebut, pernyataan mana saja yang tepat mendeskripsikan banyak lulusan di ketiga sekolah milik Yayasan Cahaya? <strong class="text-brand-yellow">(Jawaban benar lebih dari satu.)</strong></p>`,
+    options: [
+      { label: 'A', text: 'Banyak siswa SMA 1 Bintang yang lulus selalu bertambah mulai tahun 2020.' },
+      { label: 'B', text: 'Pada tahun 2017–2020, banyak lulusan dari ketiga sekolah di Yayasan Cahaya selalu bertambah.' },
+      { label: 'C', text: 'Banyak lulusan SMK Kejora konsisten naik selama lima tahun terakhir.' },
+      { label: 'D', text: 'Banyak lulusan SMA 2 Bintang tetap sama selama tiga tahun terakhir.' },
+      { label: 'E', text: 'Banyak lulusan ketiga sekolah di tahun 2023 menurun dibanding tahun sebelumnya.' }
+    ],
+    correct_answer: ['A', 'D'],
+    pembahasan_images: [lineChartSVG(true)],
+    pembahasan: String.raw`<p><strong>Langkah 1: baca nilai dari grafik (perkiraan).</strong></p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><th>Tahun</th><th>2017</th><th>2018</th><th>2019</th><th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th></tr>
+<tr><td class="left">SMA 1 Bintang</td><td>301</td><td>310</td><td>310</td><td>301</td><td>308</td><td>310</td><td>315</td><td>350</td><td>360</td></tr>
+<tr><td class="left">SMA 2 Bintang</td><td>255</td><td>260</td><td>290</td><td>310</td><td>315</td><td>320</td><td>300</td><td>300</td><td>300</td></tr>
+<tr><td class="left">SMK Kejora</td><td>250</td><td>285</td><td>301</td><td>320</td><td>320</td><td>325</td><td>320</td><td>350</td><td>400</td></tr>
+</table></div>
+<p><strong>Langkah 2: periksa tiap pernyataan.</strong></p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><th>Opsi</th><th class="left">Pernyataan</th><th class="left">Pemeriksaan</th><th>Kesimpulan</th></tr>
+<tr><td>A</td><td class="left">SMA 1 selalu bertambah mulai 2020</td><td class="left">301 → 308 → 310 → 315 → 350 → 360, naik terus</td><td><strong class="text-emerald-300">Benar</strong></td></tr>
+<tr><td>B</td><td class="left">2017–2020 ketiga sekolah selalu bertambah</td><td class="left">SMA 1: 2018 → 2019 tetap (310), 2019 → 2020 turun (310 → 301)</td><td><strong class="text-rose-300">Salah</strong></td></tr>
+<tr><td>C</td><td class="left">SMK Kejora konsisten naik 5 tahun terakhir (2021–2025)</td><td class="left">2022 → 2023 turun (325 → 320)</td><td><strong class="text-rose-300">Salah</strong></td></tr>
+<tr><td>D</td><td class="left">SMA 2 tetap sama 3 tahun terakhir</td><td class="left">2023, 2024, 2025 sama-sama 300</td><td><strong class="text-emerald-300">Benar</strong></td></tr>
+<tr><td>E</td><td class="left">Ketiga sekolah 2023 menurun dari 2022</td><td class="left">SMA 1 justru naik (310 → 315)</td><td><strong class="text-rose-300">Salah</strong></td></tr>
+</table></div>
+<p><strong>Kunci: A dan D.</strong></p>`,
+    cara_cepat: String.raw`<ol>
+<li>Cari “pengganggu” pada tiap pernyataan.</li>
+<li>Kata <strong>“ketiga sekolah”</strong> (opsi B dan E) dan kata <strong>“konsisten”</strong> (opsi C) gugur begitu ada satu garis yang menurun atau datar.</li>
+<li>Yang aman hanya pernyataan yang berbicara tentang <strong>satu sekolah</strong> dan benar-benar searah: garis hijau naik terus sejak 2020 (A), dan garis merah datar di 300 sejak 2023 (D).</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 2 ---------------- */
+  {
+    id: 2,
+    type: 'single',
+    question_text: String.raw`<p>Di sebuah acara bazar yang diadakan oleh suatu sekolah, terdapat 5 stan yang masing-masing dikelola oleh pedagang yang berbeda.</p>`,
+    image: bazarSVG(),
+    question_after: String.raw`<p>Dalam bazar tersebut, stan pedagang C ingin berada di antara pedagang A dan pedagang D. Banyak kemungkinan susunan atau penataan stan sesuai keinginan pedagang C tersebut adalah ….</p>
+<p class="text-sm text-brand-cyan">(Catatan: “di antara” berarti C berada tepat di tengah A dan D secara berdampingan, yaitu urutan ACD atau DCA.)</p>`,
+    options: [
+      { label: 'A', text: String.raw`$6$ susunan` },
+      { label: 'B', text: String.raw`$12$ susunan` },
+      { label: 'C', text: String.raw`$120$ susunan` },
+      { label: 'D', text: String.raw`$240$ susunan` },
+      { label: 'E', text: String.raw`$720$ susunan` }
+    ],
+    correct_answer: 'B',
+    pembahasan_images: [bazarSolusiSVG()],
+    pembahasan: String.raw`<p>Ada 5 pedagang (A, B, C, D, E) yang menempati 5 stan berjajar. Syaratnya: C berada di antara A dan D (berdampingan).</p>
+<p><strong>Langkah 1: perhatikan urutan A, C, D.</strong> Tiga pedagang ini dapat berurutan dalam $3! = 6$ cara: ACD, ADC, CAD, CDA, DAC, DCA. Agar C berada di antara A dan D, urutan yang sah hanya:</p>
+$$\text{ACD} \quad \text{dan} \quad \text{DCA}$$
+<p><strong>Langkah 2: jadikan satu blok.</strong> Blok ACD atau DCA (tanpa celah) diperlakukan sebagai 1 unit, lalu disusun bersama B dan E (jadi 3 unit):</p>
+$$\begin{aligned}
+\text{Pola blok (ACD atau DCA)} &= 2 \\
+\text{Susunan 3 unit (blok, B, E)} &= 3! = 6 \\
+\text{Total} &= 2 \times 3! = 2 \times 6 = 12
+\end{aligned}$$
+<p class="text-sm text-gray-300"><strong>Catatan:</strong> jika “di antara” tidak harus berdampingan, hasilnya $5! \times \frac{2}{6} = 40$, dan angka itu tidak ada pada opsi. Karena itu soal ini dimaknai berdampingan, sehingga jawabannya <strong>12 susunan</strong>.</p>`,
+    cara_cepat: String.raw`<ol>
+<li>Gabungkan A, C, D menjadi satu blok. C wajib di tengah, jadi blok hanya bisa <strong>ACD</strong> atau <strong>DCA</strong> (2 cara).</li>
+<li>Sisanya B dan E, jadi ada 3 unit yang disusun: $3! = 6$.</li>
+<li>Kalikan: $2 \times 6 = 12$ (opsi B).</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 3 ---------------- */
+  {
+    id: 3,
+    type: 'bs',
+    question_text: String.raw`<p>Perhatikan tabel distribusi data jumlah pengunjung perpustakaan Desa Sukamaju pada minggu ke-1 bulan Januari.</p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><th class="left">Minggu ke-1</th><th>Senin</th><th>Selasa</th><th>Rabu</th><th>Kamis</th><th>Jumat</th></tr>
+<tr><td class="left">Jumlah Pengunjung</td><td>4</td><td>$p$</td><td>5</td><td>$r$</td><td>6</td></tr>
+</table></div>
+<p>Informasi pada minggu ke-1 bulan Januari:</p>
+<ul>
+<li>Rata-rata pengunjung setiap hari adalah 6 orang.</li>
+<li>Selalu ada minimal dua pengunjung dan tidak pernah melebihi 10 pengunjung pada setiap hari Senin sampai Jumat.</li>
+<li>Median dari data pada tabel adalah 6.</li>
+</ul>
+<p>Tentukan <strong>Benar</strong> atau <strong>Salah</strong> pada setiap pernyataan.</p>`,
+    image: '',
+    statements: [
+      'Banyak pengunjung pada hari Selasa pasti selalu lebih banyak dibandingkan hari lain.',
+      'Banyak pengunjung pada hari Kamis pasti lebih dari 5 orang.',
+      'Banyak pengunjung pada hari Jumat dan Kamis mungkin saja sama.'
+    ],
+    correct_answer: ['S', 'B', 'B'],
+    pembahasan_images: [barKunjunganSVG()],
+    pembahasan: String.raw`<p><strong>Langkah 1: gunakan rata-rata.</strong></p>
+$$\begin{aligned}
+\frac{4+p+5+r+6}{5} &= 6 \\
+15 + p + r &= 30 \\
+p + r &= 15
+\end{aligned}$$
+<p><strong>Langkah 2: gunakan batas jumlah pengunjung.</strong> Karena $p \le 10$ dan $r \le 10$ (banyak orang berupa bilangan bulat), maka</p>
+$$\begin{aligned}
+p = 15 - r &\ge 5 \\
+r = 15 - p &\ge 5
+\end{aligned}$$
+<p>Jadi $5 \le p \le 10$ dan $5 \le r \le 10$.</p>
+<p><strong>Langkah 3: gunakan median.</strong> Data ada 5, sehingga median adalah data ke-3 setelah diurutkan, dan nilainya harus 6. Data yang sudah pasti: 4, 5, 6. Periksa kemungkinan $p$ dan $r$:</p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><th>$(p, r)$</th><th>Data terurut</th><th>Median</th><th>Memenuhi?</th></tr>
+<tr><td>(5, 10) atau (10, 5)</td><td>4, 5, 5, 6, 10</td><td>5</td><td>Tidak</td></tr>
+<tr><td>(6, 9) atau (9, 6)</td><td>4, 5, 6, 6, 9</td><td>6</td><td>Ya</td></tr>
+<tr><td>(7, 8) atau (8, 7)</td><td>4, 5, 6, 7, 8</td><td>6</td><td>Ya</td></tr>
+</table></div>
+<p>Jadi $p$ dan $r$ keduanya berada di antara 6 dan 9, dengan $p + r = 15$.</p>
+<p><strong>Langkah 4: periksa pernyataan.</strong></p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><th>No</th><th class="left">Pernyataan</th><th class="left">Pemeriksaan</th><th>Kesimpulan</th></tr>
+<tr><td>1</td><td class="left">Selasa ($p$) pasti paling banyak</td><td class="left">Jika $p = 6$ maka $r = 9$, sehingga Kamis lebih banyak</td><td><strong class="text-rose-300">Salah</strong></td></tr>
+<tr><td>2</td><td class="left">Kamis ($r$) pasti lebih dari 5</td><td class="left">$r \ge 6$ pada semua kemungkinan</td><td><strong class="text-emerald-300">Benar</strong></td></tr>
+<tr><td>3</td><td class="left">Jumat dan Kamis mungkin sama</td><td class="left">$r = 6$ (dan $p = 9$) memenuhi semua syarat</td><td><strong class="text-emerald-300">Benar</strong></td></tr>
+</table></div>`,
+    cara_cepat: String.raw`<ol>
+<li>Dari rata-rata didapat $p + r = 15$.</li>
+<li>Median harus 6 dan sudah ada 4, 5, 6, maka dua data lain ($p$ dan $r$) tidak boleh ada yang 5 atau kurang, sehingga keduanya minimal 6.</li>
+<li>Maka $r \ge 6 > 5$ (pernyataan 2 benar), $r$ boleh sama dengan 6 (pernyataan 3 benar), dan $p$ bisa saja lebih kecil dari $r$ (pernyataan 1 salah).</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 4 ---------------- */
+  {
+    id: 4,
+    type: 'single',
+    question_text: String.raw`<p>Dalam rangka memperingati Tahun Baru Imlek, sebuah supermarket membuat kotak undian yang berisi hadiah untuk para pelanggannya. Terdapat 60 angpao yang dimasukkan ke dalam kotak tersebut. Hadiahnya terbagi dalam dua kategori, yaitu kupon belanja dan peralatan rumah tangga.</p>
+<ol>
+<li>Terdapat 15 angpao berisi kupon belanja senilai Rp25.000,00.</li>
+<li>Terdapat 12 angpao berisi kupon belanja senilai Rp50.000,00.</li>
+<li>Terdapat 10 angpao berisi set sendok-garpu.</li>
+<li>Terdapat 8 angpao berisi pemanas air.</li>
+<li>Sisanya merupakan angpao kosong.</li>
+</ol>
+<p>Rini menjadi orang pertama yang berkesempatan mengambil satu angpao secara acak dari kotak tersebut. Berapakah peluang Rini mengambil angpao yang kosong?</p>`,
+    image: '',
+    options: [
+      { label: 'A', text: String.raw`$\frac{1}{15}$` },
+      { label: 'B', text: String.raw`$\frac{1}{5}$` },
+      { label: 'C', text: String.raw`$\frac{1}{4}$` },
+      { label: 'D', text: String.raw`$\frac{1}{3}$` },
+      { label: 'E', text: String.raw`$\frac{5}{11}$` }
+    ],
+    correct_answer: 'C',
+    pembahasan_images: [],
+    pembahasan: String.raw`<p><strong>Langkah 1: hitung angpao yang berisi hadiah.</strong></p>
+<div class="overflow-x-auto"><table class="pb-table" style="max-width:360px">
+<tr><th class="left">Isi angpao</th><th>Banyak</th></tr>
+<tr><td class="left">Kupon Rp25.000</td><td>15</td></tr>
+<tr><td class="left">Kupon Rp50.000</td><td>12</td></tr>
+<tr><td class="left">Set sendok-garpu</td><td>10</td></tr>
+<tr><td class="left">Pemanas air</td><td>8</td></tr>
+<tr><td class="left"><strong>Jumlah berisi hadiah</strong></td><td><strong>45</strong></td></tr>
+</table></div>
+<p><strong>Langkah 2 dan 3: hitung angpao kosong, lalu peluangnya.</strong></p>
+$$\begin{aligned}
+\text{Kosong} &= 60 - 45 = 15 \\
+P(\text{kosong}) &= \frac{n(A)}{n(S)} \\
+&= \frac{15}{60} \\
+&= \frac{1}{4}
+\end{aligned}$$`,
+    cara_cepat: String.raw`<ol>
+<li>Jumlahkan hadiah: $15 + 12 + 10 + 8 = 45$.</li>
+<li>Sisanya $60 - 45 = 15$ kosong.</li>
+<li>$\frac{15}{60} = \frac{1}{4}$.</li>
+<li>Nilai rupiah (Rp25.000 dan Rp50.000) hanya pengecoh, tidak dipakai.</li>
+</ol>`
+  },
+
+  /* ---------------- SOAL 5 ---------------- */
+  {
+    id: 5,
+    type: 'single',
+    question_text: String.raw`<p>Sebuah kantin sekolah mengadakan undian berhadiah.</p>`,
+    image: undianSVG(),
+    question_after: String.raw`<p>Di dalam kotak terdapat:</p>
+<ul>
+<li>6 kertas bertuliskan Minuman Gratis.</li>
+<li>4 kertas bertuliskan Makanan Gratis.</li>
+<li>5 kertas kosong.</li>
+</ul>
+<p>Hanya kertas yang kosong yang selalu dikembalikan lagi ke dalam kotak meskipun terambil berkali-kali.</p>
+<p>Ani akan mengambil satu buah kertas dari kotak undian. Ani adalah orang kelima yang mengambil kertas undian. Kertas apa sajakah yang mungkin sudah terambil oleh orang-orang sebelumnya sehingga peluang Ani memperoleh hadiah minuman atau makanan adalah $\frac{2}{3}$ ?</p>`,
+    options: [
+      { label: 'A', text: '1 minuman gratis, 1 makanan gratis, dan 2 kertas kosong.' },
+      { label: 'B', text: '2 makanan gratis dan 2 minuman gratis.' },
+      { label: 'C', text: '2 minuman gratis dan 2 kertas kosong.' },
+      { label: 'D', text: '4 kertas kosong.' },
+      { label: 'E', text: '4 minuman gratis.' }
+    ],
+    correct_answer: 'D',
+    pembahasan_images: [undianSolusiSVG()],
+    pembahasan: String.raw`<p>Ani orang kelima, jadi sebelumnya ada 4 orang yang mengambil kertas. Kertas hadiah yang terambil <strong>tidak dikembalikan</strong>, sedangkan kertas kosong dikembalikan, sehingga jumlah kertas kosong selalu tetap 5.</p>
+<p><strong>Langkah 1:</strong> misalkan $x$ = banyak kertas hadiah (minuman atau makanan) yang sudah terambil.</p>
+$$\begin{aligned}
+\text{Kertas hadiah tersisa} &= 10 - x \\
+\text{Kertas kosong} &= 5 \quad (\text{selalu kembali}) \\
+\text{Total kertas di kotak} &= (10 - x) + 5 = 15 - x
+\end{aligned}$$
+<p><strong>Langkah 2:</strong> samakan peluang dengan $\frac{2}{3}$.</p>
+$$\begin{aligned}
+\frac{10 - x}{15 - x} &= \frac{2}{3} \\
+3(10 - x) &= 2(15 - x) \\
+30 - 3x &= 30 - 2x \\
+-3x + 2x &= 30 - 30 \\
+-x &= 0 \\
+x &= 0
+\end{aligned}$$
+<p>Artinya tidak ada kertas hadiah yang terambil, jadi keempat orang sebelumnya mengambil kertas kosong.</p>
+<p><strong>Langkah 3: uji tiap pilihan.</strong></p>
+<div class="overflow-x-auto"><table class="pb-table">
+<tr><th>Pilihan</th><th>Hadiah terambil ($x$)</th><th>Peluang $\frac{10-x}{15-x}$</th><th>Sesuai $\frac{2}{3}$?</th></tr>
+<tr><td>A</td><td>2</td><td>$\frac{8}{13}$</td><td>Tidak</td></tr>
+<tr><td>B</td><td>4</td><td>$\frac{6}{11}$</td><td>Tidak</td></tr>
+<tr><td>C</td><td>2</td><td>$\frac{8}{13}$</td><td>Tidak</td></tr>
+<tr><td>D</td><td>0</td><td>$\frac{10}{15} = \frac{2}{3}$</td><td><strong class="text-emerald-300">Ya</strong></td></tr>
+<tr><td>E</td><td>4</td><td>$\frac{6}{11}$</td><td>Tidak</td></tr>
+</table></div>`,
+    cara_cepat: String.raw`<ol>
+<li>Peluang awal sebelum ada yang mengambil sudah $\frac{10}{15} = \frac{2}{3}$.</li>
+<li>Jadi agar peluang Ani tetap $\frac{2}{3}$, isi kotak tidak boleh berubah, artinya keempat pengambil sebelumnya hanya mengambil kertas kosong (yang dikembalikan).</li>
+<li>Itu hanya cocok dengan pilihan <strong>D</strong>.</li>
+</ol>`
+  }
+];
+
+/* =========================================================
+   3. STATE & UTILITAS
+   ========================================================= */
+const state = { current: 0, answers: {}, startTime: Date.now(), elapsed: 0, timer: null, finished: false };
+const $ = (id) => document.getElementById(id);
+const IMG_CLASS = 'max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block mx-auto';
+
+const imgTag = (src, alt = 'Gambar soal') => src ? `<img src="${src}" alt="${alt}" class="${IMG_CLASS}">` : '';
+const fmtTime = (sec) => String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+
+function typeset(node) {
+  if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+    MathJax.typesetPromise(node ? [node] : undefined).catch(() => {});
+  }
+}
+
+function isAnswered(q) {
+  const a = state.answers[q.id];
+  if (q.type === 'single') return !!a;
+  if (q.type === 'multi') return Array.isArray(a) && a.length > 0;
+  if (q.type === 'bs') return Array.isArray(a) && q.statements.every((_, i) => a[i]);
+  return false;
+}
+function isCorrect(q, a) {
+  if (!a) return false;
+  if (q.type === 'single') return a === q.correct_answer;
+  if (q.type === 'multi') return a.length === q.correct_answer.length && q.correct_answer.every(k => a.includes(k));
+  if (q.type === 'bs') return q.correct_answer.every((k, i) => a[i] === k);
+  return false;
+}
+const unansweredList = () => questions.filter(q => !isAnswered(q)).map(q => q.id);
+
+/* =========================================================
+   4. STOPWATCH (naik terus, tidak memaksa submit)
+   ========================================================= */
+function startTimer() {
+  state.startTime = Date.now();
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    $('stopwatch').textContent = fmtTime(state.elapsed);
+  }, 500);
+}
+function stopTimer() {
+  clearInterval(state.timer);
+  state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+}
+
+/* =========================================================
+   5. RENDER: MENGERJAKAN
+   ========================================================= */
+function typeBadge(q) {
+  const map = {
+    multi: ['fa-square-check', 'Pilih lebih dari satu jawaban'],
+    single: ['fa-circle-dot', 'Pilih satu jawaban'],
+    bs: ['fa-scale-balanced', 'Tentukan Benar atau Salah']
+  }[q.type];
+  return `<span class="text-xs sm:text-sm text-brand-cyan"><i class="fa-regular ${map[0].replace('fa-', 'fa-')} mr-1"></i>${map[1]}</span>`;
+}
+
+function renderQuestion() {
+  const q = questions[state.current];
+  $('qCounter').textContent = `Soal ${state.current + 1} dari ${questions.length}`;
+  $('qTypeBadge').innerHTML = typeBadge(q);
+  $('qContent').innerHTML =
+    `<div class="text-[15px] sm:text-base">${q.question_text}</div>` +
+    imgTag(q.image) +
+    (q.question_after ? `<div class="text-[15px] sm:text-base">${q.question_after}</div>` : '') +
+    `<div id="optsBox" class="mt-5"></div>`;
+  renderOptions();
+  renderNav();
+  updateBottomNav();
+  updateFinishUI();
+  typeset($('qContent'));
+  const active = $('navGrid').querySelector('[data-idx="' + state.current + '"]');
+  if (active) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+}
+
+function renderOptions() {
+  const q = questions[state.current];
+  const a = state.answers[q.id];
+  const box = $('optsBox');
+
+  if (q.type === 'bs') {
+    box.innerHTML = q.statements.map((st, i) => {
+      const pick = a ? a[i] : null;
+      const btn = (val, label) => {
+        const on = pick === val;
+        return `<label class="flex-1 sm:flex-none sm:w-28 text-center px-3 py-2 rounded-lg border cursor-pointer font-semibold transition ${on ? 'bg-brand-cyan/30 border-brand-cyan text-white shadow-glow' : 'bg-white/5 border-white/25 hover:border-brand-cyan hover:bg-brand-cyan/10'}">
+          <input type="radio" class="sr-only" name="st${i}" value="${val}" data-stmt="${i}" ${on ? 'checked' : ''}>${label}</label>`;
+      };
+      return `<div class="w-full rounded-xl border border-white/20 bg-white/5 p-3 sm:p-4 mb-3 flex flex-col sm:flex-row sm:items-center gap-3">
+        <p class="flex-1 text-[15px]"><span class="font-bold text-brand-cyan mr-1">${i + 1}.</span>${st}</p>
+        <div class="flex gap-2">${btn('B', 'Benar')}${btn('S', 'Salah')}</div>
+      </div>`;
+    }).join('');
+  } else {
+    const multi = q.type === 'multi';
+    box.innerHTML = q.options.map(o => {
+      const on = multi ? (a || []).includes(o.label) : a === o.label;
+      return `<label class="w-full flex items-start gap-3 p-3 sm:p-4 mb-3 rounded-xl border cursor-pointer transition ${on ? 'bg-brand-cyan/25 border-brand-cyan shadow-glow' : 'bg-white/5 border-white/25 hover:border-brand-cyan hover:bg-brand-cyan/10'}">
+        <input type="${multi ? 'checkbox' : 'radio'}" class="sr-only" name="opt${q.id}" value="${o.label}" data-opt="${o.label}" ${on ? 'checked' : ''}>
+        <span class="shrink-0 w-8 h-8 rounded-lg grid place-items-center font-bold ${on ? 'bg-brand-cyan text-brand-navy' : 'bg-white/10'}">${o.label}</span>
+        <span class="flex-1 pt-1 min-w-0 break-words">${o.text}</span>
+      </label>`;
+    }).join('');
+  }
+  typeset(box);
+}
+
+function renderNav() {
+  $('navGrid').innerHTML = questions.map((q, i) => {
+    const done = isAnswered(q), cur = i === state.current;
+    const cls = done
+      ? 'bg-brand-yellow text-black border-brand-yellow'
+      : 'bg-transparent text-white border-brand-cyan/60 hover:bg-brand-cyan/20';
+    return `<button data-idx="${i}" class="shrink-0 snap-center w-12 h-12 lg:w-full lg:h-11 rounded-lg border-2 font-bold transition ${cls} ${cur ? 'ring-2 ring-brand-cyan shadow-glow scale-105' : ''}">${i + 1}</button>`;
+  }).join('');
+  const n = questions.filter(isAnswered).length;
+  $('progressText').textContent = `${n}/${questions.length} terjawab`;
+}
+
+function updateBottomNav() {
+  const last = state.current === questions.length - 1;
+  $('btnPrev').disabled = state.current === 0;
+  $('btnNext').classList.toggle('hidden', last);
+  $('btnFinishBottom').classList.toggle('hidden', !last);
+}
+
+function setFinishBtn(btn, ok) {
+  btn.setAttribute('aria-disabled', String(!ok));
+  const base = btn.id === 'btnFinishSide' ? 'mt-4 w-full px-4 py-3 rounded-xl font-bold transition ' : 'px-5 py-2.5 rounded-xl font-bold transition ' + (btn.classList.contains('hidden') ? 'hidden ' : '');
+  btn.className = base + (ok
+    ? 'bg-brand-yellow text-black hover:shadow-glowy hover:brightness-110'
+    : 'bg-gray-500/40 text-gray-300 cursor-not-allowed');
+}
+
+function updateFinishUI() {
+  const left = unansweredList();
+  const ok = left.length === 0;
+  const last = state.current === questions.length - 1;
+  const bottom = $('btnFinishBottom');
+  bottom.classList.toggle('hidden', !last);
+  setFinishBtn($('btnFinishSide'), ok);
+  setFinishBtn(bottom, ok);
+  bottom.classList.toggle('hidden', !last);
+  document.querySelectorAll('.finish-hint').forEach(h => {
+    if (ok) { h.classList.add('hidden'); }
+    else {
+      h.classList.remove('hidden');
+      h.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>Belum bisa selesai. Masih ada ${left.length} soal yang belum dijawab (no. ${left.join(', ')}). Kerjakan semua soal agar tombol Selesai &amp; Lihat Pembahasan aktif.`;
+    }
+  });
+}
+
+function goTo(i) {
+  state.current = Math.max(0, Math.min(questions.length - 1, i));
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function askConfirm(message, yesLabel, onYes) {
+  $('confirmMsg').textContent = message;
+  $('confirmYes').textContent = yesLabel || 'OK';
+  const m = $('confirmModal');
+  const close = () => { m.classList.add('hidden'); $('confirmYes').onclick = null; $('confirmNo').onclick = null; };
+  $('confirmYes').onclick = () => { close(); onYes(); };
+  $('confirmNo').onclick = close;
+  m.classList.remove('hidden');
+}
+
+function tryFinish() {
+  const left = unansweredList();
+  if (left.length) {
+    document.querySelectorAll('.finish-hint').forEach(h => { h.classList.remove('hidden', 'shake'); void h.offsetWidth; h.classList.add('shake'); });
+    $('btnFinishSide').classList.remove('shake'); void $('btnFinishSide').offsetWidth; $('btnFinishSide').classList.add('shake');
+    return;
+  }
+  askConfirm('Semua soal sudah dijawab. Selesai dan lihat pembahasan sekarang?', 'Ya, selesai', finishPractice);
+}
+
+/* =========================================================
+   6. RENDER: PEMBAHASAN & EVALUASI
+   ========================================================= */
+function finishPractice() {
+  stopTimer();
+  state.finished = true;
+  $('practiceView').classList.add('hidden');
+  $('resultView').classList.remove('hidden');
+  renderResults();
+  window.scrollTo({ top: 0 });
+}
+
+function renderResults() {
+  const total = questions.length;
+  const benar = questions.filter(q => isCorrect(q, state.answers[q.id])).length;
+  const salah = total - benar;
+  const skor = Math.round(benar / total * 100);
+
+  $('resultBanner').innerHTML = `
+    <div class="rounded-2xl border border-brand-cyan/50 bg-gradient-to-br from-brand-card to-brand-deep p-5 sm:p-8 shadow-glow text-center">
+      <p class="text-brand-cyan font-semibold tracking-wide"><i class="fa-solid fa-trophy mr-1"></i> Ringkasan Hasil Latihan</p>
+      <p class="mt-2 text-6xl sm:text-7xl font-extrabold text-brand-yellow">${skor}</p>
+      <p class="text-sm text-gray-300">Skor Akhir (dari 100)</p>
+      <div class="mt-5 grid grid-cols-3 gap-3 max-w-xl mx-auto">
+        <div class="rounded-xl bg-emerald-500/15 border border-emerald-400/50 p-3"><p class="text-2xl font-bold text-emerald-300">${benar}</p><p class="text-xs sm:text-sm">Total Benar</p></div>
+        <div class="rounded-xl bg-rose-500/15 border border-rose-400/50 p-3"><p class="text-2xl font-bold text-rose-300">${salah}</p><p class="text-xs sm:text-sm">Total Salah</p></div>
+        <div class="rounded-xl bg-brand-cyan/15 border border-brand-cyan/50 p-3"><p class="text-2xl font-bold text-brand-cyan">${fmtTime(state.elapsed)}</p><p class="text-xs sm:text-sm">Waktu Pengerjaan</p></div>
+      </div>
+      <p class="mt-4 text-xs text-gray-300">Satu soal dihitung benar jika seluruh jawabannya tepat (termasuk soal pilih lebih dari satu dan soal Benar/Salah).</p>
+    </div>`;
+
+  $('resultList').innerHTML = questions.map((q, idx) => resultCard(q, idx)).join('');
+  typeset($('resultView'));
+}
+
+function badge(ok) {
+  return ok
+    ? '<span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-sm font-bold"><i class="fa-solid fa-circle-check mr-1"></i>Benar</span>'
+    : '<span class="px-3 py-1 rounded-full bg-rose-500/20 border border-rose-400 text-rose-300 text-sm font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i>Salah</span>';
+}
+
+function reviewBlock(q, a) {
+  if (q.type === 'bs') {
+    const name = (v) => v === 'B' ? 'Benar' : 'Salah';
+    return q.statements.map((st, i) => {
+      const ok = a[i] === q.correct_answer[i];
+      return `<div class="rounded-xl border p-3 mb-3 ${ok ? 'border-emerald-400 bg-emerald-500/10' : 'border-rose-400 bg-rose-500/10'}">
+        <p><span class="font-bold text-brand-cyan mr-1">${i + 1}.</span>${st}</p>
+        <p class="text-sm mt-1">Jawabanmu: <strong>${name(a[i])}</strong> <i class="fa-solid ${ok ? 'fa-circle-check text-emerald-300' : 'fa-circle-xmark text-rose-300'}"></i>
+        &nbsp;|&nbsp; Kunci: <strong class="text-emerald-300">${name(q.correct_answer[i])}</strong></p></div>`;
+    }).join('');
+  }
+  const keys = q.type === 'multi' ? q.correct_answer : [q.correct_answer];
+  const picks = q.type === 'multi' ? a : [a];
+  return q.options.map(o => {
+    const isKey = keys.includes(o.label), isPick = picks.includes(o.label);
+    const cls = isKey ? 'border-emerald-400 bg-emerald-500/15' : (isPick ? 'border-rose-400 bg-rose-500/15' : 'border-white/20 bg-white/5');
+    const tag = (isKey ? '<span class="ml-2 text-xs px-2 py-0.5 rounded bg-emerald-500 text-black font-bold">Kunci</span>' : '') +
+                (isPick ? `<span class="ml-2 text-xs px-2 py-0.5 rounded ${isKey ? 'bg-brand-yellow' : 'bg-rose-400'} text-black font-bold">Jawabanmu</span>` : '');
+    return `<div class="w-full flex items-start gap-3 p-3 mb-2 rounded-xl border ${cls}">
+      <span class="shrink-0 w-8 h-8 rounded-lg grid place-items-center font-bold bg-white/10">${o.label}</span>
+      <span class="flex-1 pt-1 min-w-0 break-words">${o.text}${tag}</span></div>`;
+  }).join('');
+}
+
+function resultCard(q, idx) {
+  const a = state.answers[q.id];
+  const ok = isCorrect(q, a);
+  let ringkas = '';
+  if (q.type !== 'bs') {
+    const mine = q.type === 'multi' ? [...a].sort().join(', ') : a;
+    const key = q.type === 'multi' ? q.correct_answer.join(', ') : q.correct_answer;
+    ringkas = `<p class="mt-3 text-sm">Jawabanmu: <strong class="${ok ? 'text-emerald-300' : 'text-rose-300'}">${mine}</strong> &nbsp;|&nbsp; Jawaban kunci: <strong class="text-emerald-300">${key}</strong></p>`;
+  }
+  return `
+  <article class="rounded-2xl bg-brand-card border ${ok ? 'border-emerald-400/50' : 'border-rose-400/50'} p-4 sm:p-6 shadow-lg">
+    <div class="flex items-center justify-between gap-2 mb-3">
+      <span class="px-3 py-1 rounded-full bg-brand-cyan text-brand-navy font-bold text-sm">Soal ${idx + 1}</span>${badge(ok)}
+    </div>
+    <div class="rich text-[15px] sm:text-base">
+      ${q.question_text}${imgTag(q.image)}${q.question_after || ''}
+    </div>
+    <div class="mt-4">${reviewBlock(q, a)}</div>
+    ${ringkas}
+
+    <div class="rich mt-5 rounded-xl border border-brand-cyan/50 bg-brand-deep/60 p-4">
+      <h3 class="font-bold text-brand-cyan mb-2"><i class="fa-solid fa-book-open mr-1"></i> Pembahasan Lengkap</h3>
+      ${q.pembahasan}
+      ${(q.pembahasan_images || []).map(src => imgTag(src, 'Gambar pembahasan')).join('')}
+    </div>
+
+    <div class="rich mt-4 rounded-xl border border-brand-cyan/40 bg-brand-cyan/10 p-4">
+      <h3 class="font-bold text-brand-yellow mb-2">🔥 Cara Cepat / Trik</h3>
+      ${q.cara_cepat}
+    </div>
+  </article>`;
+}
+
+/* =========================================================
+   7. EVENT LISTENER
+   ========================================================= */
+$('qContent').addEventListener('change', (e) => {
+  const t = e.target, q = questions[state.current];
+  if (t.dataset.opt) {
+    if (q.type === 'multi') {
+      const cur = new Set(state.answers[q.id] || []);
+      cur.has(t.dataset.opt) ? cur.delete(t.dataset.opt) : cur.add(t.dataset.opt);
+      state.answers[q.id] = [...cur].sort();
+      if (!state.answers[q.id].length) delete state.answers[q.id];
+    } else {
+      state.answers[q.id] = t.dataset.opt;
+    }
+  } else if (t.dataset.stmt !== undefined) {
+    const arr = state.answers[q.id] ? [...state.answers[q.id]] : [];
+    arr[Number(t.dataset.stmt)] = t.value;
+    state.answers[q.id] = arr;
+  } else return;
+  renderOptions();
+  renderNav();
+  updateFinishUI();
+});
+
+$('navGrid').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-idx]');
+  if (b) goTo(Number(b.dataset.idx));
+});
+$('btnPrev').addEventListener('click', () => goTo(state.current - 1));
+$('btnNext').addEventListener('click', () => goTo(state.current + 1));
+$('btnFinishSide').addEventListener('click', tryFinish);
+$('btnFinishBottom').addEventListener('click', tryFinish);
+
+$('btnRetry').addEventListener('click', () => {
+  state.answers = {}; state.current = 0; state.finished = false; state.elapsed = 0;
+  $('stopwatch').textContent = '00:00';
+  $('resultView').classList.add('hidden');
+  $('practiceView').classList.remove('hidden');
+  renderQuestion();
+  startTimer();
+  window.scrollTo({ top: 0 });
+});
+
+$('btnDashboard').addEventListener('click', (e) => {
+  if (!state.finished && Object.keys(state.answers).length) {
+    e.preventDefault();
+    askConfirm('Latihan belum selesai. Jawabanmu akan hilang jika keluar. Tetap kembali ke Dashboard?', 'Ya, keluar', () => { location.href = 'data-peluang.html'; });
+  }
+});
+
+/* =========================================================
+   8. INISIALISASI
+   ========================================================= */
+renderQuestion();
+startTimer();
+</script>
+</body>
+</html>
