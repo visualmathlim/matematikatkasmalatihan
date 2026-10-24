@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualMath.Lim - Latihan Aljabar TKA SMA Kelas 12</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+  };
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { navy: '#022050', navyDeep: '#01173a', cyanx: '#00d6d8', gold: '#ffd300' },
+    fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] }
+  } } };
+</script>
+<style>
+  body { background: #022050; color: #fff; }
+  .glow:hover { box-shadow: 0 0 14px rgba(0,214,216,.55); border-color: #00d6d8; }
+  .nav-scroll { scrollbar-width: thin; scrollbar-color: #00d6d8 transparent; }
+  /* Rumus tidak terpotong: ruang vertikal cukup, geser horizontal hanya sebagai cadangan */
+  mjx-container { color: inherit; max-width: 100%; }
+  mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; padding: .5em 0; margin: .6em 0 !important; }
+  mjx-container:not([display="true"]) { white-space: normal; }
+  .rich { overflow-wrap: anywhere; word-break: normal; line-height: 1.75; }
+  .rich table { border-collapse: collapse; width: 100%; max-width: 480px; margin: .75rem 0; }
+  .rich th, .rich td { border: 1px solid rgba(255,255,255,.35); padding: .4rem .7rem; text-align: left; }
+  .rich th { background: rgba(0,214,216,.18); }
+  .rich ol { list-style: decimal; padding-left: 1.4rem; margin: .5rem 0; }
+  .step { margin-top: .9rem; font-weight: 700; color: #00d6d8; }
+  @media (max-width: 640px) {
+    mjx-container[display="true"] { font-size: 86%; }
+    mjx-container:not([display="true"]) { font-size: 95%; }
+  }
+  :focus-visible { outline: 2px solid #00d6d8; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body class="font-sans min-h-screen">
+
+<header class="bg-navyDeep border-b border-cyanx/30 sticky top-0 z-20">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <a href="index.html" class="font-extrabold text-sm sm:text-lg leading-tight hover:text-cyanx transition">
+      VisualMath.Lim - Latihan Aljabar <span class="block sm:inline text-cyanx">TKA SMA Kelas 12</span>
+    </a>
+    <a href="aljabar.html" class="flex items-center gap-2 border border-cyanx/60 rounded-lg px-3 py-2 text-xs sm:text-sm font-bold glow transition shrink-0">
+      <img src="logo.png" alt="Logo VisualMath.Lim" class="h-7 w-7 object-contain" onerror="this.style.display='none'">
+      <span>Kembali ke Dashboard Aljabar</span>
+    </a>
+  </div>
+</header>
+
+<main id="app" class="max-w-7xl mx-auto px-4 py-5"></main>
+
+<script>
+/* ============ GAMBAR DIBUAT DENGAN KODE (SVG) ============ */
+const svgUri = s => 'data:image/svg+xml;utf8,' + encodeURIComponent(s);
+
+const graphSvg = svgUri(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 260" width="480" height="260" font-family="sans-serif" font-size="12">
+  <g stroke="#ffffff" stroke-opacity=".12">
+    ${Array.from({length:13},(_,i)=>`<line x1="${i*40}" y1="0" x2="${i*40}" y2="260"/>`).join('')}
+    ${Array.from({length:7},(_,i)=>`<line x1="0" y1="${i*40+20}" x2="480" y2="${i*40+20}"/>`).join('')}
+  </g>
+  <polygon points="80,200 240,120 320,200" fill="#00d6d8" fill-opacity=".45"/>
+  <line x1="0" y1="240" x2="480" y2="0" stroke="#fff" stroke-width="2"/>
+  <line x1="120" y1="0" x2="360" y2="240" stroke="#fff" stroke-width="2"/>
+  <line x1="0" y1="200" x2="480" y2="200" stroke="#fff" stroke-width="1.5"/>
+  <line x1="240" y1="0" x2="240" y2="260" stroke="#fff" stroke-width="1.5"/>
+  <g fill="#ffd300"><circle cx="80" cy="200" r="5"/><circle cx="240" cy="120" r="5"/><circle cx="320" cy="200" r="5"/></g>
+  <g fill="#fff" font-weight="700">
+    <text x="62" y="218">A(-4,0)</text><text x="248" y="114">B(0,2)</text><text x="318" y="218">C(2,0)</text>
+    <text x="466" y="194">x</text><text x="246" y="12">y</text>
+  </g>
+</svg>`);
+
+const bouquetSvg = (() => {
+  const cards = [
+    { t: 'Buket Tipe A', p: 'Rp85.000,00', f: [2, 3, 1] },
+    { t: 'Buket Tipe B', p: 'Rp70.000,00', f: [1, 2, 2] },
+    { t: 'Buket Tipe C', p: 'Rp75.000,00', f: [3, 1, 1] }
+  ];
+  const col = ['#e53935', '#f5f5f5', '#f48fb1'], nm = ['Mawar', 'Lili', 'Anyelir'];
+  let g = '';
+  cards.forEach((c, i) => {
+    const x = 10 + i * 160;
+    g += `<rect x="${x}" y="8" width="150" height="164" rx="10" fill="#ffffff" fill-opacity=".08" stroke="#00d6d8" stroke-opacity=".6"/>
+          <text x="${x+75}" y="30" text-anchor="middle" font-weight="700" fill="#fff">${c.t}</text>`;
+    c.f.forEach((n, k) => {
+      const y = 56 + k * 28;
+      g += `<text x="${x+10}" y="${y+4}" fill="#fff" font-size="11">${nm[k]}</text>`;
+      for (let d = 0; d < n; d++) g += `<circle cx="${x+68+d*17}" cy="${y}" r="7" fill="${col[k]}"/>`;
+    });
+    g += `<text x="${x+75}" y="158" text-anchor="middle" font-weight="800" fill="#ffd300">${c.p}</text>`;
+  });
+  return svgUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 180" width="490" height="180" font-family="sans-serif" font-size="12">${g}</svg>`);
+})();
+
+/* ============ DATA SOAL (6 soal, sudah diverifikasi) ============
+   type: 'single' (1 jawaban) | 'multi' (lebih dari satu jawaban)
+   correct_answer: string (single) atau array (multi) */
+const questions = [
+  {
+    id: 1, type: 'single',
+    question_text: String.raw`Seorang peneliti memodelkan peningkatan suhu akibat pemanasan global dengan fungsi linear $$y = 0{,}02x - 39{,}9$$ dengan \(x\) mewakili tahun dan \(y\) peningkatan suhu dalam °C. Pada tahun berapakah peningkatan suhu diperkirakan mencapai \(0{,}7\) °C?`,
+    image: '',
+    options: { A: 'Tahun 2000', B: 'Tahun 2003', C: 'Tahun 2025', D: 'Tahun 2030', E: 'Tahun 2345' },
+    correct_answer: 'D',
+    pembahasan: String.raw`Diketahui peningkatan suhu yang diinginkan \(y = 0{,}7\). Substitusikan ke fungsi linear:
+$$\begin{aligned}
+y &= 0{,}02x - 39{,}9\\
+0{,}7 &= 0{,}02x - 39{,}9\\
+0{,}02x &= 0{,}7 + 39{,}9\\
+0{,}02x &= 40{,}6\\
+x &= \frac{40{,}6}{0{,}02}\\
+x &= 2030
+\end{aligned}$$
+Jadi suhu mencapai \(0{,}7\) °C pada <b>tahun 2030</b>. Jawaban: <b>D</b>.`,
+    cara_cepat: String.raw`Uji pilihan tengah, yaitu 2025:
+$$\begin{aligned}
+y &= 0{,}02(2025) - 39{,}9\\
+&= 0{,}6
+\end{aligned}$$
+Kekurangannya \(0{,}7 - 0{,}6 = 0{,}1\), dan tiap tahun naik \(0{,}02\), sehingga butuh
+$$\frac{0{,}1}{0{,}02} = 5$$
+tahun lagi, yaitu \(2025 + 5 = 2030\).`
+  },
+  {
+    id: 2, type: 'single',
+    question_text: String.raw`Tempat Les Pintarku memberi potongan biaya kepada 50 pendaftar pertama, sedangkan pendaftar lain membayar harga normal. Biaya setelah potongan:
+$$y = 0{,}9x$$
+dengan \(x\) biaya mula-mula. Siswa berprestasi mendapat tambahan potongan:
+$$g(y) = \begin{cases} 0{,}7y, & \text{nilai rapor di atas } 90\\ 0{,}8y, & \text{nilai rapor } 85-90 \end{cases}$$
+Fira adalah pendaftar ke-50 dan membayar Rp180.000,00. Setelah itu datang empat siswa lain:
+<table><thead><tr><th>Nama</th><th>Nilai Rapor</th><th>Uang yang dimiliki (Rp)</th></tr></thead>
+<tbody><tr><td>Andi</td><td>90</td><td>285.000</td></tr><tr><td>Budi</td><td>92</td><td>286.000</td></tr>
+<tr><td>Cici</td><td>89</td><td>280.000</td></tr><tr><td>Dini</td><td>95</td><td>287.000</td></tr></tbody></table>
+Siapakah siswa yang <b>pasti</b> dapat mengikuti kursus?`,
+    image: '',
+    options: { A: 'Dini', B: 'Dini dan Budi', C: 'Dini, Budi, dan Andi', D: 'Dini, Cici, Budi, dan Andi', E: 'Cici dan Andi' },
+    correct_answer: 'D',
+    pembahasan: String.raw`<div class="step">Langkah 1: cari biaya mula-mula dari Fira</div>
+$$\begin{aligned}
+y &= 0{,}9x\\
+180.000 &= 0{,}9x\\
+x &= \frac{180.000}{0{,}9}\\
+x &= 200.000
+\end{aligned}$$
+<div class="step">Langkah 2: tentukan harga untuk keempat siswa</div>
+Fira pendaftar ke-50 (terakhir yang mendapat potongan), sehingga keempat siswa ini adalah pendaftar ke-51 dan seterusnya. Mereka tidak mendapat potongan 10%, maka \(y = x = 200.000\).
+<div class="step">Langkah 3: hitung biaya akhir dengan diskon rapor</div>
+$$\begin{aligned}
+\text{Andi (90)} &: 0{,}8 \times 200.000 = 160.000 \le 285.000\\
+\text{Budi (92)} &: 0{,}7 \times 200.000 = 140.000 \le 286.000\\
+\text{Cici (89)} &: 0{,}8 \times 200.000 = 160.000 \le 280.000\\
+\text{Dini (95)} &: 0{,}7 \times 200.000 = 140.000 \le 287.000
+\end{aligned}$$
+Keempatnya cukup. Jawaban: <b>D</b>.`,
+    cara_cepat: String.raw`Biaya terbesar yang mungkin adalah harga normal Rp200.000 (tanpa diskon apa pun). Uang keempat siswa semuanya di atas Rp280.000, jadi semuanya <b>pasti cukup</b> tanpa perlu menghitung diskon.
+$$285.000,\ 286.000,\ 280.000,\ 287.000 > 200.000$$`
+  },
+  {
+    id: 3, type: 'single',
+    question_text: String.raw`Total kertas berwarna yang dipegang pendukung di barisan paling bawah adalah 400 lembar, baris kedua 550 lembar, dan terus bertambah dengan pola penambahan yang sama sampai baris ketujuh. Berapa banyak penonton yang memegang kertas koreo di <b>baris ke-5</b>?`,
+    image: '',
+    options: { A: '700', B: '850', C: '1.000', D: '1.150', E: '1.300' },
+    correct_answer: 'C',
+    pembahasan: String.raw`Polanya barisan aritmetika dengan
+$$\begin{aligned}
+a &= U_1 = 400\\
+b &= U_2 - U_1 = 550 - 400 = 150
+\end{aligned}$$
+Rumus suku ke-\(n\) adalah \(U_n = a + (n-1)b\), maka
+$$\begin{aligned}
+U_5 &= 400 + (5-1)(150)\\
+&= 400 + 4(150)\\
+&= 400 + 600\\
+&= 1.000
+\end{aligned}$$
+$$\begin{array}{c|ccccccc}
+\text{Baris} & 1 & 2 & 3 & 4 & 5 & 6 & 7\\ \hline
+\text{Jumlah} & 400 & 550 & 700 & 850 & \mathbf{1.000} & 1.150 & 1.300
+\end{array}$$
+Jawaban: <b>C</b> (1.000 orang).`,
+    cara_cepat: String.raw`Tambah 150 terus-menerus sampai baris ke-5:
+$$400,\ 550,\ 700,\ 850,\ \mathbf{1.000}$$
+Baris ke-6 dan ke-7 hanya pengecoh, tidak perlu dihitung.`
+  },
+  {
+    id: 4, type: 'multi',
+    question_text: String.raw`Kadar asam urat seorang pasien pada hari pertama adalah 13 mg/dL. Obat menurunkan kadar asam urat sebesar 20% setiap hari secara konsisten.
+<ol><li>Pasien mulai merasa nyaman jika kadar di bawah 7 mg/dL.</li><li>Pasien dianggap sembuh secara klinis jika kadar kurang dari 5 mg/dL.</li></ol>
+Pada hari keberapa pasien merasa nyaman namun belum dianggap sembuh secara klinis? <b>(Jawaban benar lebih dari satu. Pilih semua yang benar.)</b>`,
+    image: '',
+    options: { A: 'Hari ke-2', B: 'Hari ke-3', C: 'Hari ke-4', D: 'Hari ke-5', E: 'Hari ke-6' },
+    correct_answer: ['C', 'D'],
+    pembahasan: String.raw`Kadar berkurang 20% setiap hari, sehingga tersisa 80% dari hari sebelumnya. Kadar membentuk barisan geometri dengan \(a = 13\) dan \(r = 0{,}8\):
+$$U_n = 13\,(0{,}8)^{n-1}$$
+$$\begin{aligned}
+U_1 &= 13\\
+U_2 &= 13 \times 0{,}8 = 10{,}4\\
+U_3 &= 10{,}4 \times 0{,}8 = 8{,}32\\
+U_4 &= 8{,}32 \times 0{,}8 = 6{,}656\\
+U_5 &= 6{,}656 \times 0{,}8 = 5{,}3248\\
+U_6 &= 5{,}3248 \times 0{,}8 = 4{,}25984
+\end{aligned}$$
+Syarat yang dicari: nyaman \((< 7)\) tetapi belum sembuh \((\ge 5)\), yaitu
+$$5 \le U_n < 7$$
+$$\begin{array}{c|c|c|c}
+\text{Hari} & \text{Kadar} & \text{Kondisi} \\ \hline
+2 & 10{,}4 & \text{belum nyaman}\\
+3 & 8{,}32 & \text{belum nyaman}\\
+4 & 6{,}656 & \text{nyaman, belum sembuh}\\
+5 & 5{,}3248 & \text{nyaman, belum sembuh}\\
+6 & 4{,}25984 & \text{sudah sembuh}
+\end{array}$$
+Jawaban: <b>hari ke-4 dan hari ke-5</b> (C dan D).`,
+    cara_cepat: String.raw`Kalikan 0,8 berulang kali dari 13, lalu berhenti saat kadar sudah di bawah 5.
+$$13 \to 10{,}4 \to 8{,}32 \to \mathbf{6{,}6} \to \mathbf{5{,}3} \to 4{,}3$$
+Hari ke-4 (6,6) dan hari ke-5 (5,3) berada di antara 5 dan 7, sedangkan hari ke-6 (4,3) sudah di bawah 5.`
+  },
+  {
+    id: 5, type: 'single',
+    question_text: String.raw`Perhatikan daerah penyelesaian pada gambar berikut. Daerah yang diarsir adalah segitiga dengan titik sudut \(A(-4,0)\), \(B(0,2)\), dan \(C(2,0)\). Himpunan penyelesaian dari sistem pertidaksamaan manakah yang sesuai?`,
+    image: graphSvg,
+    options: {
+      A: String.raw`\(\begin{cases}x-2y\ge -4\\ x+y\le 2\\ x\ge 0\\ y\ge 0\end{cases}\)`,
+      B: String.raw`\(\begin{cases}x-2y\ge -4\\ x+y\le 2\\ y\ge 0\end{cases}\)`,
+      C: String.raw`\(\begin{cases}x-2y\ge -4\\ x+y\ge 2\\ y\ge 0\end{cases}\)`,
+      D: String.raw`\(\begin{cases}2x-y\le 4\\ x+y\le 2\\ y\ge 0\end{cases}\)`,
+      E: String.raw`\(\begin{cases}2x-y\ge 4\\ x+y\le 2\\ y\ge 0\\ y\ge 0\end{cases}\)`
+    },
+    correct_answer: 'B',
+    pembahasan: String.raw`Daerah dibatasi tiga garis: garis \(AB\), garis \(BC\), dan sumbu-\(x\).
+<div class="step">Langkah 1: garis AB melalui A(-4,0) dan B(0,2)</div>
+$$\begin{aligned}
+m &= \frac{2-0}{0-(-4)} = \frac{1}{2}\\
+y - 0 &= \tfrac{1}{2}(x+4)\\
+2y &= x + 4\\
+x - 2y &= -4
+\end{aligned}$$
+Uji titik \((0,1)\) di dalam arsiran: \(0 - 2(1) = -2 \ge -4\), sehingga \(x - 2y \ge -4\).
+<div class="step">Langkah 2: garis BC melalui B(0,2) dan C(2,0)</div>
+$$\begin{aligned}
+\frac{x}{2} + \frac{y}{2} &= 1\\
+x + y &= 2
+\end{aligned}$$
+Uji \((0,1)\): \(0 + 1 = 1 \le 2\), sehingga \(x + y \le 2\).
+<div class="step">Langkah 3: sumbu-x</div>
+Daerah berada di atas sumbu-\(x\), sehingga \(y \ge 0\). Tidak ada syarat \(x \ge 0\) karena daerah meluas ke kiri sampai \(x = -4\).
+$$\begin{cases}x - 2y \ge -4\\ x + y \le 2\\ y \ge 0\end{cases}$$
+Jawaban: <b>B</b>.`,
+    cara_cepat: String.raw`Eliminasi pilihan:
+<ol>
+<li>A memuat \(x \ge 0\), padahal daerah melebar ke kiri sumbu-\(y\).</li>
+<li>E memuat \(y \ge 0\) ganda serta garis yang salah.</li>
+<li>C salah: \(x+y \ge 2\) menunjuk ke luar segitiga (uji \((0,0)\) gagal).</li>
+<li>D salah: \(2x-y=4\) memotong sumbu-\(x\) di \(x=2\) dan sumbu-\(y\) di \(y=-4\), bukan garis \(AB\).</li>
+</ol>
+Tersisa pilihan <b>B</b>.`
+  },
+  {
+    id: 6, type: 'single',
+    question_text: String.raw`Bu Silma adalah seorang perangkai bunga yang disusun dalam buket bunga. Di tokonya, ia memiliki bunga mawar, lili, dan anyelir. Harga buket ditentukan dari total harga bunga yang digunakan dalam buket tersebut. Tiga jenis buket yang biasa ia siapkan beserta komposisi dan harga per buketnya diberikan pada gambar berikut.<br><br>Bila seorang pembeli ingin membeli buket bunga tipe C namun ingin menambah 2 tangkai lili dan 1 tangkai anyelir dengan harga satuan, maka total harga yang harus dibayar pembeli tersebut adalah ....`,
+    image: bouquetSvg,
+    options: { A: 'Rp75.000', B: 'Rp102.000', C: 'Rp110.000', D: 'Rp115.000', E: 'Rp116.000' },
+    correct_answer: 'D',
+    pembahasan: String.raw`Misalkan \(m\) = harga mawar, \(l\) = harga lili, \(n\) = harga anyelir.
+$$\begin{cases}
+2m + 3l + n = 85.000 & (1)\\
+m + 2l + 2n = 70.000 & (2)\\
+3m + l + n = 75.000 & (3)
+\end{cases}$$
+<div class="step">Eliminasi n dari (1) dan (3)</div>
+$$\begin{aligned}
+(1)-(3):\ -m + 2l &= 10.000\\
+m &= 2l - 10.000 \quad (4)
+\end{aligned}$$
+<div class="step">Substitusi (4) ke (2)</div>
+$$\begin{aligned}
+(2l - 10.000) + 2l + 2n &= 70.000\\
+4l + 2n &= 80.000\\
+n &= 40.000 - 2l \quad (5)
+\end{aligned}$$
+<div class="step">Substitusi (4) dan (5) ke (3)</div>
+$$\begin{aligned}
+3(2l - 10.000) + l + (40.000 - 2l) &= 75.000\\
+5l + 10.000 &= 75.000\\
+5l &= 65.000\\
+l &= 13.000
+\end{aligned}$$
+Maka \(m = 2(13.000) - 10.000 = 16.000\) dan \(n = 40.000 - 2(13.000) = 14.000\).
+Cek ke (1): \(32.000 + 39.000 + 14.000 = 85.000\) (benar).
+<div class="step">Hitung total: buket C + 2 lili + 1 anyelir</div>
+$$\begin{aligned}
+\text{Total} &= 75.000 + 2l + n\\
+&= 75.000 + 26.000 + 14.000\\
+&= 115.000
+\end{aligned}$$
+Jawaban: <b>D</b>.`,
+    cara_cepat: String.raw`Kurangkan persamaan (1) dan (3) untuk mendapat \(-m + 2l = 10.000\). Dari situ \(l = 13.000\) keluar setelah satu kali substitusi.
+Karena yang dicari hanya \(2l + n\):
+$$2l + n = 26.000 + 14.000 = 40.000$$
+Langsung tambahkan ke harga buket C:
+$$75.000 + 40.000 = 115.000$$`
+  }
+];
+
+/* ============ STATE & HELPER ============ */
+const state = { current: 0, answers: {}, seconds: 0, finished: false, timer: null };
+const $app = document.getElementById('app');
+const letters = ['A', 'B', 'C', 'D', 'E'];
+const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+const imgClass = 'max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block';
+
+const asArr = v => v === undefined ? [] : Array.isArray(v) ? v : [v];
+const isAnswered = q => asArr(state.answers[q.id]).length > 0;
+const isCorrect = q => {
+  const mine = asArr(state.answers[q.id]).slice().sort().join(',');
+  return mine === asArr(q.correct_answer).slice().sort().join(',');
+};
+const unanswered = () => questions.map((q, i) => isAnswered(q) ? null : i + 1).filter(Boolean);
+
+const typeset = () => { if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([$app]).catch(() => {}); };
+window.addEventListener('load', () => setTimeout(typeset, 300));
+
+/* ============ STATE 1: MENGERJAKAN ============ */
+function noticeHtml(flash) {
+  const left = unanswered();
+  if (!left.length) {
+    return `<div class="rounded-lg border border-green-400/60 bg-green-500/15 text-green-200 text-sm p-3">
+      <i class="fa-solid fa-circle-check mr-1"></i> Semua soal sudah dijawab. Kamu bisa menekan "Selesai &amp; Lihat Pembahasan".</div>`;
+  }
+  return `<div class="rounded-lg border ${flash ? 'border-red-400 bg-red-500/20 text-red-100' : 'border-gold/60 bg-gold/10 text-gold'} text-sm p-3 leading-relaxed">
+    <i class="fa-solid fa-circle-exclamation mr-1"></i>
+    <b>Pembahasan belum bisa dibuka.</b> Kerjakan semua soal terlebih dahulu. Belum dijawab: soal nomor <b>${left.join(', ')}</b>.</div>`;
+}
+
+function renderPractice(flash = false) {
+  const q = questions[state.current];
+  const last = state.current === questions.length - 1;
+  const answeredCount = questions.filter(isAnswered).length;
+  const allDone = answeredCount === questions.length;
+  const mine = asArr(state.answers[q.id]);
+  const finishCls = allDone ? 'bg-gold text-black hover:brightness-110' : 'bg-white/10 text-white/50 cursor-not-allowed border border-white/20';
+
+  $app.innerHTML = `
+  <div class="flex flex-col lg:flex-row gap-5">
+    <section class="lg:w-3/4 min-w-0">
+      <div class="flex items-center justify-between mb-3">
+        <span class="font-bold text-cyanx">Soal ${state.current + 1} dari ${questions.length}</span>
+        <span class="bg-navyDeep border border-cyanx/50 rounded-full px-4 py-1 font-bold tabular-nums">
+          <i class="fa-regular fa-clock text-cyanx mr-1"></i><span id="stopwatch">${fmt(state.seconds)}</span>
+        </span>
+      </div>
+
+      <article class="bg-navyDeep/70 border border-cyanx/25 rounded-2xl p-5 sm:p-7">
+        <div class="rich text-base sm:text-lg">${q.question_text}</div>
+        ${q.image ? `<img src="${q.image}" alt="Gambar soal ${q.id}" class="${imgClass}">` : ''}
+        ${q.type === 'multi' ? `<p class="mt-3 text-sm text-gold"><i class="fa-regular fa-square-check mr-1"></i>Boleh memilih lebih dari satu jawaban.</p>` : ''}
+        <div class="mt-4 space-y-3">
+          ${letters.map(l => {
+            const on = mine.includes(l);
+            return `
+            <label class="w-full flex items-start gap-3 rounded-xl border px-4 py-3 cursor-pointer transition glow
+              ${on ? 'bg-cyanx/25 border-cyanx' : 'bg-white/5 border-white/20'}">
+              <input type="${q.type === 'multi' ? 'checkbox' : 'radio'}" name="opt" value="${l}" class="sr-only" ${on ? 'checked' : ''}>
+              <span class="h-8 w-8 shrink-0 ${q.type === 'multi' ? 'rounded-md' : 'rounded-full'} grid place-items-center font-bold ${on ? 'bg-gold text-black' : 'bg-white/10'}">${l}</span>
+              <span class="rich min-w-0 flex-1 pt-0.5">${q.options[l]}</span>
+            </label>`;
+          }).join('')}
+        </div>
+      </article>
+
+      <div class="flex items-center justify-between gap-3 mt-5">
+        <button id="prev" class="px-5 py-3 rounded-lg border border-cyanx/60 font-bold glow transition disabled:opacity-30 disabled:pointer-events-none" ${state.current === 0 ? 'disabled' : ''}>
+          <i class="fa-solid fa-chevron-left mr-1"></i> Sebelumnya
+        </button>
+        ${last
+          ? `<span class="text-sm text-white/60 hidden sm:inline">Soal terakhir</span>`
+          : `<button id="next" class="px-5 py-3 rounded-lg border border-cyanx/60 font-bold glow transition">Selanjutnya <i class="fa-solid fa-chevron-right ml-1"></i></button>`}
+      </div>
+
+      <div class="mt-5 space-y-3">
+        <div data-notice>${noticeHtml(flash)}</div>
+        <button data-finish aria-disabled="${!allDone}" class="w-full sm:w-auto px-5 py-3 rounded-lg font-extrabold transition ${finishCls}">
+          <i class="fa-solid ${allDone ? 'fa-flag-checkered' : 'fa-lock'} mr-1"></i> Selesai &amp; Lihat Pembahasan
+        </button>
+      </div>
+    </section>
+
+    <aside class="lg:w-1/4 min-w-0">
+      <div class="bg-navyDeep/70 border border-cyanx/25 rounded-2xl p-4 lg:sticky lg:top-24">
+        <h2 class="font-bold mb-3">Navigasi Soal <span class="text-sm font-normal text-white/60">(${answeredCount}/${questions.length} terjawab)</span></h2>
+        <div class="nav-scroll flex lg:grid lg:grid-cols-5 gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+          ${questions.map((x, i) => {
+            const done = isAnswered(x), cur = i === state.current;
+            return `<button data-go="${i}" aria-label="Soal ${i + 1}${done ? ' sudah dijawab' : ''}"
+              class="h-11 w-11 min-w-[44px] shrink-0 rounded-lg font-bold border-2 transition
+              ${done ? 'bg-gold text-black border-gold' : 'bg-white/5 border-white/25 hover:border-cyanx'}
+              ${cur ? 'ring-2 ring-cyanx ring-offset-2 ring-offset-navy' : ''}">${i + 1}</button>`;
+          }).join('')}
+        </div>
+        <p class="hidden lg:block text-xs text-white/60 mt-3">Stopwatch berjalan terus sebagai pengukur kecepatan, tanpa batas waktu. Pembahasan terbuka setelah semua soal dijawab.</p>
+      </div>
+    </aside>
+  </div>`;
+
+  $app.querySelectorAll('input[name=opt]').forEach(r => r.addEventListener('change', e => {
+    if (q.type === 'multi') {
+      const set = new Set(asArr(state.answers[q.id]));
+      e.target.checked ? set.add(e.target.value) : set.delete(e.target.value);
+      if (set.size) state.answers[q.id] = [...set].sort(); else delete state.answers[q.id];
+    } else state.answers[q.id] = e.target.value;
+    renderPractice();
+  }));
+  $app.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { state.current = +b.dataset.go; renderPractice(); });
+  $app.querySelectorAll('[data-finish]').forEach(b => b.onclick = finish);
+  const prev = document.getElementById('prev'), next = document.getElementById('next');
+  if (prev) prev.onclick = () => { state.current--; renderPractice(); };
+  if (next) next.onclick = () => { state.current++; renderPractice(); };
+  typeset();
+}
+
+/* ============ STOPWATCH ============ */
+function startTimer() {
+  state.timer = setInterval(() => {
+    state.seconds++;
+    const el = document.getElementById('stopwatch');
+    if (el) el.textContent = fmt(state.seconds);
+  }, 1000);
+}
+
+function finish() {
+  if (unanswered().length) {           // belum lengkap: tolak & tampilkan info
+    renderPractice(true);
+    const n = document.querySelector('[data-notice]');
+    if (n) n.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  clearInterval(state.timer);
+  state.finished = true;
+  renderReview();
+  window.scrollTo({ top: 0 });
+}
+
+/* ============ STATE 2: PEMBAHASAN & EVALUASI ============ */
+function renderReview() {
+  const total = questions.length;
+  const benar = questions.filter(isCorrect).length;
+  const salah = total - benar;
+  const skor = Math.round((benar / total) * 100);
+
+  const stat = (label, val, cls = '') => `
+    <div class="bg-white/5 border border-white/15 rounded-xl p-4 text-center">
+      <div class="text-2xl sm:text-3xl font-extrabold ${cls}">${val}</div>
+      <div class="text-xs sm:text-sm text-white/70 mt-1">${label}</div>
+    </div>`;
+
+  $app.innerHTML = `
+  <div class="max-w-4xl mx-auto">
+    <section class="bg-navyDeep border border-cyanx/50 rounded-2xl p-5 sm:p-7 mb-6" style="box-shadow:0 0 24px rgba(0,214,216,.18)">
+      <h1 class="text-xl sm:text-2xl font-extrabold mb-4">Ringkasan Hasil Latihan</h1>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        ${stat('Skor Akhir', skor, 'text-gold')}
+        ${stat('Total Benar', benar, 'text-green-400')}
+        ${stat('Total Salah', salah, 'text-red-400')}
+        ${stat('Waktu Pengerjaan', fmt(state.seconds), 'text-cyanx')}
+      </div>
+      <div class="flex flex-wrap gap-3 mt-5">
+        <button id="retry" class="px-5 py-3 rounded-lg bg-gold text-black font-extrabold hover:brightness-110 transition"><i class="fa-solid fa-rotate-right mr-1"></i> Ulangi Latihan</button>
+        <a href="aljabar.html" class="px-5 py-3 rounded-lg border border-cyanx/60 font-bold glow transition">Kembali ke Dashboard Aljabar</a>
+      </div>
+    </section>
+
+    ${questions.map((q, i) => {
+      const mine = asArr(state.answers[q.id]), keys = asArr(q.correct_answer), ok = isCorrect(q);
+      return `
+      <article class="bg-navyDeep/70 border border-cyanx/25 rounded-2xl p-5 sm:p-7 mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-cyanx">Soal ${i + 1}</span>
+          <span class="text-sm font-bold px-3 py-1 rounded-full ${ok ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}">
+            <i class="fa-solid ${ok ? 'fa-circle-check' : 'fa-circle-xmark'} mr-1"></i>${ok ? 'Benar' : 'Salah'}
+          </span>
+        </div>
+        <div class="rich text-base sm:text-lg">${q.question_text}</div>
+        ${q.image ? `<img src="${q.image}" alt="Gambar soal ${q.id}" class="${imgClass}">` : ''}
+
+        <div class="mt-4 space-y-2">
+          ${letters.map(l => {
+            const isKey = keys.includes(l), isMine = mine.includes(l);
+            const cls = isKey ? 'border-green-400 bg-green-500/15' : isMine ? 'border-red-400 bg-red-500/15' : 'border-white/15 bg-white/5';
+            const tag = isKey && isMine ? 'Jawabanmu • Kunci' : isKey ? 'Kunci jawaban' : isMine ? 'Jawabanmu (salah)' : '';
+            return `<div class="w-full flex items-start gap-3 rounded-xl border px-4 py-2 ${cls}">
+              <span class="h-8 w-8 shrink-0 rounded-full grid place-items-center font-bold bg-white/10">${l}</span>
+              <span class="rich min-w-0 flex-1 pt-0.5">${q.options[l]}</span>
+              ${tag ? `<span class="text-xs font-bold ${isKey ? 'text-green-300' : 'text-red-300'} shrink-0 text-right max-w-[6.5rem] pt-1">${tag}</span>` : ''}
+            </div>`;
+          }).join('')}
+        </div>
+
+        <div class="mt-5 rounded-xl border border-white/20 bg-white/5 p-4 sm:p-5">
+          <h3 class="font-extrabold mb-2"><i class="fa-solid fa-book-open text-cyanx mr-2"></i>Pembahasan Lengkap</h3>
+          <div class="rich">${q.pembahasan}</div>
+        </div>
+        <div class="mt-4 rounded-xl border border-cyanx/50 bg-cyanx/10 p-4 sm:p-5">
+          <h3 class="font-extrabold mb-2">🔥 Cara Cepat / Trik</h3>
+          <div class="rich">${q.cara_cepat}</div>
+        </div>
+      </article>`;
+    }).join('')}
+  </div>`;
+
+  document.getElementById('retry').onclick = () => {
+    Object.assign(state, { current: 0, answers: {}, seconds: 0, finished: false });
+    startTimer(); renderPractice(); window.scrollTo({ top: 0 });
+  };
+  typeset();
+}
+
+/* ============ INIT ============ */
+startTimer();
+renderPractice();
+</script>
+</body>
+</html>
