@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tryout Paket 3 – VisualMath.Lim</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+  /* MathJax 3.2.2 (versi stabil, dipin). Render dipicu manual oleh typeset() setelah tiap soal dibuat. */
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']], packages: { '[+]': ['ams'] } },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] },
+    startup: { typeset: false }
+  };
+  function loadMJ(urls) {
+    var u = urls.shift(); if (!u) return;
+    var s = document.createElement('script'); s.async = true; s.src = u;
+    s.onerror = function () { loadMJ(urls); };
+    document.head.appendChild(s);
+  }
+  loadMJ(['https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js',
+          'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js',
+          'https://unpkg.com/mathjax@3.2.2/es5/tex-chtml.js']);
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background:#022050; color:#fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .opt { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.04); transition: all .15s; }
+  .opt:hover { border-color:#00d6d8; box-shadow:0 0 12px rgba(0,214,216,.35); }
+  .opt.sel { background: rgba(0,214,216,.20); border-color:#00d6d8; }
+  .radio, .chk { width:20px; height:20px; border:2px solid rgba(255,255,255,.55); flex-shrink:0; position:relative; }
+  .radio { border-radius:9999px; } .chk { border-radius:5px; }
+  .radio.on, .chk.on { border-color:#00d6d8; }
+  .radio.on::after { content:""; position:absolute; inset:3px; border-radius:9999px; background:#00d6d8; }
+  .chk.on::after { content:"\f00c"; font-family:"Font Awesome 6 Free"; font-weight:900; font-size:11px; color:#00d6d8; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .tfbtn { border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.05); transition:all .15s; }
+  .tfbtn:hover { border-color:#00d6d8; }
+  .tfbtn.on { background:rgba(0,214,216,.25); border-color:#00d6d8; font-weight:700; }
+  .navsq::-webkit-scrollbar, .scrollx::-webkit-scrollbar { height:6px; }
+  .scrollx::-webkit-scrollbar-thumb { background:rgba(0,214,216,.5); border-radius:9999px; }
+  mjx-container { max-width:100%; }
+  mjx-container[display="true"] { display:block; overflow-x:auto; overflow-y:hidden; padding:.6em .3em; margin:.3em 0 !important; }
+  mjx-container:not([display="true"]) { overflow:visible !important; }
+  mjx-container[display="true"]::-webkit-scrollbar { height:5px; }
+  mjx-container[display="true"]::-webkit-scrollbar-thumb { background:rgba(0,214,216,.5); border-radius:9999px; }
+  .pemb { overflow:visible; min-width:0; overflow-wrap:anywhere; }
+  .pemb > div { line-height:1.9; }
+  .ok { border-color:#22c55e !important; background:rgba(34,197,94,.15) !important; }
+  .bad { border-color:#ef4444 !important; background:rgba(239,68,68,.15) !important; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<header id="navbar" class="sticky top-0 z-50 bg-[#011a42]/95 backdrop-blur border-b border-[#00d6d8]/30"></header>
+<main id="app"></main>
+
+<script>
+/* =========================================================
+   HELPER
+   ========================================================= */
+const R = String.raw;
+const tbl = (h, rows) =>
+  `<div class="overflow-x-auto"><table class="min-w-[260px] border-collapse text-sm my-2"><thead><tr>` +
+  h.map(x => `<th class="border border-gray-500 bg-white/10 px-3 py-1.5 text-left">${x}</th>`).join('') +
+  `</tr></thead><tbody>` +
+  rows.map(r => `<tr>` + r.map(c => `<td class="border border-gray-500 px-3 py-1.5">${c}</td>`).join('') + `</tr>`).join('') +
+  `</tbody></table></div>`;
+
+/* =========================================================
+   GAMBAR SOAL – dibuat dengan kode (SVG inline), tanpa file PNG
+   ========================================================= */
+const svgImg = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+const sv = (w, h, inner) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" font-family="Arial, Helvetica, sans-serif"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c0392b"/></marker><pattern id="ht" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fde2e2"/><line x1="0" y1="0" x2="0" y2="6" stroke="#c0392b" stroke-width="2"/></pattern></defs><rect width="${w}" height="${h}" rx="10" fill="#ffffff"/>${inner}</svg>`;
+const tx = (x, y, t, o = {}) => `<text x="${x}" y="${y}" font-size="${o.s || 13}" fill="${o.c || '#1b1b1b'}" text-anchor="${o.a || 'middle'}" font-weight="${o.b ? 700 : 400}"${o.i ? ' font-style="italic"' : ''}>${t}</text>`;
+const ln = (x1, y1, x2, y2, c = '#333', w = 1.5, d = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}"${d ? ` stroke-dasharray="${d}"` : ''}/>`;
+const dm = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#c0392b" stroke-width="1.3" marker-start="url(#ar)" marker-end="url(#ar)"/>`;
+const ar1 = (x1, y1, x2, y2, c = '#c0392b') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2.5" marker-end="url(#ar)"/>`;
+const rc = (x, y, w, h, f = '#fff', s = '#333', r = 0, sw = 1.5) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${f}" stroke="${s}" stroke-width="${sw}"/>`;
+const pg = (pts, f = 'none', s = '#333', sw = 1.5, d = '') => `<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="${f}" stroke="${s}" stroke-width="${sw}" stroke-linejoin="round"${d ? ` stroke-dasharray="${d}"` : ''}/>`;
+const ci = (x, y, r, f = '#fff', s = 'none', sw = 1) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" stroke="${s}" stroke-width="${sw}"/>`;
+const pt = (p, c = '#111') => ci(p[0], p[1], 3.5, c);
+const EG = (a, b, c = '#a8174f', w = 2.5, d = '') => ln(a[0], a[1], b[0], b[1], c, w, d);
+
+function barChart({ w, h, title, items, max, step, ylabel, xlabel, showVal, ts = 15 }) {
+  const L0 = 62, R0 = w - 20, T0 = 50, B0 = h - 56, k = (B0 - T0) / max, n = items.length, sl = (R0 - L0) / n, bw = Math.min(46, sl * 0.62);
+  let o = tx(w / 2, 26, title, { s: ts, b: 1 });
+  for (let v = 0; v <= max; v += step) { const y = B0 - v * k; o += ln(L0, y, R0, y, '#ddd', 1) + tx(L0 - 8, y + 4, v, { a: 'end', s: 11, c: '#555' }); }
+  o += ln(L0, T0, L0, B0, '#555', 1.5) + ln(L0, B0, R0, B0, '#555', 1.5);
+  items.forEach((it, i) => {
+    const cx = L0 + sl * (i + 0.5);
+    if (it.v != null) { const bh = it.v * k; o += rc(cx - bw / 2, B0 - bh, bw, bh, it.c || '#3b6fd4', 'none'); if (showVal) o += tx(cx, B0 - bh - 5, it.v, { s: 11, b: 1 }); }
+    o += tx(cx, B0 + 16, it.l, { s: 12 });
+  });
+  o += tx(w / 2, h - 12, xlabel, { s: 12, c: '#555' });
+  o += `<text transform="translate(16 ${(T0 + B0) / 2}) rotate(-90)" font-size="12" fill="#555" text-anchor="middle">${ylabel}</text>`;
+  return sv(w, h, o);
+}
+
+const bridgeFig = () => {
+  let o = tx(240, 26, 'Uji beban bertahap pada girder jembatan layang', { s: 14, b: 1 });
+  o += rc(0, 215, 480, 35, '#cfdcb8', 'none') + rc(120, 140, 26, 75, '#9aa0a6', '#555') + rc(330, 140, 26, 75, '#9aa0a6', '#555');
+  o += rc(40, 112, 400, 28, '#d5d8dc', '#555', 3) + tx(240, 131, 'GIRDER', { s: 12, b: 1, c: '#555' }) + rc(40, 100, 400, 12, '#7f8c8d', '#555');
+  [60, 160, 260, 350].forEach(x => { o += rc(x, 74, 50, 26, '#e67e22', '#a04000', 2) + rc(x + 50, 82, 14, 18, '#d35400', '#a04000', 2) + ci(x + 12, 102, 5, '#222') + ci(x + 40, 102, 5, '#222'); });
+  [133, 343].forEach(x => { o += ar1(x, 60, x, 96); o += tx(x, 54, 'beban statis', { s: 10, c: '#c0392b' }); o += tx(x, 232, 'tumpuan', { s: 11 }); });
+  return sv(480, 250, o);
+};
+
+const FIG = {
+  6: () => {
+    const ox = 70, oy = 250, s = 45, X = x => ox + x * s, Y = y => oy - y * s;
+    let o = ln(30, oy, 400, oy, '#222', 2) + ln(ox, 282, ox, 28, '#222', 2) + tx(412, oy + 4, 'X', { a: 'start', b: 1 }) + tx(ox, 20, 'Y', { b: 1 });
+    o += ln(X(-0.3), Y(4.3), X(4.3), Y(-0.3), '#555', 2) + ln(X(-0.3), Y(2.1), X(6.6), Y(-0.2), '#555', 2);
+    o += tx(X(4), oy + 16, '4', { s: 12 }) + tx(X(6), oy + 16, '6', { s: 12 }) + tx(ox - 10, Y(2) + 4, '2', { s: 12, a: 'end' }) + tx(ox - 10, Y(4) + 4, '4', { s: 12, a: 'end' }) + tx(ox - 8, oy + 14, 'O', { s: 11, a: 'end' });
+    o += tx(115, 212, 'I', { b: 1, s: 15 }) + tx(112, 158, 'II', { b: 1, s: 15 }) + tx(252, 160, 'III', { b: 1, s: 15 }) + tx(290, 243, 'IV', { b: 1, s: 14 }) + tx(42, 160, 'V', { b: 1, s: 15 });
+    return sv(430, 295, o);
+  },
+  7: () => {
+    let o = rc(20, 16, 340, 268, '#0b3a73', '#00d6d8', 14, 3);
+    o += tx(190, 46, 'BOBIN APP', { s: 13, c: '#ffd300', b: 1 }) + tx(190, 74, 'PROMO ISTIMEWA:', { s: 19, c: '#fff', b: 1 }) + tx(190, 98, 'INVESTASI PASTI B2026', { s: 17, c: '#00d6d8', b: 1 });
+    o += rc(110, 112, 160, 26, '#00d6d8', 'none', 13) + tx(190, 130, 'Tipe Produk: B2026', { s: 13, c: '#022050', b: 1 });
+    o += tx(75, 165, 'JANGKA', { s: 11, c: '#fff', b: 1 }) + tx(75, 178, 'WAKTU', { s: 11, c: '#fff', b: 1 }) + tx(190, 165, 'BESAR', { s: 11, c: '#fff', b: 1 }) + tx(190, 178, 'KEUNTUNGAN', { s: 11, c: '#fff', b: 1 }) + tx(305, 165, 'MODAL AWAL', { s: 11, c: '#fff', b: 1 }) + tx(305, 178, 'MINIMAL', { s: 11, c: '#fff', b: 1 });
+    o += rc(60, 192, 30, 26, '#fff', '#00d6d8', 3) + ln(60, 200, 90, 200, '#00d6d8', 2);
+    o += rc(170, 196, 7, 20, '#00d6d8', 'none') + rc(182, 188, 7, 28, '#00d6d8', 'none') + rc(194, 180, 7, 36, '#00d6d8', 'none') + ci(305, 205, 14, '#ffd300', '#fff', 2) + tx(305, 210, '$', { s: 14, b: 1, c: '#022050' });
+    o += tx(75, 250, '3 TAHUN', { s: 15, c: '#ffd300', b: 1 }) + tx(190, 250, '10% PER TAHUN', { s: 14, c: '#ffd300', b: 1 }) + tx(305, 250, 'Rp5.000.000', { s: 13, c: '#ffd300', b: 1 });
+    return sv(380, 300, o);
+  },
+  10: () => {
+    const cx = 170, cy = 170; let o = ci(cx, cy, 155, '#f6f6f6', '#bbb', 2) + ci(cx, cy, 142, '#fff', '#ddd', 1);
+    for (let i = 0; i < 16; i++) { const a = 2 * Math.PI * i / 16; o += ci((cx + 108 * Math.cos(a)).toFixed(1), (cy + 108 * Math.sin(a)).toFixed(1), 12, '#f5c518', '#c9a000', 1.5); }
+    for (let i = 0; i < 8; i++) { const a = 2 * Math.PI * i / 8 + Math.PI / 8, P = (r, d) => [(cx + r * Math.cos(a + d)).toFixed(1), (cy + r * Math.sin(a + d)).toFixed(1)]; o += pg([P(82, 0), P(46, -0.22), P(46, 0.22)], '#e74c3c', '#1e8449', 1.8); }
+    for (let i = 0; i < 4; i++) { const a = Math.PI / 2 * i + Math.PI / 4; o += ci((cx + 17 * Math.cos(a)).toFixed(1), (cy + 17 * Math.sin(a)).toFixed(1), 13, '#c5e063', '#7fa800', 1.5); }
+    o += ci(352, 90, 10, '#c5e063', '#7fa800', 1.5) + tx(368, 94, '= susunan', { a: 'start', s: 12 }) + tx(368, 108, 'pertama', { a: 'start', s: 12 });
+    o += pg([[342, 144], [362, 144], [352, 126]], '#e74c3c', '#1e8449', 1.5) + tx(368, 140, '= susunan', { a: 'start', s: 12 }) + tx(368, 154, 'kedua', { a: 'start', s: 12 });
+    o += ci(352, 196, 10, '#f5c518', '#c9a000', 1.5) + tx(368, 192, '= susunan', { a: 'start', s: 12 }) + tx(368, 206, 'ketiga', { a: 'start', s: 12 });
+    return sv(470, 340, o);
+  },
+  13: () => {
+    const k = 0.18, by = 250; let o = ln(30, by, 340, by, '#555', 2);
+    [[70, 400, 0], [160, 795, 1], [250, 1190, 2]].forEach(([x, len, j], i) => {
+      const h = len * k; o += rc(x, by - h, 18, h, '#9db4c8', '#456', 3);
+      for (let m = 1; m <= j; m++) o += rc(x - 3, by - 395 * m * k - 5, 24, 10, '#6b8299', '#345', 2);
+      o += dm(x + 34, by - h, x + 34, by) + tx(x + 40, by - h / 2 + 4, `${len.toLocaleString('id-ID')} cm`, { a: 'start', s: 12, b: 1 }) + tx(x + 9, by + 18, `${i + 1} pipa`, { s: 12 });
+    });
+    return sv(370, 275, o);
+  },
+  14: () => {
+    let o = tx(220, 28, 'Membuka cabang kafe dalam 12 bulan', { s: 15, b: 1 });
+    o += tx(24, 66, 'Modal Awal: Rp50.000.000,00', { a: 'start', b: 1 }) + rc(24, 74, 392, 22, '#e8f0ec', '#bbb', 4) + rc(24, 74, 98, 22, '#2ecc71', 'none', 4);
+    o += tx(24, 130, 'Target yang dibutuhkan: Rp200.000.000,00', { a: 'start', b: 1 }) + rc(24, 138, 392, 22, '#3b6fd4', 'none', 4);
+    o += tx(220, 200, 'Dalam waktu 12 bulan.', { s: 14 }) + rc(190, 210, 60, 22, '#fff', '#c0392b', 3, 2) + tx(220, 226, '12', { b: 1, s: 14, c: '#c0392b' });
+    return sv(440, 245, o);
+  },
+  15: bridgeFig, 17: bridgeFig, 19: bridgeFig,
+  16: () => {
+    let o = rc(150, 10, 180, 32, '#e74c3c', 'none', 6) + tx(240, 32, 'Toko Jaya', { s: 17, c: '#fff', b: 1 });
+    [['Maya', 2, 1, 3, '19.000'], ['Sella', 1, 2, 2, '17.000'], ['Elang', 3, 2, 1, '20.000']].forEach((c, i) => {
+      const x = 20 + i * 150;
+      o += rc(x, 56, 140, 156, '#f4f9ff', '#4a90d9', 10, 2) + rc(x, 56, 140, 26, '#4a90d9', 'none', 10) + tx(x + 70, 74, c[0], { c: '#fff', b: 1, s: 14 });
+      o += tx(x + 12, 106, c[1] + ' Buku Tulis', { a: 'start' }) + tx(x + 12, 130, c[2] + ' Bulpoin', { a: 'start' }) + tx(x + 12, 154, c[3] + ' Pensil', { a: 'start' });
+      o += ln(x + 10, 166, x + 130, 166, '#bbb', 1) + tx(x + 70, 184, 'Membayar', { s: 11, c: '#555' }) + tx(x + 70, 202, 'Rp' + c[4] + ',00', { b: 1, s: 13 });
+    });
+    return sv(480, 225, o);
+  },
+  18: () => {
+    let o = tx(110, 30, 'Meja Kayu', { b: 1, s: 15 }) + tx(330, 30, 'Kursi Kayu', { b: 1, s: 15 });
+    o += rc(40, 105, 140, 16, '#b9772f', '#6b3e12', 2) + rc(48, 121, 10, 62, '#a0642a', '#6b3e12') + rc(162, 121, 10, 62, '#a0642a', '#6b3e12');
+    o += rc(290, 125, 80, 12, '#b9772f', '#6b3e12', 2) + rc(290, 68, 10, 57, '#a0642a', '#6b3e12') + rc(300, 78, 6, 40, '#b9772f', '#6b3e12') + rc(310, 78, 6, 40, '#b9772f', '#6b3e12') + rc(290, 137, 10, 46, '#a0642a', '#6b3e12') + rc(360, 137, 10, 46, '#a0642a', '#6b3e12');
+    o += tx(110, 208, 'Kebutuhan Kayu = 2 m²', { s: 11, b: 1 }) + tx(110, 224, 'Lama pengerjaan oleh 1 orang pekerja', { s: 10.5 }) + tx(110, 238, '= 4 jam', { s: 11, b: 1 });
+    o += tx(330, 208, 'Kebutuhan Kayu = 1 m²', { s: 11, b: 1 }) + tx(330, 224, 'Lama pengerjaan oleh 1 orang pekerja', { s: 10.5 }) + tx(330, 238, '= 3 jam', { s: 11, b: 1 });
+    return sv(440, 250, o);
+  },
+  22: () => {
+    let o = rc(30, 36, 150, 178, '#d5d8dc', '#555', 10, 2) + rc(52, 62, 106, 36, '#fff', '#333', 3);
+    '00000'.split('').forEach((d, i) => { o += tx(66 + i * 20, 88, d, { s: 20, b: 1 }); });
+    o += ci(80, 138, 16, '#f4f6f7', '#555', 2) + ci(130, 138, 16, '#f4f6f7', '#555', 2) + ln(80, 138, 86, 130, '#c0392b', 2) + ln(130, 138, 124, 130, '#c0392b', 2) + rc(60, 172, 90, 18, '#3b6fd4', 'none', 3);
+    o += rc(210, 24, 230, 196, '#fff', '#c0392b', 6, 3) + tx(325, 62, 'TAGIHAN LISTRIK', { s: 16, b: 1 }) + pg([[418, 40], [404, 62], [412, 62], [406, 82], [424, 56], [414, 56]], '#f1c40f', '#b7950b', 1);
+    [86, 102, 118].forEach(y => { o += rc(226, y, 120, 6, '#e1e4e8', 'none', 3) + rc(360, y, 62, 6, '#e1e4e8', 'none', 3); });
+    o += ln(226, 150, 424, 150, '#bbb', 1) + tx(226, 176, 'Total', { a: 'start', b: 1, s: 14 }) + tx(424, 176, 'Rp160.000,00', { a: 'end', b: 1, s: 16, c: '#c0392b' }) + tx(226, 202, 'Metode Pembayaran: Transfer Bank', { a: 'start', s: 10.5, c: '#555' });
+    return sv(460, 245, o);
+  },
+  23: () => {
+    const x0 = 80, y0 = 30, S = 200, c = 26; let o = rc(x0, y0, S, S, '#fffbe6', '#333', 0, 2);
+    [[x0, y0], [x0 + S - c, y0], [x0, y0 + S - c], [x0 + S - c, y0 + S - c]].forEach(p => { o += rc(p[0], p[1], c, c, 'url(#ht)', '#c0392b', 0, 1); });
+    o += tx(x0 + c / 2, y0 + S + 16, 'x', { i: 1, b: 1 }) + tx(x0 + S - c / 2, y0 + S + 16, 'x', { i: 1, b: 1 });
+    o += dm(x0 - 22, y0, x0 - 22, y0 + S) + `<text transform="translate(${x0 - 30} ${y0 + S / 2}) rotate(-90)" font-size="13" font-weight="700" text-anchor="middle">30 cm</text>`;
+    o += tx(x0 + S / 2, y0 + S / 2 - 4, 'alas kotak', { s: 13 }) + tx(x0 + S / 2, y0 + S / 2 + 14, '(30 − 2x) × (30 − 2x)', { s: 12 });
+    return sv(330, 275, o);
+  },
+  24: () => {
+    const A = [360, 30], C = [360, 90], Ee = [360, 150], G = [360, 210], I = [360, 270], B = [280, 90], D = [200, 150], F = [120, 210], H = [40, 270];
+    let o = pg([A, H, I], '#f7ecd2', '#333', 2) + EG(A, I, '#333', 2);
+    [[B, C], [D, Ee], [F, G], [H, I]].forEach(([p, q]) => { o += EG(p, q, '#e67e22', 3.5); });
+    [A, B, C, D, Ee, F, G, H, I].forEach(p => { o += pt(p); });
+    o += tx(372, 28, 'A', { a: 'start', b: 1 }) + tx(268, 88, 'B', { b: 1 }) + tx(372, 94, 'C', { a: 'start', b: 1 }) + tx(188, 148, 'D', { b: 1 }) + tx(372, 154, 'E', { a: 'start', b: 1 }) + tx(108, 208, 'F', { b: 1 }) + tx(372, 214, 'G', { a: 'start', b: 1 }) + tx(28, 280, 'H', { b: 1 }) + tx(372, 276, 'I', { a: 'start', b: 1 });
+    return sv(410, 300, o);
+  },
+  25: () => {
+    const FL = [70, 260], FR = [170, 260], TL = [70, 110], TR = [170, 110], BR = [215, 230], BT = [215, 80], BTL = [115, 80], AP = [142.5, 56];
+    let o = pg([FL, FR, TR, TL], '#f3d98b', '#6b5420', 2) + pg([FR, BR, BT, TR], '#e2c06d', '#6b5420', 2) + pg([TL, TR, AP], '#f7e7b1', '#6b5420', 2) + pg([TR, BT, AP], '#ecd896', '#6b5420', 2);
+    o += EG(TL, BTL, '#6b5420', 1.5, '4 3') + EG(BTL, BT, '#6b5420', 1.5, '4 3') + EG(BTL, AP, '#6b5420', 1.5, '4 3');
+    o += dm(236, 80, 236, 230) + tx(244, 160, '12 cm', { a: 'start', b: 1 }) + dm(70, 282, 170, 282) + tx(120, 300, '8 cm', { b: 1 }) + dm(180, 272, 225, 242) + tx(222, 268, '8 cm', { a: 'start', b: 1 }) + dm(40, 56, 40, 110) + tx(34, 88, '3 cm', { a: 'end', b: 1 });
+    return sv(310, 310, o);
+  },
+  26: () => {
+    const cx = 140, cy = 150; let o = '';
+    for (let i = 0; i < 36; i++) { const a = 2 * Math.PI * i / 36; o += ci((cx + 100 * Math.cos(a)).toFixed(1), (cy + 100 * Math.sin(a)).toFixed(1), 12, '#c8873a', '#a0642a', 1); }
+    o += ci(cx, cy, 98, '#d9954a', '#a0642a', 1.5) + ci(cx, cy, 98, 'none', '#d4a017', 4) + ci(cx, cy, 62, '#f4e3c8', '#b88a4a', 2) + ci(cx, cy, 30, '#fff', '#ccc', 2);
+    o += dm(cx - 98, cy, cx + 98, cy) + tx(cx, cy - 8, 'd = 35 cm', { b: 1, s: 12 });
+    o += ln(290, 84, 232, 108, '#c0392b', 1.5) + tx(300, 80, 'Alas piring', { a: 'start', b: 1 }) + tx(300, 250, 'pita emas', { a: 'start', s: 11, c: '#a07800', b: 1 }) + tx(300, 264, 'dipasang di', { a: 'start', s: 11, c: '#a07800' }) + tx(300, 278, 'sekeliling tepi', { a: 'start', s: 11, c: '#a07800' });
+    return sv(400, 300, o);
+  },
+  27: () => {
+    const P = [80, 250], Q = [230, 250], U = [230, 100], T = [80, 100], S = [150, 200], R = [300, 200], V = [300, 50], W = [150, 50], O = [190, 225];
+    let o = pg([Q, R, V, U], '#e4ecf8', 'none') + pg([T, U, V, W], '#f4f8ff', 'none') + pg([P, Q, U, T], '#eef3fb', 'none');
+    [[P, Q], [Q, R], [U, V], [R, V], [T, W], [W, V], [P, T], [Q, U], [T, U]].forEach(([a, b]) => { o += EG(a, b); });
+    [[P, S], [S, R], [S, W]].forEach(([a, b]) => { o += EG(a, b, '#a8174f', 2, '6 5'); });
+    o += EG(P, R, '#555', 1.5) + EG(Q, S, '#555', 1.5, '5 4') + EG(V, O, '#c0392b', 2.2, '6 4');
+    [P, Q, R, S, T, U, V, W].forEach(p => { o += pt(p); }); o += pt(O, '#c0392b');
+    o += tx(66, 266, 'P', { b: 1, s: 15 }) + tx(236, 270, 'Q', { b: 1, s: 15 }) + tx(310, 206, 'R', { b: 1, s: 15, a: 'start' }) + tx(142, 196, 'S', { b: 1, s: 15, a: 'end' }) + tx(66, 98, 'T', { b: 1, s: 15 }) + tx(222, 96, 'U', { b: 1, s: 15 }) + tx(310, 48, 'V', { b: 1, s: 15, a: 'start' }) + tx(150, 40, 'W', { b: 1, s: 15 }) + tx(196, 244, 'O', { b: 1, s: 14, c: '#c0392b' });
+    o += tx(150, 288, 'rusuk = 12 cm', { s: 12, c: '#555' });
+    return sv(350, 300, o);
+  },
+  28: () => {
+    let o = tx(110, 24, 'Kemasan Keju A', { b: 1 }) + tx(355, 24, 'Kemasan Keju B', { b: 1 });
+    o += `<path d="M60 135 L60 260 A50 10 0 0 0 160 260 L160 135 Z" fill="#1f3f86" stroke="#0e2150" stroke-width="2"/><ellipse cx="110" cy="135" rx="50" ry="10" fill="#fff" stroke="#0e2150" stroke-width="2"/>`;
+    o += pg([[60, 135], [160, 135], [110, 60]], '#fff', '#0e2150', 2) + `<path d="M60 135 A50 10 0 0 0 160 135" fill="none" stroke="#0e2150" stroke-width="2"/>` + tx(110, 205, 'KEJU', { c: '#fff', b: 1, s: 15 });
+    o += dm(60, 282, 160, 282) + tx(110, 298, '8 cm', { b: 1 }) + dm(180, 135, 180, 260) + tx(186, 202, '10 cm', { a: 'start', b: 1 }) + dm(180, 60, 180, 135) + tx(186, 102, '6 cm', { a: 'start', b: 1 });
+    o += pg([[290, 135], [390, 135], [390, 260], [290, 260]], '#f39c12', '#7e5109', 2) + pg([[390, 260], [420, 240], [420, 115], [390, 135]], '#d68910', '#7e5109', 2) + pg([[290, 135], [390, 135], [420, 115], [320, 115]], '#fdebd0', '#7e5109', 2);
+    o += pg([[290, 135], [390, 135], [355, 50]], '#fff', '#7e5109', 2) + pg([[390, 135], [420, 115], [355, 50]], '#f2f2f2', '#7e5109', 2) + EG([320, 115], [355, 50], '#7e5109', 1.5, '4 3') + tx(340, 205, 'KEJU', { c: '#fff', b: 1, s: 15 });
+    o += dm(290, 282, 390, 282) + tx(340, 298, '8 cm', { b: 1 }) + dm(436, 135, 436, 260) + tx(442, 202, '10 cm', { a: 'start', b: 1 }) + dm(436, 50, 436, 135) + tx(442, 96, '6 cm', { a: 'start', b: 1 });
+    return sv(500, 310, o);
+  },
+  29: () => {
+    const A = [60, 240], B = [200, 240], F = [200, 100], Ee = [60, 100], D = [120, 195], C = [260, 195], G = [260, 55], H = [120, 55];
+    let o = pg([B, C, G, F], '#e3f4e8', 'none') + pg([Ee, F, G, H], '#f1faf4', 'none') + pg([A, B, F, Ee], '#eaf7ee', 'none');
+    [[A, B], [B, C], [F, G], [C, G], [Ee, H], [H, G], [A, Ee], [B, F], [Ee, F]].forEach(([a, b]) => { o += EG(a, b, '#1e9e4a', 3); });
+    [[A, D], [D, C], [D, H]].forEach(([a, b]) => { o += EG(a, b, '#1e9e4a', 2, '6 5'); });
+    [A, B, C, D, Ee, F, G, H].forEach(p => { o += pt(p); });
+    o += tx(46, 256, 'A', { b: 1, s: 15 }) + tx(206, 260, 'B', { b: 1, s: 15 }) + tx(270, 200, 'C', { b: 1, s: 15, a: 'start' }) + tx(112, 190, 'D', { b: 1, s: 15, a: 'end' }) + tx(46, 98, 'E', { b: 1, s: 15 }) + tx(194, 94, 'F', { b: 1, s: 15, a: 'end' }) + tx(270, 52, 'G', { b: 1, s: 15, a: 'start' }) + tx(120, 44, 'H', { b: 1, s: 15 });
+    return sv(320, 285, o);
+  },
+  30: () => {
+    let o = pg([[80, 150], [200, 60], [320, 150], [320, 270], [80, 270]], '#cfe8f7', '#222', 4);
+    o += ln(140, 150, 140, 270, '#222', 3) + ln(200, 150, 200, 270, '#222', 3) + ln(260, 150, 260, 270, '#222', 3) + ln(80, 150, 320, 150, '#222', 3) + ln(80, 210, 320, 210, '#222', 3) + ln(200, 60, 200, 150, '#222', 3);
+    o += dm(80, 292, 320, 292) + tx(200, 308, '4 m', { b: 1 }) + dm(344, 150, 344, 270) + tx(352, 214, '2 m', { a: 'start', b: 1 }) + dm(56, 60, 56, 150) + tx(48, 108, '1,5 m', { a: 'end', b: 1 });
+    return sv(400, 318, o);
+  },
+  31: () => {
+    const A = [60, 190], B = [340, 190], D = [111, 49], C = [289, 49];
+    let o = pg([A, B, C, D], '#eaf6ea', '#222', 2.5) + EG(B, D, '#c0392b', 2.2, '') ;
+    o += `<path d="M195 184 L206 190 L195 196" fill="none" stroke="#222" stroke-width="2"/><path d="M195 43 L206 49 L195 55" fill="none" stroke="#222" stroke-width="2"/>`;
+    o += ln(80, 117, 91, 122, '#222', 2) + ln(289 + 21, 117, 289 + 10, 122, '#222', 2);
+    o += `<path d="M90 190 A30 30 0 0 0 70.3 161.8" fill="none" stroke="#1e8449" stroke-width="2"/><path d="M300 190 A40 40 0 0 1 305.9 169" fill="none" stroke="#1e8449" stroke-width="2"/>`;
+    o += tx(98, 176, '70°', { s: 12, c: '#1e8449', b: 1 }) + tx(270, 178, '30°', { s: 12, c: '#1e8449', b: 1 });
+    o += tx(44, 206, 'A', { b: 1, s: 15 }) + tx(350, 206, 'B', { b: 1, s: 15, a: 'start' }) + tx(300, 42, 'C', { b: 1, s: 15, a: 'start' }) + tx(100, 42, 'D', { b: 1, s: 15, a: 'end' });
+    o += tx(200, 225, 'AD = BC,  AB // DC,  AB > DC', { s: 12, c: '#555' });
+    return sv(390, 240, o);
+  },
+  32: () => {
+    const A = [60, 40], D = [200, 40], B = [60, 170], C = [340, 170];
+    let o = pg([A, D, C, B], '#eef4fb', '#222', 2.5) + rc(60, 40, 12, 12, 'none', '#222', 0, 1.5) + rc(60, 158, 12, 12, 'none', '#222', 0, 1.5);
+    o += tx(46, 36, 'A', { b: 1, s: 15 }) + tx(210, 36, 'D', { b: 1, s: 15, a: 'start' }) + tx(46, 188, 'B', { b: 1, s: 15 }) + tx(350, 186, 'C', { b: 1, s: 15, a: 'start' }) + tx(44, 110, '3', { b: 1, s: 14 });
+    return sv(390, 215, o);
+  },
+  33: () => {
+    let o = tx(260, 20, '2,4 m', { b: 1 }) + dm(110, 28, 410, 28) + rc(110, 40, 300, 225, '#f8fafc', '#333', 0, 3) + tx(260, 58, '[PROYEKSI GAMBAR]', { s: 11, c: '#555', b: 1 });
+    const bld = (x, y, s) => rc(x, y, s, s, '#9fb6c7', '#345', 0, 1.5) + rc(x + s * 0.55, y - s * 0.12, s * 0.3, s * 1.12, '#7f98ab', '#345', 0, 1.5) + [0.12, 0.3, 0.48, 0.66].map(f => rc(x + s * 0.1, y + s * f, s * 0.14, s * 0.1, '#fff', '#345', 0, 1)).join('');
+    o += bld(192, 85, 125);
+    o += dm(424, 40, 424, 265) + tx(430, 156, '1,8 m', { a: 'start', b: 1 });
+    o += rc(26, 284, 66, 26, '#ccd1d6', '#555', 4, 2) + ci(80, 297, 7, '#2c3e50') + tx(110, 292, 'Skala pembesaran:', { a: 'start', s: 11 }) + tx(110, 306, '0,6 × jarak (m)', { a: 'start', s: 11, b: 1 });
+    o += bld(300, 288, 34) + tx(346, 298, 'Ukuran gambar asli:', { a: 'start', s: 11 }) + tx(346, 312, '60 cm × 60 cm', { a: 'start', s: 11, b: 1 });
+    o += dm(59, 336, 260, 336) + tx(160, 330, 'jarak proyektor ke layar = 3 meter', { s: 11, b: 1 });
+    return sv(480, 350, o);
+  },
+  35: () => {
+    const F = [150, 260], T = [230, 121.4], dx = T[0] - F[0], dy = T[1] - F[1], len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len, px = -uy, py = ux;
+    let o = rc(230, 30, 40, 230, '#e5e8eb', '#555', 0, 2) + ln(30, 260, 270, 260, '#333', 2.5);
+    o += ln(F[0] - px * 7, F[1] - py * 7, T[0] - px * 7, T[1] - py * 7, '#a0642a', 4) + ln(F[0] + px * 7, F[1] + py * 7, T[0] + px * 7, T[1] + py * 7, '#a0642a', 4);
+    for (let t = 0.1; t < 0.95; t += 0.11) { const x = F[0] + dx * t, y = F[1] + dy * t; o += ln((x - px * 7).toFixed(1), (y - py * 7).toFixed(1), (x + px * 7).toFixed(1), (y + py * 7).toFixed(1), '#c28a4e', 3); }
+    o += `<path d="M184 260 A34 34 0 0 0 167 230.6" fill="none" stroke="#c0392b" stroke-width="2"/>` + tx(190, 246, '60°', { s: 12, c: '#c0392b', b: 1, a: 'start' });
+    o += rc(220, 250, 10, 10, 'none', '#333', 0, 1.5) + tx(166, 170, '6 m', { a: 'end', b: 1 }) + tx(250, 150, 'dinding', { s: 10.5, c: '#555' }) + tx(90, 280, 'lantai', { s: 11, c: '#555' });
+    return sv(300, 292, o);
+  },
+  38: () => barChart({ w: 480, h: 300, title: 'DATA BANYAK PENGUSAHA DI PROVINSI JINGGA', max: 70, step: 10, ylabel: 'Banyak Orang (Ratus)', xlabel: 'Nama Kota', showVal: false, items: [{ l: 'A', v: 65, c: '#3b6fd4' }, { l: 'B', v: 40, c: '#9b6bd6' }, { l: 'C', v: 25, c: '#e8a85a' }, { l: 'D', v: 20, c: '#f1c40f' }, { l: 'E', v: null }, { l: 'F', v: 35, c: '#d65ca8' }, { l: 'G', v: 50, c: '#3cc9c9' }] }),
+  39: () => barChart({ w: 560, h: 320, title: 'Produksi Pakaian Bu Rahmi Tahun 2020', max: 180, step: 20, ylabel: 'Jumlah produksi', xlabel: 'Bulan', showVal: true, items: [['Jan', 122], ['Feb', 136], ['Mar', 112], ['Apr', 151], ['Mei', 18], ['Jun', 81], ['Jul', 133], ['Agt', 150], ['Sept', 166], ['Okt', 87], ['Nov', 153], ['Des', 131]].map(([l, v]) => ({ l, v, c: '#7f8c9a' })) }),
+  42: () => barChart({ w: 430, h: 300, title: 'Data Jumlah Kunjungan Wisatawan Mancanegara', ts: 13, max: 130, step: 10, ylabel: 'Banyak Pengunjung (Dalam Ribuan)', xlabel: 'Negara Asal Pengunjung', showVal: false, items: [{ l: 'Australia', v: 120 }, { l: 'China', v: 85 }, { l: 'Malaysia', v: 65 }, { l: 'Jepang', v: 40 }] })
+};
+const img = n => svgImg(FIG[n]());
+
+/* =========================================================
+   GAMBAR PEMBAHASAN – dibuat dengan kode (SVG inline)
+   ========================================================= */
+/* =========================================================
+   GAMBAR SOAL & PEMBAHASAN — dibuat dengan kode (SVG), tanpa file PNG
+   fig(6)  -> gambar pada soal    | fig('6p') -> gambar pada pembahasan
+   ========================================================= */
+const FIG_N = '#022050', FIG_C = '#0e9aa7', FIG_Y = '#ffd300', FIG_R = '#d62839', FIG_G = '#2e9e5b', FIG_GR = '#64748b';
+const figEsc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const figUri = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+const figDoc = (w, h, body) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" font-family="Arial, Helvetica, sans-serif" font-size="13">` +
+  `<defs>` +
+  `<marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${FIG_N}"/></marker>` +
+  `<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${FIG_R}"/></marker>` +
+  `<pattern id="ht" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fde2e4"/><line x1="0" y1="0" x2="0" y2="6" stroke="${FIG_R}" stroke-width="2"/></pattern>` +
+  `</defs><rect width="${w}" height="${h}" rx="10" fill="#f8fafc"/>${body}</svg>`;
+const fT = (x, y, t, o = {}) =>
+  `<text x="${x}" y="${y}" text-anchor="${o.a || 'middle'}" font-size="${o.s || 13}" fill="${o.c || FIG_N}" font-weight="${o.b ? 700 : 400}"${o.i ? ' font-style="italic"' : ''}${o.h ? ' stroke="#f8fafc" stroke-width="4" paint-order="stroke"' : ''}${o.r ? ` transform="rotate(${o.r} ${x} ${y})"` : ''}>${figEsc(t)}</text>`;
+const fL = (x1, y1, x2, y2, c = FIG_N, w = 2, d = '', m = '') =>
+  `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}"${d ? ` stroke-dasharray="${d}"` : ''}${m ? ` marker-end="url(#${m})"` : ''} stroke-linecap="round"/>`;
+const fR = (x, y, w, h, f = 'none', s = FIG_N, sw = 1.5, r = 0) =>
+  `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${f}" stroke="${s}" stroke-width="${sw}"/>`;
+const fC = (x, y, r, f = 'none', s = FIG_N, sw = 1.5) =>
+  `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" stroke="${s}" stroke-width="${sw}"/>`;
+const fP = (pts, f = 'none', s = FIG_N, sw = 1.5, d = '') =>
+  `<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="${f}" stroke="${s}" stroke-width="${sw}" stroke-linejoin="round"${d ? ` stroke-dasharray="${d}"` : ''}/>`;
+const fPath = (d, f = 'none', s = FIG_N, sw = 2, da = '') =>
+  `<path d="${d}" fill="${f}" stroke="${s}" stroke-width="${sw}" stroke-linejoin="round"${da ? ` stroke-dasharray="${da}"` : ''}/>`;
+const fDot = (x, y, c = FIG_R, r = 4) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;
+/* garis ukuran dua arah */
+const fDim = (x1, y1, x2, y2, label, o = {}) =>
+  `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${FIG_N}" stroke-width="1.3" marker-start="url(#an)" marker-end="url(#an)"/>` +
+  fT((x1 + x2) / 2 + (o.dx || 0), (y1 + y2) / 2 + (o.dy || -5), label, { s: o.s || 12, r: o.r, b: o.b, h: 1 });
+const fRight = (x, y, dx, dy, s = 9) => `<path d="M${x + dx * s},${y} L${x + dx * s},${y + dy * s} L${x},${y + dy * s}" fill="none" stroke="${FIG_N}" stroke-width="1.2"/>`;
+
+/* ---------- sumbu koordinat ---------- */
+const fAxes = (w, h, ox, oy, sx, sy, xmax, ymax, o = {}) => {
+  const X = x => ox + x * sx, Y = y => oy - y * sy;
+  let s = '';
+  if (o.grid) {
+    for (let i = 0; i <= xmax; i += o.gx || 1) s += fL(X(i), Y(0), X(i), Y(ymax), '#e2e8f0', 1);
+    for (let j = 0; j <= ymax; j += o.gy || 1) s += fL(X(0), Y(j), X(xmax), Y(j), '#e2e8f0', 1);
+  }
+  s += fL(X(o.xmin || 0), oy, X(xmax) + 14, oy, FIG_N, 2, '', 'an') + fL(ox, oy, ox, Y(ymax) - 14, FIG_N, 2, '', 'an');
+  s += fT(X(xmax) + 20, oy + 4, o.xl || 'X', { b: 1, a: 'start' }) + fT(ox, Y(ymax) - 20, o.yl || 'Y', { b: 1 });
+  (o.xt || []).forEach(v => { s += fL(X(v), oy - 4, X(v), oy + 4, FIG_N, 1.5) + fT(X(v), oy + 18, v); });
+  (o.yt || []).forEach(v => { s += fL(ox - 4, Y(v), ox + 4, Y(v), FIG_N, 1.5) + fT(ox - 10, Y(v) + 4, v, { a: 'end' }); });
+  return { X, Y, s };
+};
+
+const F = {};
+/* ===== SOAL 6 ===== */
+(() => {
+  const A = fAxes(460, 300, 100, 252, 40, 40, 7, 5.2, { xt: [4, 6], yt: [2, 4] });
+  const { X, Y } = A;
+  let s = A.s;
+  s += fL(X(-0.9), Y(4.9), X(4.7), Y(-0.7), FIG_N, 2) + fL(X(-1.2), Y(2.4), X(6.8), Y(-0.27), FIG_N, 2);
+  [['I', 1, 1], ['II', 0.55, 2.95], ['III', 4, 2], ['IV', 4.75, 0.38], ['V', -1.05, 3]].forEach(([t, x, y]) => { s += fT(X(x), Y(y) + 6, t, { s: 20, b: 1 }); });
+  let s2 = A.s;
+  s2 += fP([[X(0), Y(2)], [X(0), Y(4)], [X(3), Y(1)]], 'rgba(255,211,0,.65)', 'none');
+  s2 += fL(X(-0.9), Y(4.9), X(4.7), Y(-0.7), FIG_N, 2) + fL(X(-1.2), Y(2.4), X(6.8), Y(-0.27), FIG_C, 2);
+  s2 += fDot(X(3), Y(1)) + fT(X(3) + 10, Y(1) - 14, 'titik potong (3, 1)', { a: 'start', c: FIG_R, s: 12, h: 1 });
+  s2 += fT(X(4.9), Y(3.2), 'x + y = 4', { s: 12 }) + fT(X(5.6), Y(0.62), 'x + 3y = 6', { s: 12, c: FIG_C, h: 1 });
+  s2 += fT(X(0.7), Y(2.85), 'II', { s: 20, b: 1 });
+  F['6p'] = figDoc(460, 300, s2);
+})();
+
+/* ===== SOAL 18 : meja & kursi ===== */
+(() => {
+  let s = fT(120, 28, 'Meja Kayu', { b: 1, s: 15 }) + fT(360, 28, 'Kursi Kayu', { b: 1, s: 15 });
+  s += fR(40, 70, 160, 14, '#c9783a', '#7a4318', 1.5, 2) + fR(52, 84, 14, 74, '#b5622b', '#7a4318', 1.5) + fR(174, 84, 14, 74, '#b5622b', '#7a4318', 1.5) + fR(78, 84, 10, 62, '#a65a26', '#7a4318', 1.2) + fR(152, 84, 10, 62, '#a65a26', '#7a4318', 1.2);
+  s += fR(325, 52, 70, 16, '#c9783a', '#7a4318', 1.5, 2) + fR(332, 68, 56, 60, '#d38a4a', '#7a4318', 1.5) + fR(318, 124, 84, 12, '#c9783a', '#7a4318', 1.5) + fR(324, 136, 10, 38, '#b5622b', '#7a4318', 1.5) + fR(386, 136, 10, 38, '#b5622b', '#7a4318', 1.5);
+  s += fT(120, 200, 'Kebutuhan Kayu = 2 m²', { b: 1, s: 12 }) + fT(120, 220, 'Lama pengerjaan oleh 1 orang pekerja = 4 jam', { s: 11 });
+  s += fT(360, 200, 'Kebutuhan Kayu = 1 m²', { b: 1, s: 12 }) + fT(360, 220, 'Lama pengerjaan oleh 1 orang pekerja = 3 jam', { s: 11 });
+  /* pembahasan: daerah layak */
+  const A = fAxes(460, 330, 70, 290, 28, 12.5, 13, 20, { xt: [2, 4, 6, 8, 10, 12], yt: [4, 8, 12, 16, 20], xl: 'x (meja)', yl: 'y (kursi)', grid: true });
+  const { X, Y } = A;
+  let t = A.s + fP([[X(0), Y(0)], [X(10), Y(0)], [X(6), Y(8)], [X(0), Y(16)]], 'rgba(255,211,0,.6)', 'none');
+  t += fL(X(0), Y(20), X(10.5), Y(-1), FIG_N, 2) + fL(X(0), Y(16), X(12.5), Y(-1.33), FIG_C, 2);
+  [[0, 0], [10, 0], [6, 8], [0, 16]].forEach(([x, y]) => { t += fDot(X(x), Y(y)) + fT(X(x) + 8, Y(y) - 8, `(${x}, ${y})`, { a: 'start', s: 12, c: FIG_R }); });
+  t += fT(X(7.2), Y(18), '2x + y = 20 (kayu)', { s: 12, a: 'start' }) + fT(X(8.2), Y(5.5), '4x + 3y = 48 (waktu)', { s: 12, c: FIG_C, a: 'start' });
+  F['18p'] = figDoc(540, 330, t);
+})();
+
+/* ===== SOAL 20 pembahasan : program linear kue ===== */
+(() => {
+  const A = fAxes(460, 330, 70, 290, 0.7, 0.52, 560, 500, { xt: [100, 200, 300, 400, 500], yt: [100, 200, 300, 400, 500], xl: 'x (bolu)', yl: 'y (brownies)', grid: true, gx: 100, gy: 100 });
+  const { X, Y } = A;
+  let t = A.s + fP([[X(0), Y(0)], [X(500), Y(0)], [X(400), Y(100)], [X(0), Y(400)]], 'rgba(255,211,0,.6)', 'none');
+  t += fL(X(0), Y(500), X(520), Y(-20), FIG_N, 2) + fL(X(0), Y(400), X(540), Y(-35), FIG_C, 2);
+  [[0, 0], [500, 0], [400, 100], [0, 400]].forEach(([x, y]) => { t += fDot(X(x), Y(y)) + fT(X(x) + 8, Y(y) - 8, `(${x}, ${y})`, { a: 'start', s: 12, c: FIG_R }); });
+  t += fT(X(150), Y(470), 'x + y = 500', { s: 12 }) + fT(X(330), Y(40), '3x + 4y = 1600', { s: 12, c: FIG_C });
+  F['20p'] = figDoc(540, 330, t);
+})();
+
+/* ===== SOAL 21 pembahasan : parabola ===== */
+(() => {
+  const ox = 80, oy = 236, sx = 40, sy = 2.4;
+  const X = x => ox + x * sx, Y = y => oy - y * sy;
+  let s = fL(X(-1.5), oy, X(9.2), oy, FIG_N, 1.5, '', 'an') + fL(ox, Y(-26), ox, Y(90), FIG_N, 1.5, '', 'an');
+  [2, 4, 6, 8].forEach(v => { s += fL(X(v), oy - 4, X(v), oy + 4, FIG_N, 1.5) + fT(X(v), oy - 10, v, { s: 12, h: 1 }); });
+  [20, 40, 60, 80].forEach(v => { s += fL(ox - 4, Y(v), ox + 4, Y(v), FIG_N, 1.5) + fT(ox - 10, Y(v) + 4, v, { a: 'end', s: 12 }); });
+  let d = ''; for (let x = -0.9; x <= 8.95; x += 0.1) d += (d ? 'L' : 'M') + X(x).toFixed(1) + ',' + Y(4 * x * x - 32 * x + 48).toFixed(1);
+  s += fPath(d, 'none', FIG_N, 2.2);
+  s += fL(X(-1.5), Y(-18), X(9), Y(-18), FIG_R, 1.8, '6 4') + fT(X(8.4), Y(-18) + 16, 'y = −18', { c: FIG_R, b: 1, s: 12 });
+  [[0, 48], [2, 0], [6, 0], [4, -16]].forEach(([x, y]) => { s += fDot(X(x), Y(y), FIG_N, 4); });
+  s += fT(X(0) + 10, Y(48) - 6, '(0, 48)', { a: 'start', s: 12 }) + fT(X(2) - 4, oy + 18, '(2, 0)', { s: 12 }) + fT(X(6) + 4, oy + 18, '(6, 0)', { s: 12 });
+  s += fT(X(4), Y(-16) - 12, 'puncak (4, −16)', { c: FIG_C, b: 1, s: 12, h: 1 });
+  s += fT(X(8.9), oy - 22, 'x', { i: 1 }) + fT(ox, Y(90) - 8, 'f(x)', { b: 1 });
+  F['21p'] = figDoc(500, 300, s);
+})();
+
+/* ===== SOAL 23 : karton ===== */
+(() => {
+  let s = fR(70, 36, 220, 220, 'none', FIG_N, 2);
+  [[70, 36], [250, 36], [70, 216], [250, 216]].forEach(([x, y]) => { s += fR(x, y, 40, 40, 'url(#ht)', FIG_N, 1.5); });
+  s += fDim(46, 36, 46, 256, '30 cm', { r: -90, dx: -8, dy: 0 });
+  s += fDim(70, 276, 110, 276, 'x', { dy: 16, s: 14, b: 1 }) + fDim(250, 276, 290, 276, 'x', { dy: 16, s: 14, b: 1 });
+  s += fT(180, 150, 'alas kotak', { s: 13, c: FIG_GR }) + fT(180, 168, '(30 − 2x) × (30 − 2x)', { s: 12, c: FIG_GR });
+  /* pembahasan : grafik volume */
+  const ox = 70, oy = 262, sx = 24, sy = 0.11;
+  const X = x => ox + x * sx, Y = y => oy - y * sy;
+  let t = fL(ox, oy, X(15.6), oy, FIG_N, 1.5, '', 'an') + fL(ox, oy, ox, Y(2250), FIG_N, 1.5, '', 'an');
+  [0, 5, 10, 15].forEach(v => { t += fT(X(v), oy + 16, v, { s: 12 }); });
+  [500, 1000, 1500, 2000].forEach(v => { t += fL(ox - 4, Y(v), X(15), Y(v), '#e2e8f0', 1) + fT(ox - 8, Y(v) + 4, v, { a: 'end', s: 12 }); });
+  let d = ''; for (let x = 0; x <= 15; x += 0.2) d += (d ? 'L' : 'M') + X(x).toFixed(1) + ',' + Y(x * (30 - 2 * x) ** 2).toFixed(1);
+  t += fPath(d, 'none', FIG_C, 2.5) + fDot(X(5), Y(2000)) + fT(X(5) + 14, Y(2000) + 4, 'maksimum: x = 5, V = 2.000 cm³', { a: 'start', c: FIG_R, b: 1, s: 12 });
+  t += fT(X(15.6) - 20, oy + 34, 'x (cm)', { s: 12, c: FIG_GR }) + fT(18, 150, 'V (cm³)', { s: 12, c: FIG_GR, r: -90 }) + fT(260, 22, 'Grafik V(x) = x(30 − 2x)²', { b: 1, s: 14 });
+  F['23p'] = figDoc(500, 310, t);
+})();
+
+/* ===== SOAL 25 : kotak souvenir + jaring-jaring ===== */
+(() => {
+  let s = fP([[100, 80], [190, 80], [214, 64], [124, 64]], '#f3d28a', FIG_N, 1.5);
+  s += fR(100, 80, 90, 140, '#f6dc9c', FIG_N, 1.5) + fP([[190, 80], [214, 64], [214, 188], [190, 220]], '#e8c26c', FIG_N, 1.5);
+  s += fP([[100, 80], [190, 80], [145, 34]], '#f9e7b5', FIG_N, 1.5) + fP([[190, 80], [214, 64], [145, 34]], '#efd28a', FIG_N, 1.5) + fP([[100, 80], [124, 64], [145, 34]], '#f2deaa', FIG_N, 1.5);
+  s += fR(122, 130, 28, 50, '#4a90c8', FIG_N, 1.2, 14) + fR(158, 130, 28, 50, '#4a90c8', FIG_N, 1.2, 14);
+  s += fDim(145, 34, 145, 80, '3 cm', { dx: 28, dy: 0, s: 12, b: 1 });
+  s += fDim(232, 64, 232, 188, '12 cm', { r: -90, dx: 14, dy: 0, b: 1 }) + fDim(100, 244, 190, 244, '8 cm', { dy: 16, b: 1 }) + fDim(196, 234, 220, 222, '8 cm', { dx: 20, dy: 10, b: 1 });
+  /* pembahasan : jaring-jaring & susunan pada kertas Plano */
+  const k = 6.4;
+  let t = fT(172, 20, 'Jaring-jaring (32 × 25 cm)', { b: 1, s: 12 });
+  const ox = 44, oy = 38;
+  for (let i = 0; i < 4; i++) {
+    t += fP([[ox + i * 8 * k, oy + 5 * k], [ox + (i + 1) * 8 * k, oy + 5 * k], [ox + (i + 0.5) * 8 * k, oy]], '#f8c9cf', FIG_N, 1.2);
+    t += fR(ox + i * 8 * k, oy + 5 * k, 8 * k, 12 * k, '#fdebb8', FIG_N, 1.2) + fT(ox + (i + 0.5) * 8 * k, oy + 5 * k + 6 * k + 4, '8×12', { s: 10 });
+  }
+  t += fR(ox + 8 * k, oy + 17 * k, 8 * k, 8 * k, '#cfe4f7', FIG_N, 1.2) + fT(ox + 12 * k, oy + 21 * k + 3, 'alas 8×8', { s: 10 });
+  t += fDim(ox, oy + 25 * k + 16, ox + 32 * k, oy + 25 * k + 16, '32 cm', { dy: 14, b: 1 }) + fDim(ox - 10, oy, ox - 10, oy + 25 * k, '25 cm', { r: -90, dx: -6, dy: 0, b: 1 });
+  const px = 300, py = 40, ks = 3.4, W = 86 * ks, H = 61 * ks;
+  t += fT(px + W / 2, 20, 'Kertas Plano 61 × 86 cm = 5 pola', { b: 1, s: 12 });
+  t += fR(px, py, W, H, '#fff', FIG_N, 2);
+  [[0, 0, 32, 25], [32, 0, 32, 25], [0, 25, 25, 32], [25, 25, 25, 32], [50, 25, 25, 32]].forEach(([x, y, w, h]) => { t += fR(px + x * ks, py + y * ks, w * ks, h * ks, '#cfe4f7', FIG_C, 1.5) + fT(px + (x + w / 2) * ks, py + (y + h / 2) * ks + 4, `${w}×${h}`, { s: 11 }); });
+  F['25p'] = figDoc(620, 270, t);
+})();
+
+/* ===== SOAL 27 : kubus PQRS.TUVW ===== */
+(() => {
+  let s = fT(170, 24, 'Segitiga siku-siku VRO (siku-siku di R)', { b: 1, s: 13 });
+  s += fP([[90, 210], [90, 50], [270, 210]], 'rgba(214,40,57,.12)', FIG_R, 2.2) + fRight(90, 210, 1, -1);
+  s += fT(80, 52, 'V', { b: 1, s: 15, a: 'end' }) + fT(80, 226, 'R', { b: 1, s: 15, a: 'end' }) + fT(282, 226, 'O', { b: 1, s: 15, a: 'start' });
+  s += fT(78, 134, 'VR = 12', { a: 'end', s: 13 }) + fT(180, 234, 'RO = ½ PR = 6√2', { s: 13 }) + fT(196, 110, 'VO = ?', { r: 42, c: FIG_R, b: 1, s: 14 });
+  F['27p'] = figDoc(330, 250, s);
+})();
+
+/* ===== SOAL 34 pembahasan : kuadran II ===== */
+(() => {
+  const ox = 250, oy = 190;
+  let s = fL(30, oy, 460, oy, FIG_N, 1.8, '', 'an') + fL(ox, oy + 20, ox, 20, FIG_N, 1.8, '', 'an') + fT(450, oy + 18, 'x', { i: 1, s: 14 }) + fT(ox + 12, 24, 'y', { i: 1, s: 14 });
+  const Pp = [110, 70];
+  s += fP([Pp, [Pp[0], oy], [ox, oy]], 'rgba(14,154,167,.14)', 'none') + fL(...Pp, ox, oy, FIG_R, 3) + fL(...Pp, Pp[0], oy, FIG_G, 3) + fL(Pp[0], oy, ox, oy, '#2563eb', 3) + fRight(Pp[0], oy, 1, -1);
+  s += fDot(...Pp, FIG_N, 5) + fT(Pp[0] - 8, Pp[1] + 4, 'P(x, y)', { b: 1, s: 13, a: 'end' }) + fT(Pp[0] - 8, 135, 'y = 1', { a: 'end', c: FIG_G, b: 1 }) + fT(190, 118, 'r = a', { c: FIG_R, b: 1, s: 14 });
+  s += fT(180, oy + 22, 'x = −√(a² − 1)', { c: '#2563eb', b: 1 }) + fT(ox + 12, oy + 16, 'O', { b: 1 });
+  s += `<path d="M${ox - 40},${oy} A40,40 0 0 1 ${ox - 31},${oy - 26}" fill="none" stroke="${FIG_N}" stroke-width="1.6"/>` + fT(ox - 52, oy - 24, 'A', { b: 1, s: 15 });
+  s += fT(350, 120, 'Kuadran I', { c: '#cbd5e1', s: 14 }) + fT(175, 34, 'Kuadran II', { b: 1, s: 14 }) + fT(175, 50, 'sin A (+), cos A (−)', { c: FIG_GR, s: 12 });
+  F['34p'] = figDoc(480, 240, s);
+})();
+
+/* ===== SOAL 35 : tangga ===== */
+(() => {
+  let s = fR(240, 20, 60, 230, '#e5e7eb', FIG_N, 2) + fL(40, 250, 300, 250, FIG_N, 3);
+  for (let i = 0; i < 12; i++) s += fL(20 + i * 22, 258, 34 + i * 22, 250, FIG_GR, 1);
+  s += fL(110, 250, 240, 25, '#8a5a14', 7) + fL(110, 250, 240, 25, '#d8a066', 3);
+  for (let i = 1; i < 8; i++) { const t = i / 8; s += fL(110 + 130 * t - 10, 250 - 225 * t, 110 + 130 * t + 10, 250 - 225 * t, '#8a5a14', 2.4); }
+  s += `<path d="M138,250 A28,28 0 0 0 130,229" fill="none" stroke="${FIG_R}" stroke-width="2"/>` + fT(150, 238, '60°', { c: FIG_R, b: 1, s: 12, a: 'start' });
+  s += fT(130, 150, 'tangga 6 m', { r: -60, b: 1, c: '#8a5a14', s: 12 });
+  let t = fP([[60, 230], [260, 230], [260, 58]], 'rgba(14,154,167,.12)', FIG_N, 1.5) + fL(60, 230, 260, 58, FIG_R, 3.5) + fL(260, 58, 260, 230, FIG_G, 3.5) + fL(60, 230, 260, 230, '#2563eb', 3.5) + fRight(260, 230, -1, -1);
+  t += fT(128, 130, 'tangga (miring) = 6 m', { r: -40, c: FIG_R, b: 1, s: 13 }) + fT(274, 150, 't = 3√3', { a: 'start', c: FIG_G, b: 1, s: 14 }) + fT(160, 252, 'samping = 3', { c: '#2563eb', b: 1, s: 13 });
+  t += fT(118, 222, '60°', { c: FIG_R, b: 1, s: 13 }) + fT(246, 104, '30°', { s: 12, a: 'end', c: FIG_R, b: 1 });
+  F['35p'] = figDoc(380, 280, t);
+})();
+
+/* ===== SOAL 36 pembahasan : diagram Venn ===== */
+(() => {
+  let s = fR(14, 14, 340, 230, '#fff', FIG_N, 1.5) + `<circle cx="140" cy="125" r="78" fill="rgba(59,111,212,.35)" stroke="#3b6fd4" stroke-width="1.5"/><circle cx="230" cy="125" r="78" fill="rgba(245,158,11,.35)" stroke="#f59e0b" stroke-width="1.5"/>`;
+  s += fT(110, 130, '12', { b: 1, s: 20 }) + fT(185, 130, '6', { b: 1, s: 20 }) + fT(260, 130, '4', { b: 1, s: 20 });
+  s += fT(120, 36, 'Pemandangan laut (18)', { b: 1, c: '#3b6fd4', s: 12 }) + fT(262, 36, 'Twin Bed (10)', { b: 1, c: '#d97706', s: 12 });
+  s += fT(34, 218, '8', { b: 1, s: 20 }) + fT(34, 236, 'kamar standar', { s: 10, c: FIG_GR, a: 'start' }).replace('x="34"', 'x="50"') + fT(338, 236, 'S = 30 kamar', { a: 'end', s: 11 });
+  F['36p'] = figDoc(370, 260, s);
+})();
+
+
+const figP = n => figUri(F[n + 'p']);
+
+
+
+/* =========================================================
+   DATA SOAL (dari PDF "Soal TKA Asli 2025 dan Contoh Web")
+   type: 'single' (default) | 'multi' (pilih semua yang benar) | 'tf' (Benar/Salah per pernyataan)
+   correct: single -> index 0-4 | multi -> array index | tf -> array boolean (true = Benar)
+   pembahasan: satu baris = satu langkah (boleh HTML + LaTeX)
+   ========================================================= */
+const questions = [
+
+/* ===================== BILANGAN ===================== */
+{ id:1, topic:'Bilangan', type:'single', image:'',
+  text:R`Hasil dari $\frac{1}{4}+\frac{7}{4}\times\frac{8}{21}$ adalah ....`,
+  options:[R`$\frac{8}{12}$`, R`$\frac{8}{11}$`, R`$\frac{11}{12}$`, R`$\frac{16}{21}$`, R`$2\frac{8}{21}$`],
+  correct:2,
+  pembahasan:R`<b>Langkah 1.</b> Kerjakan perkalian terlebih dahulu.
+$$\frac{A}{B}\times\frac{C}{D}=\frac{A\times C}{B\times D}$$
+$$\frac{7}{4}\times\frac{8}{21}=\frac{7\times 8}{4\times 21}=\frac{56}{84}=\frac{2}{3}$$
+<b>Langkah 2.</b> Jumlahkan dengan menyamakan penyebut (KPK 4 dan 3 adalah 12).
+$$\frac{1}{4}+\frac{2}{3}=\frac{1\times 3}{4\times 3}+\frac{2\times 4}{3\times 4}=\frac{3}{12}+\frac{8}{12}=\frac{11}{12}$$
+<b>Jawaban: C.</b> $\frac{11}{12}$`,
+  cara_cepat:R`Sederhanakan silang dulu: $\frac{7}{21}=\frac13$ dan $\frac{8}{4}=2$, sehingga hasil kali $=\frac23$. Lalu $\frac14+\frac23=\frac{3+8}{12}=\frac{11}{12}$.` },
+
+{ id:2, topic:'Bilangan', type:'single', image:'',
+  text:R`Diberikan: $A = 25 \times 48$ dan $B = 24 \times 50$. Tanpa melakukan perkalian secara langsung, hubungan antara $A$ dan $B$ adalah ....`,
+  options:[R`$A > B$`, R`$A < B$`, R`$A = B$`, R`$A = 2B$`, R`$B = 2A$`],
+  correct:2,
+  pembahasan:R`<b>Langkah 1.</b> Ubah $48 = 2 \times 24$.
+$$A = 25 \times (2 \times 24)$$
+<b>Langkah 2.</b> Gunakan sifat asosiatif.
+$$A = (25 \times 2)\times 24 = 50 \times 24$$
+<b>Langkah 3.</b> Karena $B = 24 \times 50$ dan perkalian bersifat komutatif, $50\times 24 = 24 \times 50$.
+$$A = B$$
+<b>Jawaban: C.</b>`,
+  cara_cepat:R`Pecah $48 = 2\times 24$, lalu pindahkan faktor 2 ke 25 sehingga menjadi $50 \times 24$. Itu sama persis dengan $B$.` },
+
+{ id:3, topic:'Bilangan', type:'single', image:'',
+  text:R`Bentuk rasional dari $\dfrac{2+\sqrt{2}}{\sqrt{6}-\sqrt{2}}$ adalah ....`,
+  options:[R`$\frac{\sqrt6+\sqrt2-\sqrt3+1}{2}$`, R`$\frac{\sqrt6+\sqrt2+\sqrt3+1}{2}$`, R`$\frac{\sqrt6+\sqrt2+2\sqrt3+2}{2}$`, R`$\frac{\sqrt6+\sqrt2-\sqrt3+2}{4}$`, R`$\frac{\sqrt6+\sqrt2+\sqrt3+2}{4}$`],
+  correct:1,
+  pembahasan:R`<b>Langkah 1.</b> Rasionalkan penyebut dengan mengalikan akar sekawan $(\sqrt6+\sqrt2)$.
+$$\frac{2+\sqrt2}{\sqrt6-\sqrt2}\times\frac{\sqrt6+\sqrt2}{\sqrt6+\sqrt2}$$
+<b>Langkah 2.</b> Pembilang:
+$$(2+\sqrt2)(\sqrt6+\sqrt2)=2\sqrt6+2\sqrt2+\sqrt{12}+\sqrt{4}$$
+Dengan $\sqrt{12}=2\sqrt3$ dan $\sqrt4=2$:
+$$=2\sqrt6+2\sqrt2+2\sqrt3+2$$
+<b>Langkah 3.</b> Penyebut (selisih kuadrat):
+$$(\sqrt6-\sqrt2)(\sqrt6+\sqrt2)=6-2=4$$
+<b>Langkah 4.</b> Gabungkan dan sederhanakan.
+$$\frac{2\sqrt6+2\sqrt2+2\sqrt3+2}{4}=\frac{2(\sqrt6+\sqrt2+\sqrt3+1)}{4}=\frac{\sqrt6+\sqrt2+\sqrt3+1}{2}$$
+<b>Jawaban: B.</b>`,
+  cara_cepat:R`Penyebut akar sekawan selalu menjadi $a-b$, yaitu $6-2=4$. Kalikan 4 suku pembilang, lalu bagi 2 pada akhir. Hasilnya langsung pilihan dengan penyebut 2 dan 4 suku bertanda positif.` },
+
+{ id:4, topic:'Bilangan', type:'single', image:'',
+  text:R`Seorang teknisi di bidang energi menghitung konsumsi energi sebuah alat listrik. Diketahui tegangan listrik sebesar $2^4\times 5^2$ volt, arus listrik sebesar $2^{-1}\times 5^{-1}$ ampere, dan waktu pemakaian selama $2^3\times 5$ detik. Energi listrik dirumuskan dengan $E = V \times I \times t$.<br>Karena adanya rugi sistem, energi bersih yang dihasilkan menjadi $E_{bersih}=E\times\dfrac{1}{2^2\times 5^1}$. Maka energi bersih sama dengan ...`,
+  options:[R`$2^8\times 5^5$ J`, R`$2^4\times 5^3$ J`, R`$80$ J`, R`$32$ J`, R`$5$ J`],
+  correct:2,
+  pembahasan:R`<b>Langkah 1.</b> Hitung $E = V\times I\times t$.
+$$E=(2^4\times5^2)(2^{-1}\times5^{-1})(2^3\times5^1)$$
+Gunakan $a^m\times a^n=a^{m+n}$ untuk basis 2 dan basis 5:
+$$E=2^{4-1+3}\times5^{2-1+1}=2^6\times5^2$$
+<b>Langkah 2.</b> Hitung energi bersih.
+$$E_{bersih}=\frac{2^6\times5^2}{2^2\times5^1}$$
+Gunakan $\dfrac{a^m}{a^n}=a^{m-n}$:
+$$E_{bersih}=2^{6-2}\times5^{2-1}=2^4\times5^1=16\times5=80\text{ J}$$
+<b>Jawaban: C.</b>`,
+  cara_cepat:R`Jumlahkan pangkat tiap basis: basis 2 bernilai $4-1+3=6$, basis 5 bernilai $2-1+1=2$. Kurangi pangkat penyebut ($2$ dan $1$), sehingga menjadi $2^4\times5^1=80$.` },
+
+/* ===================== ALJABAR ===================== */
+{ id:5, topic:'Aljabar – SPLDV', type:'single', image:'',
+  text:R`Harga 3 buah buku dan 2 buah penggaris Rp18.000,00. Jika harga sebuah buku Rp1.000,00 lebih mahal dari sebuah penggaris, harga 2 buah buku dan 5 buah penggaris adalah ....`,
+  options:['Rp19.000,00','Rp23.000,00','Rp25.000,00','Rp27.000,00','Rp30.000,00'],
+  correct:1,
+  pembahasan:R`<b>Langkah 1.</b> Misalkan $b$ = harga sebuah buku dan $p$ = harga sebuah penggaris.
+<b>Langkah 2.</b> Ubah cerita menjadi persamaan.
+$$3b+2p=18.000\quad\cdots(1)$$
+$$b=p+1.000\quad\cdots(2)$$
+<b>Langkah 3.</b> Substitusi (2) ke (1).
+$$3(p+1.000)+2p=18.000\Rightarrow 5p+3.000=18.000\Rightarrow 5p=15.000\Rightarrow p=3.000$$
+<b>Langkah 4.</b> Harga buku: $b=3.000+1.000=4.000$.
+<b>Langkah 5.</b> Hitung yang ditanya.
+$$2b+5p=2(4.000)+5(3.000)=8.000+15.000=23.000$$
+Cek: $3(4.000)+2(3.000)=18.000$ (sesuai soal).
+<b>Jawaban: B.</b> Rp23.000,00`,
+  cara_cepat:R`Karena $b=p+1.000$, maka $3b+2p=5p+3.000=18.000$, sehingga $p=3.000$ dan $b=4.000$. Langsung hitung $2b+5p=8.000+15.000=23.000$.` },
+
+{ id:6, topic:'Aljabar – Pertidaksamaan Linear', type:'single', image:img(6), pembahasan_image:figP(6),
+  text:R`Daerah yang memenuhi sistem pertidaksamaan linear $x+y\le4;\; x+3y\ge6;\; x\ge0;\; y\ge0$ adalah .... (perhatikan gambar)`,
+  options:['Daerah I','Daerah II','Daerah III','Daerah IV','Daerah V'],
+  correct:1,
+  pembahasan:R`<b>Langkah 1 – Garis batas.</b>
+Garis $x+y=4$ memotong sumbu X di $(4,0)$ dan sumbu Y di $(0,4)$.
+Garis $x+3y=6$ memotong sumbu X di $(6,0)$ dan sumbu Y di $(0,2)$.
+<b>Langkah 2 – Uji titik $(0,0)$.</b>
+$x+y\le4$: $0\le4$ <b>benar</b>, maka daerah berada di bawah garis $x+y=4$.
+$x+3y\ge6$: $0\ge6$ <b>salah</b>, maka daerah berada di atas garis $x+3y=6$.
+<b>Langkah 3 – Syarat $x\ge0,\,y\ge0$.</b> Daerah hanya di kuadran I, sehingga daerah V (di kiri sumbu Y) gugur.
+<b>Langkah 4 – Uji titik wakil setiap daerah.</b>
+${tbl(['Daerah','Titik wakil','$x+y\\le4$','$x+3y\\ge6$','Memenuhi?'],[['I','(1,1)','2 ≤ 4 ✔','4 ≥ 6 ✘','Tidak'],['II','(1,2)','3 ≤ 4 ✔','7 ≥ 6 ✔','<b>Ya</b>'],['III','(4,2)','6 ≤ 4 ✘','10 ≥ 6 ✔','Tidak'],['IV','(5,0)','5 ≤ 4 ✘','5 ≥ 6 ✘','Tidak'],['V','(−1,3)','$x\\ge0$ dilanggar','','Tidak']])}
+Daerah II adalah segitiga dengan titik sudut $(0,2)$, $(0,4)$, dan $(3,1)$.
+<b>Jawaban: B. Daerah II</b>`,
+  cara_cepat:R`Daerah yang dicari berada di bawah garis $x+y=4$, di atas garis $x+3y=6$, dan di kanan sumbu Y. Hanya satu daerah yang terjepit di antara kedua garis dan sumbu Y, yaitu daerah II.` },
+
+{ id:7, topic:'Aljabar – Bunga Majemuk', type:'single', image:img(7),
+  text:R`Rina mulai berinvestasi melalui aplikasi Bobin. Rina memilih produk investasi tipe B2026 karena pada setiap akhir tahun, bunga yang diperoleh langsung ditambahkan ke tabungan. Brosur produk B2026: jangka waktu <b>3 tahun</b>, keuntungan <b>10% per tahun</b>, modal awal minimal Rp5.000.000.<br>Rina membeli produk investasi B2026 sebesar Rp7.000.000,00 dan berencana menyimpannya sampai jatuh tempo. Berapakah uang yang diperoleh Rina setelah jatuh tempo?`,
+  options:['Rp8.470.000,00','Rp9.100.000,00','Rp9.240.000,00','Rp9.261.000,00','Rp9.317.000,00'],
+  correct:4,
+  pembahasan:R`<b>Diketahui:</b> $M_0=7.000.000$, $i=10\%=0{,}1$, $n=3$ tahun, bunga ditambahkan ke tabungan tiap akhir tahun (bunga majemuk).
+<b>Langkah 1 – Hitung tahun demi tahun.</b>
+${tbl(['Akhir tahun','Perhitungan','Jumlah tabungan'],[['1','7.000.000 + 10% × 7.000.000','Rp7.700.000'],['2','7.700.000 + 10% × 7.700.000','Rp8.470.000'],['3','8.470.000 + 10% × 8.470.000','<b>Rp9.317.000</b>']])}
+<b>Langkah 2 – Cek dengan rumus.</b>
+$$M_n=M_0(1+i)^n\Rightarrow M_3=7.000.000\,(1+0{,}1)^3=7.000.000\times1{,}331=9.317.000$$
+<b>Jebakan:</b> Rp9.100.000 muncul jika memakai bunga tunggal; Rp8.470.000 adalah saldo setelah 2 tahun.
+<b>Jawaban: E.</b> Rp9.317.000,00`,
+  cara_cepat:R`Kalikan $1{,}1$ tiga kali berturut-turut (per tahun) atau pakai $1{,}1^3=1{,}331$. Lalu $7\text{ juta}\times1{,}331=9{,}317\text{ juta}$.` },
+
+{ id:8, topic:'Aljabar – Fungsi Invers', type:'single', image:'',
+  text:R`Diketahui fungsi $f(x)=\sqrt{2x+3}$, dengan $x\ge-\frac{3}{2}$. Jika $f^{-1}(x)$ adalah invers dari fungsi $f(x)$, nilai dari $f^{-1}(3)=\cdots$`,
+  options:[R`$6$`, R`$3$`, R`$\frac{3}{2}$`, R`$-\frac{1}{2}$`, R`$-1$`],
+  correct:1,
+  pembahasan:R`Ingat: $f^{-1}(a)=b$ artinya $f(b)=a$.
+<b>Cara 1 – Tanpa rumus invers (tercepat).</b> Cari $x$ yang membuat $f(x)=3$.
+$$\sqrt{2x+3}=3\Rightarrow 2x+3=9\Rightarrow 2x=6\Rightarrow x=3$$
+Syarat $x\ge-\frac32$ terpenuhi, sehingga $f^{-1}(3)=3$.
+<b>Cara 2 – Cari rumus invers.</b> Tulis $y=\sqrt{2x+3}$, kuadratkan lalu buat $x$ sendirian.
+$$y^2=2x+3\Rightarrow x=\frac{y^2-3}{2}\Rightarrow f^{-1}(x)=\frac{x^2-3}{2}$$
+$$f^{-1}(3)=\frac{3^2-3}{2}=\frac{9-3}{2}=3$$
+<b>Jawaban: B. 3</b>`,
+  cara_cepat:R`Jangan cari rumus invers. Tanyakan: "masukan berapa ke $f$ yang menghasilkan 3?" Selesaikan $\sqrt{2x+3}=3$, hasilnya $x=3$.` },
+
+{ id:9, topic:'Aljabar – Komposisi Fungsi', type:'single', image:'',
+  text:R`Fungsi $f:\mathbb{R}\to\mathbb{R}$ dan $g:\mathbb{R}\to\mathbb{R}$. Jika $g(x)=x-1$ dan $(f\circ g)(x)=x^3-4x$, nilai dari $f(2)=\cdots$`,
+  options:['9','13','15','17','25'],
+  correct:2,
+  pembahasan:R`Ingat: $(f\circ g)(x)=f(g(x))$.
+<b>Cara 1 – Cari $x$ yang membuat $g(x)=2$.</b>
+$$g(x)=2\Rightarrow x-1=2\Rightarrow x=3$$
+Maka $f(2)=f(g(3))=(f\circ g)(3)$:
+$$f(2)=3^3-4(3)=27-12=15$$
+<b>Cara 2 – Cari rumus $f(x)$.</b> Misalkan $t=x-1$, sehingga $x=t+1$.
+$$f(t)=(t+1)^3-4(t+1)=t^3+3t^2+3t+1-4t-4=t^3+3t^2-t-3$$
+$$f(2)=8+12-2-3=15$$
+<b>Jawaban: C. 15</b>`,
+  cara_cepat:R`Cari $x$ yang membuat bagian dalam $g(x)=2$ (yaitu $x=3$), lalu langsung masukkan ke $x^3-4x$: $27-12=15$.` },
+
+{ id:10, topic:'Aljabar – Barisan Geometri', type:'multi', image:img(10),
+  text:R`Sebuah piring besar akan ditata potongan buah dengan susunan melingkar seperti pada gambar berikut. Tatanan potongan buah tersebut belum selesai dan akan dilanjutkan. Tentukan manakah banyak potongan buah yang mungkin pada susunan berikutnya?<br><b>Pilihlah semua jawaban yang benar! Jawaban benar lebih dari satu.</b>`,
+  options:['20 potongan buah','24 potongan buah','32 potongan buah','64 potongan buah'],
+  correct:[2,3],
+  pembahasan:R`<b>Langkah 1 – Hitung potongan buah tiap susunan (dari dalam ke luar).</b>
+${tbl(['Susunan','Jenis buah','Banyak potongan'],[['Pertama','Melon (pusat)','4'],['Kedua','Semangka','8'],['Ketiga','Nanas','16']])}
+<b>Langkah 2 – Cari pola.</b>
+$$\frac{8}{4}=2,\qquad\frac{16}{8}=2$$
+Rasio tetap $r=2$, jadi ini <b>barisan geometri</b>.
+<b>Langkah 3 – Lanjutkan.</b>
+$$4,\;8,\;16,\;\mathbf{32},\;\mathbf{64},\;128,\ldots\qquad U_n=4\times2^{n-1}$$
+Susunan keempat berisi 32 dan susunan kelima berisi 64. Angka 20 dan 24 tidak pernah muncul karena barisan hanya berisi 4 dikali pangkat dua.
+<b>Jawaban: 32 dan 64 potongan buah.</b>`,
+  cara_cepat:R`Setiap susunan dua kali susunan sebelumnya: $16\times2=32$, $32\times2=64$. Bilangan yang bukan hasil $4\times2^k$ (seperti 20 dan 24) pasti salah.` },
+
+{ id:11, topic:'Aljabar – Pertumbuhan & Penyusutan', type:'single', image:'',
+  text:R`Seorang peneliti melakukan pengamatan terhadap bakteri tertentu. Setiap $\frac12$ hari bakteri membelah diri menjadi dua. Pada awal pengamatan terdapat 2 bakteri. Jika setiap 2 hari $\frac14$ dari jumlah bakteri mati, banyaknya bakteri setelah tiga hari adalah ....`,
+  options:['48 bakteri','64 bakteri','96 bakteri','128 bakteri','192 bakteri'],
+  correct:2,
+  pembahasan:R`<b>Langkah 1 – Banyak pembelahan.</b> Dalam 3 hari ada $3\div\frac12=6$ kali; dalam 2 hari ada $2\div\frac12=4$ kali.
+<b>Langkah 2 – Ikuti proses berurutan.</b> Bakteri yang mati di hari ke-2 tidak ikut membelah lagi, sehingga kronologi harus ditulis.
+${tbl(['Waktu','Kejadian','Jumlah bakteri'],[['Awal','—','2'],['0,5 hari','belah','4'],['1 hari','belah','8'],['1,5 hari','belah','16'],['2 hari','belah, lalu ¼ mati','$32-\\frac14(32)=32-8=24$'],['2,5 hari','belah','48'],['3 hari','belah','<b>96</b>']])}
+<b>Langkah 3 – Cek dengan rumus.</b>
+$$\text{Setelah 2 hari: }2\times2^4=32,\ \text{sisa }\tfrac34\Rightarrow32\times\tfrac34=24$$
+$$\text{Hari ke-2 sampai ke-3 ada 2 pembelahan: }24\times2^2=96$$
+<b>Jebakan:</b> jika kematian tidak dihitung, hasilnya 128 (pilihan D).
+<b>Jawaban: C. 96 bakteri</b>`,
+  cara_cepat:R`Hitung sampai hari ke-2: $2\times2^4=32$. Kurangi $\frac14$ sehingga sisa $24$. Sisa 1 hari lagi berarti 2 pembelahan: $24\times4=96$.` },
+
+{ id:12, topic:'Aljabar – Fungsi Eksponen', type:'multi', image:'',
+  text:R`Proses pelumasan pada mesin merupakan hal penting yang harus dilakukan untuk menjaga performa kerja mesin. Kekentalan pelumas akan menurun seiring bertambahnya waktu operasi mesin. Hubungan antara waktu operasi $x$ (jam) dan tingkat kekentalan pelumas $V(x)$ dinyatakan oleh fungsi:
+$$V(x)=24\cdot2^{-x/2}$$
+Untuk keperluan pemeliharaan mesin, kekentalan dikategorikan menjadi tiga interval:
+${tbl(['Interval Nilai $V(x)$','Indikator Kekentalan','Interpretasi'],[['$V(x)>12$','Tinggi','Pelumas masih sangat kental, kondisi sangat baik'],['$6\\le V(x)\\le12$','Sedang','Pelumas masih layak digunakan'],['$V(x)<6$','Rendah','Pelumas mulai encer, perlu dipertimbangkan untuk diganti']])}
+Setelah mesin beroperasi berapa lamakah kekentalan pelumas masuk pada indikator sedang?<br><b>Pilihlah semua jawaban yang benar! Jawaban benar lebih dari satu.</b>`,
+  options:['1 jam','2 jam','3 jam','4 jam'],
+  correct:[1,2,3],
+  pembahasan:R`<b>Cara 1 – Selesaikan pertidaksamaan.</b>
+$$6\le24\cdot2^{-x/2}\le12$$
+Bagi semua ruas dengan 24:
+$$\frac14\le2^{-x/2}\le\frac12\Rightarrow2^{-2}\le2^{-x/2}\le2^{-1}$$
+Basis $2>1$, tanda tidak berubah saat pangkat dibandingkan:
+$$-2\le-\frac{x}{2}\le-1$$
+Kalikan $-2$ (tanda dibalik):
+$$4\ge x\ge2\Rightarrow2\le x\le4$$
+<b>Cara 2 – Uji setiap pilihan.</b>
+${tbl(['$x$ (jam)','Perhitungan $V(x)$','Nilai','Kategori'],[['1','$24\\cdot2^{-1/2}=12\\sqrt2$','≈ 16,97','Tinggi ✘'],['2','$24\\cdot2^{-1}=12$','12','Sedang ✔'],['3','$24\\cdot2^{-3/2}=6\\sqrt2$','≈ 8,49','Sedang ✔'],['4','$24\\cdot2^{-2}=6$','6','Sedang ✔']])}
+Nilai 12 dan 6 tepat di batas, tetap masuk Sedang karena tanda $\le$.
+<b>Jawaban: 2 jam, 3 jam, dan 4 jam.</b>`,
+  cara_cepat:R`Bagi dengan 24 sehingga menjadi $\frac14\le2^{-x/2}\le\frac12$, yaitu pangkat $-2$ sampai $-1$. Jadi $\frac{x}{2}$ berada di antara 1 dan 2, yaitu $2\le x\le4$. Pilihan 2, 3, dan 4 jam lolos.` },
+
+{ id:13, topic:'Aljabar – Barisan Aritmetika', type:'single', image:img(13),
+  text:R`Seorang teknisi sedang menyambung beberapa pipa untuk membuat saluran air lurus. Setiap pipa yang disambungkan tidak menambah panjang penuh, karena sebagian ujung pipa masuk ke dalam sambungan pipa sebelumnya sehingga panjang saluran pipa mengalami penambahan tetap. Gambar menunjukkan panjang 1 pipa (400 cm), 2 pipa tersambung (795 cm), dan 3 pipa tersambung (1.190 cm).<br>Berapa panjang pipa saluran air jika terdapat 8 pipa yang tersambung?`,
+  options:['3.200 cm','3.170 cm','3.165 cm','3.100 cm','2.770 cm'],
+  correct:2,
+  pembahasan:R`<b>Diketahui:</b> $U_1=400$, $U_2=795$, $U_3=1.190$. Rumus suku ke-$n$: $U_n=a+(n-1)b$.
+<b>Langkah 1 – Cari beda.</b>
+$$b=U_2-U_1=795-400=395,\qquad b=U_3-U_2=1.190-795=395$$
+Setiap menambah satu pipa, panjang bertambah 395 cm (bukan 400 cm); selisih 5 cm adalah bagian pipa yang masuk ke sambungan.
+<b>Langkah 2 – Hitung suku ke-8.</b>
+$$U_8=400+(8-1)(395)=400+2.765=3.165$$
+<b>Cara pengecekan:</b> $8\times400=3.200$, ada 7 sambungan masing-masing memakan 5 cm: $3.200-7\times5=3.165$.
+<b>Jawaban: C. 3.165 cm</b>`,
+  cara_cepat:R`Total $8\times400=3.200$, lalu kurangi 7 sambungan $\times5\text{ cm}=35$. Hasilnya $3.165$.` },
+
+{ id:14, topic:'Aljabar – Deret Aritmetika', type:'tf', image:img(14),
+  text:R`Pak Budi ingin membuka cabang baru kafe dalam waktu 12 bulan. Modal awal yang ia miliki saat ini Rp50.000.000,00. Total dana yang dibutuhkan Rp200.000.000,00. Pak Budi akan menyisihkan laba usahanya mulai bulan Januari. Tabungan awal Rp5.000.000,00 dan ia berkomitmen menaikkan tabungannya secara tetap sebesar Rp1.500.000,00 setiap bulan.<br>Hambatan yang dialami Pak Budi:
+<ol class="list-decimal ml-6 my-1"><li>Pada bulan ke-5 dan ke-9, Pak Budi harus mengeluarkan Rp5.000.000,00 dari tabungannya untuk biaya tak terduga.</li><li>Mulai bulan ke-7, kenaikan tabungan per bulan berkurang sebesar 20% dari kenaikan awal karena persaingan usaha.</li><li>Pak Budi hanya dapat membuka cabang baru jika total tabungan (termasuk modal awal) mencapai minimal Rp200.000.000,00 tanpa memperhitungkan uang yang sudah terpakai.</li></ol>
+Kondisi seperti apakah yang dapat membuat Pak Budi membuka cabang baru dalam waktu 12 bulan? <b>Tentukan Benar atau Salah pada setiap pernyataan berikut!</b>`,
+  options:['Dengan kendala yang ada, Pak Budi tetap dapat membuka cabang baru.','Pak Budi dapat membuka cabang baru dan membayar semua pengeluaran tak terduga jika tidak ada persaingan usaha.','Dengan meningkatkan jumlah tabungan secara tetap yaitu menjadi selalu bertambah sebesar Rp1.700.000,00 per bulan maka Pak Budi dapat membuka cabang baru dan membayar semua pengeluaran tak terduganya.'],
+  correct:[false,false,true],
+  pembahasan:R`Total yang dibandingkan dengan target: <b>modal awal + total tabungan − pengeluaran tak terduga</b> ($=50+S-10$, dalam juta rupiah).
+<b>Pernyataan A – dengan semua kendala.</b> Kenaikan 1,5 juta berlaku untuk bulan 2–6. Mulai bulan ke-7 kenaikan turun 20%: $1{,}5\times80\%=1{,}2$ juta.
+${tbl(['Bulan','1','2','3','4','5','6','7','8','9','10','11','12'],[['Tabungan (juta)','5,0','6,5','8,0','9,5','11,0','12,5','13,7','14,9','16,1','17,3','18,5','19,7']])}
+$$\text{Bulan 1–6: }5+6{,}5+8+9{,}5+11+12{,}5=52{,}5$$
+$$\text{Bulan 7–12: }13{,}7+14{,}9+16{,}1+17{,}3+18{,}5+19{,}7=100{,}2$$
+$$\text{Total}=50+52{,}5+100{,}2-10=192{,}7<200$$
+Dana belum cukup, sehingga A <b>Salah</b>.
+<b>Pernyataan B – tanpa persaingan (kenaikan tetap 1,5 juta).</b>
+$$S_{12}=\frac{12}{2}\big(2(5)+11(1{,}5)\big)=6(26{,}5)=159$$
+$$\text{Total}=50+159-10=199<200$$
+Kurang 1 juta, sehingga B <b>Salah</b>.
+<b>Pernyataan C – kenaikan tetap 1,7 juta.</b>
+$$S_{12}=6\big(2(5)+11(1{,}7)\big)=6(28{,}7)=172{,}2$$
+$$\text{Total}=50+172{,}2-10=212{,}2\ge200$$
+Dana cukup, sehingga C <b>Benar</b>.
+<b>Jawaban: A Salah · B Salah · C Benar</b>`,
+  cara_cepat:R`Pakai $S_n=\frac n2\,(2a+(n-1)b)$. Untuk $b=1{,}5$ hasilnya 159 juta, sehingga $50+159-10=199<200$ (kurang tipis). Untuk $b=1{,}7$ hasilnya 172,2 juta dan total $212{,}2>200$. Kenaikan melambat di semester kedua membuat A makin jauh dari target.` },
+
+{ id:15, topic:'Aljabar – Barisan Geometri', type:'single', image:img(15),
+  text:R`<b>Analisis Pembebanan Struktur Jembatan.</b> Dalam proyek pembangunan jembatan layang, tim insinyur struktur melakukan uji beban bertahap pada rangkaian balok penyangga (girder). Uji beban dilakukan dengan menempatkan beban statis di sepanjang titik tumpuan secara berurutan untuk melihat respons lendutan material.<br>Pada tiga titik tumpuan pertama, beban yang diaplikasikan secara berturut-turut adalah 500 kg, 1.000 kg, 2.000 kg. Peningkatan beban di setiap titik tumpuan berikutnya direncanakan mengikuti pola tertentu untuk menguji batas elastisitas tertinggi dari beton pracetak yang digunakan.<br>Berdasarkan pola berat beban tersebut, beban pada titik tumpuan ke-4, 5, dan 6 berturut-turut adalah ....`,
+  options:['3.000, 4.000, 5.000','3.000, 6.000, 12.000','4.000, 6.000, 8.000','4.000, 6.000, 12.000','4.000, 8.000, 16.000'],
+  correct:4,
+  pembahasan:R`<b>Langkah 1 – Tentukan jenis pola.</b>
+Selisih: $1.000-500=500$, tetapi $2.000-1.000=1.000$. Selisih tidak tetap, jadi bukan barisan aritmetika.
+Perbandingan: $\dfrac{1.000}{500}=2$ dan $\dfrac{2.000}{1.000}=2$. Rasio tetap, jadi ini <b>barisan geometri</b> dengan $r=2$.
+<b>Langkah 2 – Kalikan 2 terus-menerus.</b>
+$$U_n=ar^{n-1}=500\times2^{n-1}$$
+$$U_4=2.000\times2=4.000,\quad U_5=4.000\times2=8.000,\quad U_6=8.000\times2=16.000$$
+Cek: $U_6=500\times2^5=500\times32=16.000$.
+<b>Jawaban: E. 4.000, 8.000, 16.000</b>`,
+  cara_cepat:R`Lihat 500 → 1.000 → 2.000: setiap suku dikali 2. Lanjutkan kali 2: 4.000, 8.000, 16.000.` },
+
+{ id:16, topic:'Aljabar – SPLTV', type:'single', image:img(16),
+  text:R`Toko Jaya menjual alat tulis sekolah. Tiga murid SMK Merdeka yaitu Maya, Sella, dan Elang membeli alat tulis di Toko Jaya dengan rincian sebagai berikut:
+${tbl(['Pembeli','Buku tulis','Bulpoin','Pensil','Membayar'],[['Maya','2','1','3','Rp19.000,00'],['Sella','1','2','2','Rp17.000,00'],['Elang','3','2','1','Rp20.000,00']])}
+Apabila Nurul, murid dari sekolah yang sama ingin membeli ketiga alat tulis tersebut masing-masing 1 buah, maka banyaknya uang yang harus dibayarkan oleh Nurul adalah …`,
+  options:['Rp9.000,00','Rp10.000,00','Rp10.500,00','Rp11.000,00','Rp12.000,00'],
+  correct:1,
+  pembahasan:R`<b>Langkah 1 – Pemisalan.</b> $b$ = harga buku tulis, $k$ = harga bulpoin, $p$ = harga pensil.
+<b>Langkah 2 – Sistem persamaan dari tabel.</b>
+$$2b+k+3p=19.000\ \cdots(1)$$
+$$b+2k+2p=17.000\ \cdots(2)$$
+$$3b+2k+p=20.000\ \cdots(3)$$
+<b>Langkah 3 – Hilangkan $k$.</b> (3) − (2):
+$$2b-p=3.000\Rightarrow p=2b-3.000\ \cdots(4)$$
+(1) × 2 menjadi $4b+2k+6p=38.000\ \cdots(5)$. Lalu (5) − (2):
+$$3b+4p=21.000\ \cdots(6)$$
+<b>Langkah 4 – Substitusi (4) ke (6).</b>
+$$3b+4(2b-3.000)=21.000\Rightarrow11b=33.000\Rightarrow b=3.000$$
+<b>Langkah 5 – Cari $p$ dan $k$.</b>
+$$p=2(3.000)-3.000=3.000$$
+$$3.000+2k+2(3.000)=17.000\Rightarrow2k=8.000\Rightarrow k=4.000$$
+Cek: (1) $6.000+4.000+9.000=19.000$ ✔; (3) $9.000+8.000+3.000=20.000$ ✔.
+<b>Langkah 6.</b> $b+k+p=3.000+4.000+3.000=10.000$.
+<b>Jawaban: B. Rp10.000,00</b>`,
+  cara_cepat:R`Jumlahkan ketiga persamaan: $6b+5k+6p=56.000$. Tidak langsung terlihat jawabannya, jadi eliminasi $k$ seperti di pembahasan. Setelah dapat $b=3.000$ dan $p=3.000$, cukup cari $k$ dari satu persamaan.` },
+
+{ id:17, topic:'Aljabar – Barisan Geometri', type:'single', image:img(17),
+  text:R`<b>Analisis Pembebanan Struktur Jembatan.</b> Pada tiga titik tumpuan pertama, beban yang diaplikasikan secara berturut-turut adalah 500 kg, 1.000 kg, 2.000 kg. Peningkatan beban di setiap titik tumpuan berikutnya direncanakan mengikuti pola tertentu untuk menguji batas elastisitas tertinggi dari beton pracetak.<br>Standar Keamanan Bangunan menetapkan bahwa beton pracetak tersebut akan mengalami retak struktur jika diberi beban tunggal yang melampaui 128 ton pada satu titik. Pada titik tumpuan ke-berapakah beban yang diberikan untuk pertama kalinya mencapai batas keamanan struktur?`,
+  options:['Titik ke-7','Titik ke-8','Titik ke-9','Titik ke-10','Titik ke-11'],
+  correct:2,
+  pembahasan:R`<b>Langkah 1 – Samakan satuan.</b>
+$$128\text{ ton}=128.000\text{ kg}$$
+<b>Langkah 2 – Rumus beban.</b> Rasio $\dfrac{1.000}{500}=\dfrac{2.000}{1.000}=2$, sehingga barisan geometri dengan $a=500$ dan $r=2$.
+$$U_n=500\times2^{n-1}$$
+<b>Langkah 3 – Cari $n$ saat beban mencapai 128.000 kg.</b>
+$$500\times2^{n-1}=128.000\Rightarrow2^{n-1}=256=2^8\Rightarrow n-1=8\Rightarrow n=9$$
+<b>Langkah 4 – Cek dengan tabel.</b>
+${tbl(['Titik ke-$n$','7','8','9','10'],[['Beban (kg)','32.000','64.000','<b>128.000</b>','256.000'],['Beban (ton)','32','64','<b>128</b>','256']])}
+<i>Catatan:</i> kata "melampaui" pada soal sebenarnya berarti lebih dari 128 ton (titik ke-10). Namun yang ditanyakan adalah titik yang pertama kali <i>mencapai</i> batas, yaitu tepat 128 ton pada titik ke-9, dan inilah yang sesuai kunci jawaban.
+<b>Jawaban: C. Titik ke-9</b>`,
+  cara_cepat:R`Ubah 128 ton menjadi 128.000 kg. Lalu $128.000\div500=256=2^8$, sehingga $n-1=8$ dan $n=9$.` },
+
+{ id:18, topic:'Aljabar – Program Linear', type:'multi', image:img(18), pembahasan_image:figP(18),
+  text:R`Sebuah perusahaan mebel "Awet" memproduksi dua jenis produk yaitu meja dan kursi. Kebutuhan bahan baku (kayu) dan tenaga kerja untuk pembuatan 1 unit meja dan 1 unit kursi:
+${tbl(['Produk','Kebutuhan kayu','Lama pengerjaan (1 orang pekerja)'],[['1 unit meja','2 m²','4 jam'],['1 unit kursi','1 m²','3 jam']])}
+Total kayu yang tersedia maksimal 20 m² per hari dan total waktu yang tersedia maksimal 48 jam per hari. Keuntungan bersih 1 unit meja Rp500.000,00 dan 1 unit kursi Rp300.000,00.<br>Berdasarkan kondisi tersebut, manakah pernyataan yang benar mengenai banyak meja dan kursi yang dapat diproduksi serta keuntungan yang diperoleh?<br><b>Pilihlah semua jawaban yang benar! Jawaban benar lebih dari satu.</b>`,
+  options:['(1) Mebel tidak dapat memproduksi 6 unit meja dan 5 unit kursi secara bersamaan.','(2) Jika mebel hanya memproduksi kursi, jumlah maksimum yang dapat dihasilkan adalah 16 unit.','(3) Memproduksi 2 meja dan 10 kursi menghasilkan keuntungan yang lebih besar daripada memproduksi 8 meja saja.','(4) Keuntungan maksimum yang diperoleh adalah sebesar Rp5.400.000,00.'],
+  correct:[1,3],
+  pembahasan:R`<b>Langkah 1 – Pemisalan.</b> $x$ = banyak meja, $y$ = banyak kursi.
+<b>Langkah 2 – Model matematika.</b>
+$$2x+y\le20\quad(\text{kayu}),\qquad4x+3y\le48\quad(\text{waktu}),\qquad x\ge0,\ y\ge0$$
+$$Z=500.000x+300.000y$$
+<b>Langkah 3 – Titik pojok.</b> Garis kayu memotong sumbu di $(10,0)$ dan $(0,20)$; garis waktu di $(12,0)$ dan $(0,16)$. Titik potong kedua garis:
+$$y=20-2x\Rightarrow4x+3(20-2x)=48\Rightarrow-2x=-12\Rightarrow x=6,\ y=8$$
+Titik pojok: $(0,0)$, $(10,0)$, $(6,8)$, $(0,16)$.
+<b>Langkah 4 – Keuntungan di tiap titik pojok.</b>
+${tbl(['Titik pojok $(x,y)$','$Z=500.000x+300.000y$'],[['(0, 0)','Rp0'],['(10, 0)','Rp5.000.000'],['(0, 16)','Rp4.800.000'],['(6, 8)','<b>Rp5.400.000</b> (terbesar)']])}
+<b>Langkah 5 – Periksa pernyataan.</b>
+<b>(1) Salah.</b> Uji $(6,5)$: kayu $2(6)+5=17\le20$ ✔ dan waktu $4(6)+3(5)=39\le48$ ✔. Jadi 6 meja dan 5 kursi bisa diproduksi bersamaan.
+<b>(2) Benar.</b> Jika $x=0$: kayu membatasi $y\le20$, waktu membatasi $3y\le48\Rightarrow y\le16$. Batas yang lebih ketat adalah 16.
+<b>(3) Salah.</b> 2 meja + 10 kursi: $2(500.000)+10(300.000)=4.000.000$. 8 meja: $8(500.000)=4.000.000$. Hasilnya sama, bukan lebih besar.
+<b>(4) Benar.</b> $6(500.000)+8(300.000)=5.400.000$.
+<b>Jawaban: pernyataan (2) dan (4).</b>`,
+  cara_cepat:R`Keuntungan maksimum ada di titik pojok. Perpotongan kedua garis adalah $(6,8)$, dengan $Z=3{,}0+2{,}4=5{,}4$ juta, lebih besar daripada pojok lain. Untuk menguji suatu pernyataan, cukup substitusikan angkanya ke kedua kendala.` },
+
+{ id:19, topic:'Aljabar – Deret Geometri', type:'multi', image:img(19),
+  text:R`<b>Analisis Pembebanan Struktur Jembatan.</b> Beban pada tiga titik tumpuan pertama berturut-turut adalah 500 kg, 1.000 kg, 2.000 kg, dan seterusnya mengikuti pola tertentu.<br>Konsultan pengawas ingin menghitung total akumulasi beban (tonase total) yang ditahan oleh jembatan selama pengujian di 5 hingga 7 titik tumpuan pertama untuk memastikan kekuatan fondasi dasar. Tim logistik kemudian menyiapkan beban statis seberat 32 ton. Pilihlah semua pernyataan yang benar terkait dengan tonase total dan persediaan beban statis tersebut. <b>Jawaban benar lebih dari satu.</b>`,
+  options:['(1) Beban statis yang disediakan tim logistik cukup untuk pengujian tonase hingga titik tumpuan ke-6.','(2) Diperlukan tambahan beban statis sebesar 30 ton apabila pengujian tonase dilakukan hingga titik tumpuan ke-7.','(3) Terdapat sisa beban sebesar 15,5 ton setelah proses alokasi pengujian tonase hingga titik tumpuan ke-5 selesai.','(4) Beton melewati batas beban setelah titik tumpuan ke-5 saat batas elastisitas kumulatif beton pracetak adalah 20 ton.'],
+  correct:[0,3],
+  pembahasan:R`<b>Rumus deret geometri</b> dengan $a=500$ kg, $r=2$:
+$$S_n=\frac{a(r^n-1)}{r-1}=500(2^n-1)\text{ kg}$$
+"Total akumulasi" berarti dijumlahkan, bukan hanya beban di satu titik.
+<b>Langkah 1 – Total beban sampai titik ke-5, 6, dan 7.</b>
+${tbl(['Sampai titik ke-$n$','Perhitungan','Total (kg)','Total (ton)'],[['5','500 × 31','15.500','15,5'],['6','500 × 63','31.500','31,5'],['7','500 × 127','63.500','63,5']])}
+Cek langsung sampai titik ke-5: $500+1.000+2.000+4.000+8.000=15.500$ kg.
+<b>Langkah 2 – Periksa pernyataan (persediaan 32 ton).</b>
+<b>(1) Benar.</b> Total sampai titik ke-6 adalah 31,5 ton $\le32$ ton. Persediaan cukup.
+<b>(2) Salah.</b> Sampai titik ke-7 dibutuhkan 63,5 ton, tambahan $63{,}5-32=31{,}5$ ton (bukan 30 ton).
+<b>(3) Salah.</b> 15,5 ton adalah beban yang <i>terpakai</i> sampai titik ke-5. Sisanya $32-15{,}5=16{,}5$ ton, bukan 15,5 ton.
+<b>(4) Benar.</b> Sampai titik ke-5 totalnya 15,5 ton (belum lewat 20 ton). Setelah titik ke-6 ditambahkan total 31,5 ton (sudah lewat 20 ton).
+<b>Jawaban: pernyataan (1) dan (4).</b>`,
+  cara_cepat:R`Gunakan $S_n=500(2^n-1)$: $S_5=15{,}5$ ton, $S_6=31{,}5$ ton, $S_7=63{,}5$ ton. Bandingkan dengan 32 ton (dan 20 ton untuk pernyataan 4). Waspadai pernyataan (2) dan (3), selisihnya sengaja dibuat mirip: hasil benarnya 31,5 dan 16,5.` },
+
+{ id:20, topic:'Aljabar – Program Linear', type:'tf', image:'', pembahasan_image:figP(20),
+  text:R`Mirna akan memproduksi dua jenis kue dengan modal Rp8.000.000,00. Biaya produksi kue bolu sebesar Rp15.000,00 per kotak dan dijual dengan laba 40%. Sedangkan biaya produksi kue brownies sebesar Rp20.000,00 per kotak dan dijual dengan laba 35%. Setiap harinya, Mirna dapat memproduksi paling banyak 500 kotak kue.<br>Apabila Mirna ingin memperoleh keuntungan maksimum, <b>tentukan Benar atau Salah untuk setiap pernyataan berikut!</b>`,
+  options:['Mirna harus memproduksi 200 kotak kue bolu.','Mirna harus memproduksi kue brownies lebih banyak.','Keuntungan maksimum yang dapat diperoleh Mirna adalah Rp3.100.000,00.'],
+  correct:[false,false,true],
+  pembahasan:R`<b>Langkah 1.</b> $x$ = banyak kotak bolu, $y$ = banyak kotak brownies.
+<b>Langkah 2 – Laba per kotak.</b> Bolu: $40\%\times15.000=6.000$. Brownies: $35\%\times20.000=7.000$.
+<b>Langkah 3 – Model matematika.</b>
+$$15.000x+20.000y\le8.000.000\Rightarrow3x+4y\le1.600$$
+$$x+y\le500,\quad x\ge0,\ y\ge0,\qquad Z=6.000x+7.000y$$
+<b>Langkah 4 – Titik pojok.</b>
+Pada sumbu X ($y=0$): $x\le500$ dan $x\le533$, sehingga titik $(500,0)$.
+Pada sumbu Y ($x=0$): $y\le500$ dan $y\le400$, sehingga titik $(0,400)$.
+Titik potong: $y=500-x\Rightarrow3x+4(500-x)=1.600\Rightarrow-x=-400\Rightarrow x=400,\ y=100$.
+<b>Langkah 5 – Laba di tiap titik pojok.</b>
+${tbl(['Titik pojok $(x,y)$','$Z=6.000x+7.000y$'],[['(0, 0)','Rp0'],['(500, 0)','Rp3.000.000'],['(0, 400)','Rp2.800.000'],['(400, 100)','<b>Rp3.100.000</b> (terbesar)']])}
+<b>Langkah 6 – Periksa.</b>
+A <b>Salah</b>: laba maksimum dicapai dengan 400 kotak bolu, bukan 200.
+B <b>Salah</b>: brownies hanya 100 kotak, jauh lebih sedikit daripada bolu.
+C <b>Benar</b>: $6.000(400)+7.000(100)=3.100.000$.
+<b>Jawaban: A Salah · B Salah · C Benar</b>`,
+  cara_cepat:R`Sederhanakan kendala modal menjadi $3x+4y\le1.600$. Titik potong dengan $x+y=500$ langsung memberi $(400,100)$. Hitung $Z$ di titik itu dan bandingkan dengan dua pojok lain.` },
+
+{ id:21, topic:'Aljabar – Fungsi Kuadrat', type:'tf', image:'', pembahasan_image:figP(21),
+  text:R`Fungsi $f$ didefinisikan oleh $f(x)=4\,(x^2-8x+12)$. <b>Tentukan Benar atau Salah pada setiap pernyataan berikut yang terkait dengan grafik fungsi $f$!</b>`,
+  options:[R`Grafik fungsi $f$ terbuka ke atas.`, R`Grafik fungsi $f$ memotong garis $y=-18$.`, R`Grafik fungsi $f$ tidak melalui kuadran tiga.`],
+  correct:[true,false,true],
+  pembahasan:R`<b>Langkah 1 – Bentuk umum dan faktor.</b>
+$$f(x)=4x^2-32x+48=4(x-2)(x-6)\quad\Rightarrow a=4,\ b=-32,\ c=48$$
+<b>Langkah 2 – Ciri grafik.</b>
+Titik potong sumbu X: $x=2$ dan $x=6$. Titik potong sumbu Y: $f(0)=48$.
+Sumbu simetri: $x=\dfrac{-b}{2a}=\dfrac{32}{8}=4$. Nilai puncak: $f(4)=4(16-32+12)=-16$, puncak $(4,-16)$.
+<b>Langkah 3 – Periksa.</b>
+<b>A Benar.</b> $a=4>0$ sehingga parabola terbuka ke atas dan nilai terkecilnya $-16$.
+<b>B Salah.</b> Nilai minimum $-16$, sedangkan $y=-18$ berada di bawah puncak sehingga tidak dipotong. Bukti dengan diskriminan:
+$$4x^2-32x+48=-18\Rightarrow4x^2-32x+66=0,\quad D=(-32)^2-4(4)(66)=1.024-1.056=-32<0$$
+Karena $D<0$, tidak ada titik potong.
+<b>C Benar.</b> Kuadran III adalah $x<0$ dan $y<0$. Untuk $x<0$, faktor $(x-2)$ dan $(x-6)$ keduanya negatif sehingga hasil kalinya positif dan $f(x)>0$. Grafik tidak pernah berada di kuadran III.
+<b>Jawaban: A Benar · B Salah · C Benar</b>`,
+  cara_cepat:R`Cari puncak dulu: $(4,-16)$ dan $a>0$. Semua titik grafik berada di $y\ge-16$, jadi garis $y=-18$ pasti tidak terpotong. Untuk $x<0$, nilai $f$ selalu positif, sehingga kuadran III tidak dilalui.` },
+
+{ id:22, topic:'Aljabar – Fungsi Linear', type:'multi', image:img(22),
+  text:R`Tagihan listrik bulanan di sebuah apartemen dihitung berdasarkan jumlah energi listrik (dalam kWh) yang digunakan, dengan rumus:
+$$f(x)=1.350x+25.000$$
+$f(x)$: total tagihan listrik (rupiah), $x$: jumlah pemakaian energi listrik (kWh).<br>Andi merupakan salah satu penghuni apartemen tersebut yang menerima tagihan pembayaran listrik seperti pada gambar (total tagihan <b>Rp160.000,00</b>). Dia menyadari bahwa penggunaan listrik sebulan terakhir lebih dari penggunaan listrik biasanya. Berdasarkan informasi tersebut, biasanya berapa besar penggunaan listrik di apartemen Andi?<br><b>Pilihlah jawaban yang benar! Jawaban benar lebih dari satu.</b>`,
+  options:['85 kWh','90 kWh','100 kWh','120 kWh','137 kWh'],
+  correct:[0,1],
+  pembahasan:R`<b>Langkah 1 – Baca tagihan.</b> Total tagihan bulan lalu Rp160.000, jadi $f(x)=160.000$.
+<b>Langkah 2 – Pemakaian bulan lalu.</b>
+$$1.350x+25.000=160.000\Rightarrow1.350x=135.000\Rightarrow x=\frac{135.000}{1.350}=100$$
+Pemakaian bulan lalu adalah <b>100 kWh</b>.
+<b>Langkah 3 – Kalimat kunci.</b> "Penggunaan sebulan terakhir <i>lebih dari</i> penggunaan biasanya" berarti pemakaian biasa <b>lebih kecil</b> dari 100 kWh.
+<b>Langkah 4 – Pilih jawaban yang kurang dari 100.</b>
+${tbl(['Pilihan','Kurang dari 100?'],[['85 kWh','Ya ✔'],['90 kWh','Ya ✔'],['100 kWh','Tidak, sama dengan 100 (bukan "lebih dari") ✘'],['120 kWh','Tidak ✘'],['137 kWh','Tidak ✘']])}
+<b>Jawaban: 85 kWh dan 90 kWh.</b>`,
+  cara_cepat:R`Hitung dulu pemakaian bulan lalu: $(160.000-25.000)\div1.350=100$. Karena bulan lalu lebih boros, pemakaian biasa harus $<100$ (bukan sama dengan), sehingga hanya 85 dan 90.` },
+
+/* ===================== GEOMETRI ===================== */
+{ id:23, topic:'Geometri – Volume Bangun Ruang', type:'single', image:img(23), pembahasan_image:figP(23),
+  text:R`Dari selembar karton berbentuk persegi yang berukuran sisi 30 cm akan dibuat kotak tanpa tutup, dengan cara menggunting empat persegi di setiap pojok karton, seperti pada gambar. Volume kotak terbesar yang dapat dibuat adalah ....`,
+  options:['2.000 cm³','3.000 cm³','4.000 cm³','5.000 cm³','6.000 cm³'],
+  correct:0,
+  pembahasan:R`<b>Langkah 1 – Ukuran kotak.</b> Pojok digunting persegi sisi $x$: tinggi kotak $=x$, sisi alas $=30-2x$, dengan syarat $0 \lt x \lt 15$.
+<b>Langkah 2 – Rumus volume.</b>
+$$V(x)=(30-2x)^2\cdot x=4x^3-120x^2+900x$$
+<b>Langkah 3 – Maksimum (turunan).</b>
+$$V'(x)=12x^2-240x+900=0\Rightarrow x^2-20x+75=0\Rightarrow(x-5)(x-15)=0$$
+$x=15$ ditolak (di luar syarat, alas menjadi 0), jadi $x=5$. Uji turunan kedua: $V''(x)=24x-240\Rightarrow V''(5)=-120<0$, maka $x=5$ memang maksimum.
+<b>Langkah 4 – Volume maksimum.</b>
+$$V(5)=(30-10)^2\cdot5=400\cdot5=2.000\text{ cm}^3$$
+<b>Cara lain tanpa turunan (AM–GM).</b> Jumlah tiga faktor $4x+(30-2x)+(30-2x)=60$ (tetap). Hasil kali maksimum bila ketiganya sama: $4x=30-2x\Rightarrow x=5$, sehingga $V=\frac14\cdot20\cdot20\cdot20=2.000$.
+${tbl(['$x$ (cm)','1','2','3','4','5','6','7','8'],[['Volume (cm³)','784','1.352','1.728','1.936','<b>2.000</b>','1.944','1.792','1.568']])}
+<b>Jawaban: A. 2.000 cm³</b>`,
+  cara_cepat:R`Pakai AM–GM: faktor $4x,\ 30-2x,\ 30-2x$ berjumlah tetap 60, maka hasil kali terbesar saat ketiganya 20. $V=\frac14\times20^3=2.000$.` },
+
+{ id:24, topic:'Geometri – Kesebangunan', type:'single', image:img(24),
+  text:R`Perhatikan desain rak buku pada gambar. Manakah perbandingan yang sama dengan $\dfrac{AB}{AC}$ ?`,
+  options:[R`$\frac{AC}{AB}$`, R`$\frac{BC}{DE}$`, R`$\frac{BD}{CE}$`, R`$\frac{AD}{AE}$`, R`$\frac{AH}{HA}$`],
+  correct:3,
+  pembahasan:R`<b>Langkah 1 – Baca gambar.</b> Papan rak (BC, DE, FG, HI) mendatar sehingga saling sejajar. Garis AI tegak, tegak lurus semua papan. Titik A–B–D–F–H berada pada satu garis lurus.
+<b>Langkah 2 – Segitiga sebangun.</b> Segitiga ABC, ADE, AFG, dan AHI sama-sama punya sudut di A (sudut bersama) dan sudut siku-siku di C, E, G, I. Jadi keempatnya sebangun, dan perbandingan sisi yang bersesuaian selalu sama.
+<b>Langkah 3 – Sisi bersesuaian (ABC dengan ADE).</b> AB bersesuaian dengan AD (sisi miring), AC bersesuaian dengan AE (sisi tegak). Maka
+$$\frac{AB}{AC}=\frac{AD}{AE}$$
+<b>Langkah 4 – Cek dengan angka.</b> Misalkan $AC=3$ dan $BC=4$, maka $AB=5$ (segitiga 3-4-5), sehingga $\frac{AB}{AC}=\frac53$. Segitiga ADE adalah pembesaran 2× ($AE=6$, $DE=8$, $AD=10$).
+${tbl(['Pilihan','Perbandingan','Nilai','Sama dengan 5/3?'],[['A','$AC/AB$','3/5','Tidak (kebalikannya)'],['B','$BC/DE$','4/8 = 1/2','Tidak'],['C','$BD/CE$','5/3 (BD = 10−5, CE = 6−3)','Ya (nilainya sama)'],['D','$AD/AE$','10/6 = 5/3','<b>Ya (langsung dari kesebangunan)</b>'],['E','$AH/HI$','20/16 = 5/4','Tidak']])}
+<i>Catatan:</i> pilihan C secara numerik juga bernilai $5/3$, tetapi kunci jawaban pada berkas soal adalah D, yang menjadi perbandingan sisi bersesuaian langsung dari kesebangunan.
+<b>Jawaban: D. $\frac{AD}{AE}$</b>`,
+  cara_cepat:R`Pasangkan sisi miring dengan sisi miring dan sisi tegak dengan sisi tegak pada dua segitiga sebangun: $\frac{AB}{AC}=\frac{AD}{AE}$.` },
+
+{ id:25, topic:'Geometri – Jaring-jaring', type:'single', image:img(25), pembahasan_image:figP(25),
+  text:R`Seorang desainer percetakan digital diminta membuat kemasan souvenir (balok alas persegi 8 cm × 8 cm, tinggi 12 cm, dengan atap limas segiempat beraturan alas 8 cm × 8 cm dan tinggi limas 3 cm) yang akan dicetak menggunakan kertas laminasi.<br>Kemasan harus didesain pola bentuk (jaring-jaring) yang belum dirakit. Desainer bisa memodifikasi pola agar bisa dicetak tidak lebih dari 1 kertas untuk pola yang sama. Satu pola kemasan utuh hanya boleh dibuat posisi horizontal atau vertikal (tidak boleh diagonal). Tersedia pilihan kertas laminasi:
+${tbl(['Jenis Kertas','Ukuran (cm)','Harga per lembar'],[['A3','29,7 × 42','Rp6.000,00'],['A3+','32,9 × 48,3','Rp8.000,00'],['Plano','61 × 86','Rp15.000,00']])}
+Dengan anggaran maksimal Rp1.200.000,00 berapakah paling banyak kotak souvenir yang bisa dibuat?`,
+  options:['150 kotak kemasan.','160 kotak kemasan.','200 kotak kemasan.','300 kotak kemasan.','400 kotak kemasan.'],
+  correct:4,
+  pembahasan:R`<b>Langkah 1 – Bentuk kemasan.</b> Balok (alas $8\times8$, tinggi 12) + limas segiempat beraturan (alas $8\times8$, tinggi 3).
+<b>Langkah 2 – Tinggi sisi tegak limas (apotema).</b> Gunakan Pythagoras dengan setengah sisi alas (4) dan tinggi limas (3):
+$$\text{apotema}=\sqrt{4^2+3^2}=\sqrt{25}=5\text{ cm}$$
+<b>Langkah 3 – Jaring-jaring hemat tempat.</b> Empat sisi balok ($8\times12$) berjajar dalam satu baris, alas ($8\times8$) di bawah salah satunya, dan empat segitiga atap (alas 8, tinggi 5) di atas keempat sisi.
+$$\text{Lebar}=4\times8=32\text{ cm},\qquad\text{Tinggi}=5+12+8=25\text{ cm}$$
+Jadi satu pola membutuhkan ruang $32\times25$ cm.
+<b>Langkah 4 – Banyak pola per kertas.</b>
+${tbl(['Kertas','Ukuran (cm)','Pola yang muat','Biaya per kotak'],[['A3','29,7 × 42','1 pola (dua pola butuh ≥ 50 cm pada sisi 29,7 atau 64 cm pada sisi 42: tidak cukup)','Rp6.000'],['A3+','32,9 × 48,3','1 pola (lebar 32 ≤ 32,9 muat, dua pola ditumpuk butuh 25+25 = 50 > 48,3)','Rp8.000'],['Plano','61 × 86','5 pola (3 pola berdiri 25×32 berjajar → lebar 75 ≤ 86; di sisa tinggi 29 ≥ 25 diletakkan 2 pola berbaring 32×25 → lebar 64 ≤ 86)','Rp15.000 ÷ 5 = Rp3.000']])}
+<b>Langkah 5 – Banyak kotak dengan Rp1.200.000.</b>
+$$\text{A3: }1.200.000\div6.000=200\text{ lembar}\to200\text{ kotak}$$
+$$\text{A3+: }1.200.000\div8.000=150\text{ lembar}\to150\text{ kotak}$$
+$$\text{Plano: }1.200.000\div15.000=80\text{ lembar}\to80\times5=400\text{ kotak}$$
+<b>Jebakan:</b> memilih kertas dengan harga per lembar termurah (A3 → 200 kotak). Yang dibandingkan adalah <i>biaya per kotak</i>.
+<b>Jawaban: E. 400 kotak kemasan</b>`,
+  cara_cepat:R`Ukuran jaring-jaring $32\times25$ cm. Plano muat 5 pola, sehingga biaya per kotak $=15.000\div5=3.000$ (paling murah). Banyak kotak $=1.200.000\div3.000=400$.` },
+
+{ id:26, topic:'Geometri – Keliling Lingkaran', type:'single', image:img(26),
+  text:R`UMKM mendapatkan pesanan membuat alas piring untuk di meja makan seperti gambar. Ukuran diameter alas piring yang dibuat adalah 35 cm. Agar tampilan menjadi lebih menarik, di sekeliling alas tersebut akan dihiasi dengan pita berwarna emas. Jika harga satu meter pita emas Rp5.000,00 dan UMKM tersebut akan memproduksi sebanyak 180 buah, biaya yang dibutuhkan untuk membeli pita emas adalah ….`,
+  options:['Rp6.930.000,00','Rp1.980.000,00','Rp1.000.000,00','Rp990.000,00','Rp900.000,00'],
+  correct:3,
+  pembahasan:R`<b>Langkah 1.</b> Pita dipasang mengelilingi tepi alas, jadi panjang pita satu alas = keliling lingkaran.
+<b>Langkah 2 – Keliling satu alas.</b> Karena 35 kelipatan 7, pakai $\pi=\frac{22}{7}$.
+$$K=\pi\times d=\frac{22}{7}\times35=22\times5=110\text{ cm}=1{,}1\text{ m}$$
+<b>Langkah 3 – Pita untuk 180 buah.</b>
+$$180\times1{,}1=198\text{ m}$$
+<b>Langkah 4 – Biaya.</b>
+$$198\times5.000=990.000$$
+Bila memakai $\pi=3{,}14$: biaya $\approx$ Rp989.100, pilihan terdekat tetap Rp990.000,00.
+<b>Kesalahan umum:</b> memakai luas ($\pi r^2$) bukan keliling, atau lupa mengubah cm menjadi meter.
+<b>Jawaban: D. Rp990.000,00</b>`,
+  cara_cepat:R`$d=35$ adalah kelipatan 7, sehingga $K=\frac{22}{7}\times35=110$ cm $=1{,}1$ m. Lalu $180\times1{,}1\times5.000=990.000$.` },
+
+{ id:27, topic:'Geometri – Jarak pada Bangun Ruang', type:'single', image:img(27), pembahasan_image:figP(27),
+  text:R`Perhatikan kubus PQRS.TUVW pada gambar. Panjang rusuk kubus tersebut 12 cm. Pada gambar terlihat bahwa titik O berada tepat pada perpotongan diagonal garis PR dan QS. Jarak titik V ke O adalah ….`,
+  options:[R`$3\sqrt6$ cm`, R`$6\sqrt2$ cm`, R`$6\sqrt6$ cm`, R`$12\sqrt2$ cm`, R`$12\sqrt3$ cm`],
+  correct:2,
+  pembahasan:R`<b>Langkah 1 – Segitiga yang dipakai.</b> Jarak V ke O adalah ruas VO. Rusuk VR tegak lurus bidang alas PQRS, sehingga $VR\perp RO$ dan segitiga VRO siku-siku di R.
+<b>Langkah 2 – Panjang RO.</b> PR adalah diagonal bidang alas:
+$$PR=12\sqrt2\text{ cm}$$
+O titik tengah PR, maka
+$$RO=\frac12\times12\sqrt2=6\sqrt2\text{ cm}$$
+<b>Langkah 3 – Pythagoras pada segitiga VRO.</b> $VR=12$ cm.
+$$VO^2=VR^2+RO^2=12^2+(6\sqrt2)^2=144+72=216$$
+$$VO=\sqrt{216}=\sqrt{36\times6}=6\sqrt6\text{ cm}$$
+Pemeriksaan: $VO\approx14{,}7$ cm, lebih dari rusuk (12) dan kurang dari diagonal ruang ($12\sqrt3\approx20{,}8$), jadi masuk akal.
+<b>Jawaban: C. $6\sqrt6$ cm</b>`,
+  cara_cepat:R`$VO=\sqrt{VR^2+RO^2}$ dengan $RO=\frac12\times12\sqrt2=6\sqrt2$. Jadi $VO=\sqrt{144+72}=\sqrt{216}=6\sqrt6$.` },
+
+{ id:28, topic:'Geometri – Volume Gabungan Bangun Ruang', type:'single', image:img(28),
+  text:R`Pada tahun 2025, sebuah perusahaan keju memproduksi dua jenis keju kemasan berbentuk gabungan bangun ruang seperti pada gambar: <b>Kemasan A</b> berupa tabung (diameter 8 cm, tinggi 10 cm) ditambah kerucut beralas sama dengan tinggi 6 cm; <b>Kemasan B</b> berupa balok alas persegi 8 cm × 8 cm dan tinggi 10 cm ditambah limas beralas sama dengan tinggi 6 cm.<br>Karena permintaan pasar meningkat, manajer produksi mengusulkan aturan baru: <i>"Mulai bulan Januari tahun depan, setiap kemasan akan diisi menjadi 75% volumenya tanpa mengubah ukuran kemasan"</i>.<br>Pada bulan Maret 2026, sebuah supermarket memesan 150 keju kemasan A dan 200 keju kemasan B. Apabila adonan keju yang tersedia adalah 220 liter, apakah usulan manajer produksi tersebut dapat diterapkan untuk memenuhi seluruh pesanan?`,
+  options:['Usulan tersebut tepat, karena meskipun aturan pengisian berubah, kebutuhan adonan tetap kurang dari 220 liter sehingga persediaan masih mencukupi.','Usulan tersebut tepat, karena penurunan volume hanya terjadi pada Keju Kemasan A sehingga tidak memengaruhi kecukupan persediaan secara keseluruhan.','Usulan tersebut kurang tepat, karena peningkatan aturan pengisian menyebabkan kebutuhan adonan bertambah, tetapi persediaan 220 liter masih mencukupi.','Usulan tersebut tidak tepat, karena peningkatan pengisian pada kedua jenis kemasan menyebabkan kebutuhan adonan melebihi 220 liter.','Usulan tersebut tidak tepat, karena perubahan aturan pengisian tidak memengaruhi kebutuhan adonan, melainkan hanya mengubah bentuk kemasan.'],
+  correct:0,
+  pembahasan:R`<b>Langkah 1 – Ukuran dari gambar.</b> Kemasan A: tabung $r=4$, $t=10$ + kerucut $r=4$, $t=6$. Kemasan B: balok $8\times8\times10$ + limas alas $8\times8$, tinggi 6.
+<b>Langkah 2 – Volume satu kemasan A</b> ($\pi=3{,}14$).
+$$V_A=\pi r^2t+\tfrac13\pi r^2t=160\pi+32\pi=192\pi=602{,}88\text{ cm}^3$$
+<b>Langkah 3 – Volume satu kemasan B.</b>
+$$V_B=640+\tfrac13\times64\times6=640+128=768\text{ cm}^3$$
+<b>Langkah 4 – Kebutuhan jika diisi penuh (aturan lama, 100%).</b>
+$$150\times602{,}88=90.432,\qquad200\times768=153.600$$
+$$\text{Total}=244.032\text{ cm}^3=244{,}03\text{ liter}>220\text{ liter}$$
+Dengan aturan lama persediaan tidak cukup.
+<b>Langkah 5 – Aturan baru (75%).</b>
+$$0{,}75\times244.032=183.024\text{ cm}^3=183{,}02\text{ liter}<220\text{ liter}$$
+Sisa sekitar 37 liter, pesanan dapat dipenuhi.
+<b>Langkah 6 – Periksa pilihan.</b> B salah (penurunan terjadi pada kedua kemasan). C salah (aturan 75% justru mengurangi kebutuhan). D salah (kebutuhan tidak melebihi 220 liter). E salah (aturan jelas memengaruhi kebutuhan adonan).
+<b>Jawaban: A.</b> Kebutuhan adonan ($\pm183$ liter) tetap kurang dari 220 liter.`,
+  cara_cepat:R`Hitung total isi penuh: $244$ liter ($>220$). Aturan 75% menjadikannya $0{,}75\times244\approx183$ liter ($<220$). Jadi usulan tepat.` },
+
+{ id:29, topic:'Geometri – Hubungan Dua Garis pada Kubus', type:'tf', image:img(29),
+  text:R`Diketahui kubus ABCDEFGH seperti pada gambar (ABCD adalah alas dan EFGH adalah tutup; E di atas A, F di atas B, G di atas C, H di atas D). Bagaimana hubungan antara setiap rusuk atau setiap garis yang menghubungkan dua titik pada sudut tersebut? <b>Tentukan Benar atau Salah untuk setiap pernyataan.</b>`,
+  options:['AD tegak lurus FG','BC sejajar EH','EF memotong CG'],
+  correct:[false,true,false],
+  pembahasan:R`<b>Langkah 1 – Pahami letak titik.</b> Pada kubus, rusuk-rusuk yang searah saling sejajar. Ada tiga arah:
+$AB\parallel DC\parallel EF\parallel HG$ &nbsp;|&nbsp; $AD\parallel BC\parallel FG\parallel EH$ &nbsp;|&nbsp; $AE\parallel BF\parallel CG\parallel DH$
+<b>Langkah 2 – Pernyataan A: "AD tegak lurus FG".</b> AD dan FG sama-sama searah dengan BC, jadi $AD\parallel FG$ (sejajar, bukan tegak lurus). → <b>Salah</b>.
+<b>Langkah 3 – Pernyataan B: "BC sejajar EH".</b> $BC\parallel AD$ dan $EH\parallel AD$, maka $BC\parallel EH$. → <b>Benar</b>.
+<b>Langkah 4 – Pernyataan C: "EF memotong CG".</b> EF berada di bidang atas (mendatar), CG adalah rusuk tegak yang menyentuh bidang atas hanya di titik G. Titik G tidak berada pada EF, jadi keduanya tidak berpotongan. Keduanya juga tidak sejajar. Dua garis yang tidak sejajar dan tidak berpotongan disebut <b>bersilangan</b>. → <b>Salah</b>.
+<b>Jawaban: A = Salah, B = Benar, C = Salah</b>`,
+  cara_cepat:R`Kelompokkan 12 rusuk menjadi 3 arah (masing-masing 4 rusuk sejajar). Satu arah yang sama = sejajar. Beda arah dan tidak bertemu di satu titik = bersilangan.` },
+
+{ id:30, topic:'Geometri – Luas Bangun Datar', type:'single', image:img(30),
+  text:R`Desain jendela kaca dari sebuah komplek perumahan (<i>cluster</i>) yang akan segera dibangun beserta ukurannya diberikan pada gambar (lebar 4 m, tinggi bagian persegi panjang 2 m, tinggi bagian segitiga 1,5 m). Pihak pengembang konstruksi berencana akan membangun 20 rumah di dalam komplek tersebut. Setiap rumah memiliki satu desain jendela seperti pada gambar.<br>Berdasarkan jumlah rumah dan desain jendela yang akan dibangun, maka total luas kebutuhan kaca yang harus dipersiapkan pihak pengembang adalah ….`,
+  options:[R`$11\ \text{m}^2$`, R`$14\ \text{m}^2$`, R`$140\ \text{m}^2$`, R`$220\ \text{m}^2$`, R`$280\ \text{m}^2$`],
+  correct:3,
+  pembahasan:R`<b>Langkah 1.</b> Jendela berbentuk "rumah": bagian bawah persegi panjang dan bagian atas segitiga.
+<b>Langkah 2 – Luas tiap bagian.</b>
+$$\text{Persegi panjang}=4\times2=8\text{ m}^2$$
+$$\text{Segitiga}=\tfrac12\times4\times1{,}5=3\text{ m}^2$$
+<b>Langkah 3 – Luas satu jendela.</b> $8+3=11\text{ m}^2$.
+<b>Langkah 4 – Luas kaca untuk 20 rumah.</b>
+$$11\times20=220\text{ m}^2$$
+<b>Kesalahan umum:</b> memakai tinggi $1{,}5+2=3{,}5$ lalu dikali 4 (hasil $14\text{ m}^2$). Itu keliru karena bagian atas bukan persegi panjang, melainkan segitiga yang luasnya hanya setengah.
+<b>Jawaban: D. $220\ \text{m}^2$</b>`,
+  cara_cepat:R`Jendela $=$ persegi panjang $4\times2=8$ ditambah segitiga $\frac12\times4\times1{,}5=3$, yaitu $11\text{ m}^2$. Kalikan 20 rumah: $220$.` },
+
+{ id:31, topic:'Geometri – Sudut pada Trapesium', type:'tf', image:img(31),
+  text:R`Pada trapesium ABCD berikut, $AD=BC$, $AB$ sejajar $DC$, $AB>DC$, $\angle BAD=70^\circ$, dan $\angle ABD=30^\circ$. <b>Tentukan Benar atau Salah untuk setiap pernyataan berikut terkait dengan besar sudut pada trapesium ABCD!</b>`,
+  options:[R`$\angle BCD=110^\circ$`, R`$\angle CBD=40^\circ$`, R`$\angle BDC=40^\circ$`],
+  correct:[true,true,false],
+  pembahasan:R`<b>Langkah 1 – Trapesium sama kaki.</b> Karena $AD=BC$, trapesium ABCD sama kaki sehingga sudut alas sama besar:
+$$\angle ABC=\angle BAD=70^\circ$$
+<b>Langkah 2 – $\angle CBD$ (pernyataan B).</b> Diagonal BD membagi $\angle ABC$ menjadi $\angle ABD$ dan $\angle CBD$.
+$$\angle CBD=70^\circ-30^\circ=40^\circ\ \to\ \text{B Benar}$$
+<b>Langkah 3 – $\angle BCD$ (pernyataan A).</b> $AB\parallel DC$ sehingga $\angle ABC$ dan $\angle BCD$ adalah sudut dalam sepihak (jumlah $180^\circ$).
+$$\angle BCD=180^\circ-70^\circ=110^\circ\ \to\ \text{A Benar}$$
+<b>Langkah 4 – $\angle BDC$ (pernyataan C).</b> $AB\parallel DC$ dan BD memotong keduanya, sehingga $\angle ABD$ dan $\angle BDC$ adalah sudut dalam berseberangan yang sama besar.
+$$\angle BDC=\angle ABD=30^\circ\ \to\ \text{C Salah (bukan }40^\circ)$$
+<b>Langkah 5 – Cek jumlah sudut segitiga BCD.</b> $40^\circ+110^\circ+30^\circ=180^\circ$ ✔
+<b>Jawaban: A = Benar, B = Benar, C = Salah</b>`,
+  cara_cepat:R`Trapesium sama kaki: sudut alas kembar ($70^\circ$ dan $70^\circ$). Sudut sepihak di antara dua garis sejajar berjumlah $180^\circ$ ($110^\circ$). Sudut berseberangan sama besar, sehingga $\angle BDC=30^\circ$.` },
+
+{ id:32, topic:'Geometri – Kecukupan Data', type:'single', image:img(32),
+  text:R`Pada trapesium siku-siku ABCD (siku-siku di A dan B) pada gambar, $AB=3$ dan $AD\le BC$. Apakah keliling trapesium tersebut lebih dari 25?<br>Putuskan apakah dengan tambahan informasi Pernyataan (1) dan Pernyataan (2) berikut cukup untuk menjawab pertanyaan tersebut!<br>(1) Luas trapesium $ABCD=24$.<br>(2) $BC=10$ dan $CD=5$.`,
+  options:['Pernyataan (1) SAJA cukup untuk menjawab pertanyaan, tetapi Pernyataan (2) SAJA tidak cukup.','Pernyataan (2) SAJA cukup untuk menjawab pertanyaan, tetapi Pernyataan (1) SAJA tidak cukup.','DUA pernyataan BERSAMA-SAMA cukup untuk menjawab pertanyaan, tetapi SATU pernyataan SAJA tidak cukup.','Pernyataan (1) SAJA cukup untuk menjawab pertanyaan dan Pernyataan (2) SAJA cukup.','Pernyataan (1) dan Pernyataan (2) tidak cukup.'],
+  correct:1,
+  pembahasan:R`<b>Arti "cukup":</b> informasi cukup jika menghasilkan <i>satu jawaban pasti</i> ("ya" saja atau "tidak" saja).
+<b>Langkah 1 – Rumus keliling.</b> $AB=3$ adalah tinggi. Misalkan selisih sisi sejajar $d=BC-AD\ge0$. Sisi miring CD, tinggi AB, dan selisih $d$ membentuk segitiga siku-siku:
+$$CD=\sqrt{3^2+d^2}=\sqrt{9+d^2}$$
+$$\text{Keliling}=3+(AD+BC)+CD$$
+<b>Langkah 2 – Uji Pernyataan (1): luas = 24.</b>
+$$\tfrac12(AD+BC)\times3=24\Rightarrow AD+BC=16\Rightarrow\text{Keliling}=19+CD$$
+Keliling $>25\iff CD>6$. Namun CD bergantung pada $d$ yang belum diketahui. Dua kemungkinan yang sama-sama memenuhi:
+$AD=BC=8$ (persegi panjang): $CD=3$, keliling $=22$ → <b>tidak</b> lebih dari 25.
+$AD=1,\ BC=15$: $d=14$, $CD=\sqrt{205}\approx14{,}3$, keliling $\approx33{,}3$ → <b>lebih</b> dari 25.
+Jawaban tidak pasti, maka Pernyataan (1) <b>tidak cukup</b>.
+<b>Langkah 3 – Uji Pernyataan (2): $BC=10$, $CD=5$.</b>
+$$CD^2=3^2+d^2\Rightarrow25=9+d^2\Rightarrow d=4\Rightarrow AD=10-4=6\ (\le BC)$$
+$$\text{Keliling}=3+6+10+5=24,\ \text{yang tidak lebih dari 25}$$
+Jawabannya pasti ("tidak"), maka Pernyataan (2) <b>cukup</b>.
+<b>Langkah 4.</b> Pernyataan (2) saja cukup, Pernyataan (1) saja tidak cukup.
+<b>Jawaban: B.</b>`,
+  cara_cepat:R`Kalau ada dua bentuk berbeda yang sama-sama memenuhi suatu pernyataan dan memberi jawaban berbeda, pernyataan itu tidak cukup. Untuk luas 24, persegi panjang $8\times3$ (keliling 22) dan trapesium sangat miring (keliling $\approx33$) sama-sama mungkin. Pernyataan (2) mengunci semua sisi, sehingga pasti.` },
+
+{ id:33, topic:'Geometri – Dilatasi', type:'tf', image:img(33),
+  text:R`Pak Andi akan mempresentasikan desain gedung berukuran 60 cm × 60 cm menggunakan proyektor ke layar berukuran 2,4 meter × 1,8 meter yang dipasang di depan ruang rapat (orientasi horizontal). Proyektor menghasilkan pembesaran proporsional tergantung jaraknya dari layar. Pak Andi menempatkan proyektor pada jarak <b>3 meter</b> dengan skala pembesaran <b>0,6 × jarak (m)</b>, seperti pada gambar.<br>Bagaimanakah tampilan desain gedung di layar? <b>Tentukan Benar atau Salah pada setiap pernyataan berikut!</b>`,
+  options:['Perbandingan ukuran tampilan desain di layar adalah 1 : 1.','Ukuran panjang dan lebar tampilan desain pada layar adalah lebih dari 1 meter.','Terdapat bagian gambar asli desain yang terpotong dalam tampilan pada layar.'],
+  correct:[true,true,false],
+  pembahasan:R`<b>Langkah 1 – Skala pembesaran.</b>
+$$\text{Skala}=0{,}6\times3=1{,}8\text{ kali}$$
+<b>Langkah 2 – Ukuran tampilan di layar.</b>
+$$\text{Panjang}=60\times1{,}8=108\text{ cm}=1{,}08\text{ m},\qquad\text{Lebar}=60\times1{,}8=108\text{ cm}=1{,}08\text{ m}$$
+<b>Langkah 3 – Pernyataan A.</b> Pembesaran proporsional, gambar persegi tetap persegi: panjang : lebar $=1{,}08:1{,}08=1:1$. → <b>Benar</b>. (Yang dibandingkan di sini adalah panjang dengan lebar tampilan, bukan skala pembesaran.)
+<b>Langkah 4 – Pernyataan B.</b> $1{,}08\text{ m}>1\text{ m}$. → <b>Benar</b>.
+<b>Langkah 5 – Pernyataan C.</b> Gambar terpotong jika melebihi layar: panjang $1{,}08<2{,}4$ ✔ muat; lebar $1{,}08<1{,}8$ ✔ muat. Seluruh gambar muat (bahkan tersisa 0,66 m di kiri dan kanan). → <b>Salah</b>.
+<b>Jawaban: A = Benar, B = Benar, C = Salah</b>`,
+  cara_cepat:R`Skala $=0{,}6\times3=1{,}8$, sehingga $60\text{ cm}\to108\text{ cm}$ (persegi tetap persegi, $>1$ m). Bandingkan $1{,}08$ dengan sisi layar $2{,}4$ dan $1{,}8$, keduanya masih muat.` },
+
+/* ===================== TRIGONOMETRI ===================== */
+{ id:34, topic:'Trigonometri – Perbandingan Trigonometri', type:'single', image:'', pembahasan_image:figP(34),
+  text:R`Diketahui $\sin A=\dfrac{1}{a}$, $A$ adalah sudut tumpul. Nilai $\cos A=\ldots$`,
+  options:[R`$\frac{a}{\sqrt{a^2+1}}$`, R`$\frac{1}{\sqrt{a^2+1}}$`, R`$\frac{\sqrt{a^2-1}}{a}$`, R`$-\frac{\sqrt{a^2-1}}{a}$`, R`$-\frac{\sqrt{a^2+1}}{a}$`],
+  correct:3,
+  pembahasan:R`<b>Konsep:</b> sudut tumpul berada di Kuadran II, di mana hanya $\sin$ yang positif ($\cos$ dan $\tan$ negatif). Untuk titik $P(x,y)$ berjarak $r$ dari titik asal: $\sin A=\frac yr$, $\cos A=\frac xr$, dan $x^2+y^2=r^2$.
+<b>Langkah 1.</b> $A$ tumpul ($90^\circ \lt A \lt 180^\circ$), jadi $\cos A$ harus <b>negatif</b>.
+<b>Langkah 2.</b> $\sin A=\dfrac yr=\dfrac1a$, sehingga $y=1$ dan $r=a$. (Karena $A$ tumpul, $a>1$.)
+<b>Langkah 3 – Pythagoras.</b>
+$$x^2+1^2=a^2\Rightarrow x^2=a^2-1\Rightarrow x=\pm\sqrt{a^2-1}$$
+Di Kuadran II nilai $x$ negatif, sehingga $x=-\sqrt{a^2-1}$.
+<b>Langkah 4.</b>
+$$\cos A=\frac xr=-\frac{\sqrt{a^2-1}}{a}$$
+<b>Cara alternatif (identitas).</b>
+$$\cos^2A=1-\sin^2A=1-\frac1{a^2}=\frac{a^2-1}{a^2}\Rightarrow\cos A=\pm\frac{\sqrt{a^2-1}}{a}$$
+lalu pilih tanda negatif karena sudut tumpul.
+<b>Jawaban: D.</b>`,
+  cara_cepat:R`Dari $\sin^2+\cos^2=1$ didapat $|\cos A|=\frac{\sqrt{a^2-1}}{a}$. Sudut tumpul membuat cos negatif, jadi pilihan yang ada tanda minusnya: D.` },
+
+{ id:35, topic:'Trigonometri – Perbandingan Trigonometri', type:'single', image:img(35), pembahasan_image:figP(35),
+  text:R`Suatu tangga dengan panjang 6 meter disandarkan pada dinding vertikal. Sudut yang dibentuk tangga dengan lantai adalah $60^\circ$. Tinggi dinding yang disentuh ujung atas tangga adalah ….`,
+  options:['3 meter',R`$3\sqrt2$ meter`,R`$3\sqrt3$ meter`,R`$4\sqrt2$ meter`,R`$4\sqrt3$ meter`],
+  correct:2,
+  pembahasan:R`<b>Konsep:</b> $\sin\theta=\frac{\text{depan}}{\text{miring}}$, $\cos\theta=\frac{\text{samping}}{\text{miring}}$, $\tan\theta=\frac{\text{depan}}{\text{samping}}$ (Sin-De-Mi, Cos-Sa-Mi, Tan-De-Sa).
+<b>Langkah 1 – Nama sisi terhadap sudut $60^\circ$.</b> Tangga = sisi miring = 6 m. Tinggi dinding $t$ = sisi depan (yang dicari). Jarak kaki tangga ke dinding = sisi samping.
+<b>Langkah 2 – Pilih perbandingan.</b> Diketahui sisi miring, dicari sisi depan, jadi pakai $\sin$:
+$$\sin60^\circ=\frac{t}{6}$$
+<b>Langkah 3 – Hitung.</b>
+$$t=6\times\sin60^\circ=6\times\tfrac12\sqrt3=3\sqrt3$$
+<b>Cara alternatif (segitiga istimewa 30°–60°–90°).</b> Perbandingan sisi depan $30^\circ$ : depan $60^\circ$ : miring $=1:\sqrt3:2$. Karena miring $=6=3\times2$, maka tinggi $=3\sqrt3$.
+<b>Cek Pythagoras:</b> $3^2+(3\sqrt3)^2=9+27=36=6^2$ ✔.
+<b>Mengapa pilihan lain salah?</b> A (3) adalah jarak kaki tangga ($6\cos60^\circ$). B ($3\sqrt2$) memakai sudut $45^\circ$. D ($4\sqrt2$) menghasilkan sudut $\approx70{,}5^\circ$. E ($4\sqrt3\approx6{,}93$) lebih panjang dari tangga sehingga mustahil.
+<b>Jawaban: C. $3\sqrt3$ meter</b>`,
+  cara_cepat:R`Tinggi $=$ miring $\times\sin60^\circ=6\times\frac{\sqrt3}{2}=3\sqrt3$. Pilihan E ($\approx6{,}93$ m) bisa langsung dicoret karena lebih panjang dari tangga.` },
+
+/* ===================== DATA & PELUANG ===================== */
+{ id:36, topic:'Data & Peluang – Kejadian Majemuk', type:'single', image:'', pembahasan_image:figP(36),
+  text:R`Sebuah hotel memiliki 30 kamar yang tersedia di lantai 5. Manajer operasional mencatat fasilitas kamar tersebut sebagai berikut.
+<ol class="list-decimal ml-6 my-1"><li>18 kamar memiliki pemandangan ke arah laut.</li><li>10 kamar memiliki fasilitas tempat tidur Twin Bed.</li><li>6 kamar di antaranya adalah kamar dengan pemandangan laut yang juga memiliki tempat tidur Twin Bed.</li><li>Sisanya adalah kamar standar yang tidak memiliki pemandangan laut maupun fasilitas Twin Bed.</li></ol>
+Jika saat ini semua kamar di lantai tersebut kosong dan resepsionis memilih satu kamar secara acak untuk tamu yang baru datang, berapakah peluang tamu tersebut mendapatkan kamar dengan pemandangan laut atau tempat tidur Twin Bed?`,
+  options:[R`$\frac{1}{5}$`, R`$\frac{8}{15}$`, R`$\frac{11}{15}$`, R`$\frac{12}{15}$`, R`$\frac{14}{15}$`],
+  correct:2,
+  pembahasan:R`<b>Konsep:</b> $P(A)=\dfrac{n(A)}{n(S)}$ dan untuk "A atau B", irisan tidak boleh dihitung dua kali:
+$$n(A\cup B)=n(A)+n(B)-n(A\cap B)$$
+<b>Diketahui:</b> $n(S)=30$, $n(\text{Laut})=18$, $n(\text{Twin})=10$, $n(\text{Laut}\cap\text{Twin})=6$.
+<b>Langkah 1 – Diagram Venn (dari irisan ke luar).</b> Laut & Twin $=6$. Hanya laut $=18-6=12$. Hanya Twin $=10-6=4$. Kamar standar $=30-(12+6+4)=8$.
+<b>Langkah 2 – Kamar yang diinginkan.</b>
+$$n(\text{Laut}\cup\text{Twin})=18+10-6=22$$
+<b>Langkah 3 – Peluang.</b>
+$$P=\frac{22}{30}=\frac{11}{15}$$
+<b>Cara lain (komplemen):</b> $P=1-\frac{8}{30}=\frac{22}{30}=\frac{11}{15}$.
+<b>Kesalahan umum:</b> menjumlahkan $18+10=28$ tanpa mengurangi irisan, menghasilkan $\frac{14}{15}$ (pilihan E).
+<b>Jawaban: C. $\frac{11}{15}$</b>`,
+  cara_cepat:R`Peluang = $1-\frac{\text{kamar standar}}{30}=1-\frac{8}{30}=\frac{22}{30}=\frac{11}{15}$.` },
+
+{ id:37, topic:'Data & Peluang – Komplemen Kejadian', type:'multi', image:'',
+  text:R`Dalam sebuah konferensi teknologi, dipaparkan data bahwa dalam satu kelompok data yaitu setiap 10 gadget ramah lingkungan yang diproduksi oleh perusahaan X, rata-rata jenisnya adalah sebagai berikut:
+<ol class="list-decimal ml-6 my-1"><li>4 unit ponsel pintar (smartphone);</li><li>3 unit jam tangan pintar (smartwatch);</li><li>2 unit komputer tablet; dan</li><li>sisanya adalah unit pelacak lokasi (smart tag).</li></ol>
+Seorang petugas quality control memilih 1 unit gadget secara acak dari kelompok data tersebut untuk diuji efisiensi dayanya. Mana saja pernyataan berikut yang benar terkait nilai peluang terpilihnya jenis gadget tersebut?<br><b>Pilihlah semua pernyataan yang benar! (Jawaban benar lebih dari satu.)</b>`,
+  options:['Peluang terpilihnya ponsel pintar adalah 40%.','Peluang terpilihnya gadget bukan komputer tablet adalah 0,2.',R`Peluang terpilihnya unit pelacak lokasi adalah $\frac{1}{5}$.`,'Peluang terpilihnya gadget bukan jam tangan pintar adalah 70%.'],
+  correct:[0,3],
+  pembahasan:R`<b>Konsep:</b> $P(A)=\dfrac{n(A)}{n(S)}$ dan peluang komplemen $P(A')=1-P(A)$.
+<b>Diketahui:</b> $n(S)=10$; ponsel 4, jam tangan 3, tablet 2, sehingga smart tag $=10-(4+3+2)=1$.
+${tbl(['Pernyataan','Perhitungan','Nilai'],[['1. Ponsel pintar = 40%','$P=\\frac{4}{10}=0{,}4=40\\%$','<b>Benar</b>'],['2. Bukan tablet = 0,2','$P(\\text{tablet})=0{,}2$, sehingga $P(\\text{bukan tablet})=1-0{,}2=0{,}8$. Angka 0,2 adalah peluang tablet.','<b>Salah</b>'],['3. Pelacak lokasi = 1/5','$P(\\text{smart tag})=\\frac{1}{10}$, bukan $\\frac15$','<b>Salah</b>'],['4. Bukan jam tangan = 70%','$P=1-\\frac{3}{10}=\\frac{7}{10}=70\\%$ (cek: 4+2+1 = 7 unit)','<b>Benar</b>']])}
+<b>Jawaban: pernyataan 1 dan pernyataan 4.</b>`,
+  cara_cepat:R`Hitung banyak unit (bukan persentase) lalu bagi 10. Pernyataan 2 menyebut 0,2 padahal itu peluang tablet, dan pernyataan 3 menyebut $\frac15$ padahal smart tag hanya 1 unit $=\frac1{10}$.` },
+
+{ id:38, topic:'Data & Peluang – Diagram Batang', type:'single', image:img(38),
+  text:R`<b>Pengusaha di Provinsi Jingga.</b> Pemerintah Provinsi Jingga mendata banyaknya pengusaha yang ada di Provinsi Jingga. Terdapat 7 kota di Provinsi Jingga. Berikut disajikan data banyak pengusaha pada masing-masing kota pada tahun 2026 (diagram batang, satuan <b>ratus orang</b>: A = 65, B = 40, C = 25, D = 20, E = hilang, F = 35, G = 50).<br>Informasi mengenai banyaknya pengusaha di Kota E hilang, namun Pemerintah Provinsi Jingga sudah mengetahui jumlah total pengusaha di Provinsi Jingga sebanyak 25.000 orang. Berdasarkan informasi tersebut, banyak pengusaha di Kota E adalah ....`,
+  options:['500 orang','1.500 orang','2.000 orang','2.500 orang','3.000 orang'],
+  correct:1,
+  pembahasan:R`<b>Diketahui:</b> satuan sumbu tegak adalah <b>ratus orang</b>. Total seluruh kota $=25.000$ orang $=250$ ratus orang.
+<b>Langkah 1 – Baca nilai tiap batang.</b>
+${tbl(['Kota','A','B','C','D','F','G','Jumlah'],[['Ratus orang','65','40','25','20','35','50','235']])}
+<b>Langkah 2 – Jumlahkan semua kota yang diketahui.</b>
+$$65+40+25+20+35+50=235\text{ ratus}$$
+<b>Langkah 3 – Kurangkan dari total.</b>
+$$E=250-235=15\text{ ratus}=15\times100=1.500\text{ orang}$$
+<b>Kesalahan umum:</b> lupa bahwa satuan grafik adalah ratusan, sehingga hasil 15 langsung ditulis 15 orang.
+<b>Jawaban: B. 1.500 orang</b>`,
+  cara_cepat:R`Ubah total ke satuan grafik dulu ($25.000=250$ ratus). Kurangi jumlah batang yang diketahui ($235$) lalu kalikan 100: $15\times100=1.500$.` },
+
+{ id:39, topic:'Data & Peluang – Perubahan Data', type:'single', image:img(39),
+  text:R`Diagram batang berikut menunjukkan produksi pakaian yang dikelola Bu Rahmi selama tahun 2020 dari bulan Januari sampai bulan Desember.
+${tbl(['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sept','Okt','Nov','Des'],[['122','136','112','151','18','81','133','150','166','87','153','131']])}
+Peningkatan tertinggi jumlah produksi pakaian Bu Rahmi terjadi pada bulan ....`,
+  options:['April','Juni','Juli','September','November'],
+  correct:4,
+  pembahasan:R`<b>Ide:</b> "peningkatan" adalah selisih produksi bulan itu dengan bulan <i>sebelumnya</i> (bernilai positif). Yang dicari bukan batang tertinggi, melainkan <b>kenaikan terbesar</b>.
+<b>Hitung selisih tiap bulan.</b>
+${tbl(['Bulan','Produksi','Perhitungan','Perubahan'],[['Januari','122','–','–'],['Februari','136','136 − 122','+14'],['Maret','112','112 − 136','−24'],['April','151','151 − 112','+39'],['Mei','18','18 − 151','−133'],['Juni','81','81 − 18','+63'],['Juli','133','133 − 81','+52'],['Agustus','150','150 − 133','+17'],['September','166','166 − 150','+16'],['Oktober','87','87 − 166','−79'],['November','153','153 − 87','<b>+66</b>'],['Desember','131','131 − 153','−22']])}
+Peningkatan (nilai positif) terbesar adalah $+66$ pada bulan <b>November</b>. Pembanding dari pilihan: April $+39$, Juni $+63$, Juli $+52$, September $+16$.
+<b>Kesalahan umum:</b> memilih September karena batangnya paling tinggi (166), padahal kenaikannya dari Agustus hanya 16.
+<b>Jawaban: E. November</b>`,
+  cara_cepat:R`Hanya hitung selisih untuk bulan-bulan yang ada di pilihan: April $+39$, Juni $+63$, Juli $+52$, September $+16$, November $153-87=+66$. Yang terbesar adalah November.` },
+
+{ id:40, topic:'Data & Peluang – Modus Data Berkelompok', type:'single', image:'',
+  text:R`Perhatikan data pada tabel nilai hasil ulangan matematika kelas XI SMA Z. Modus dari data tersebut adalah ....
+${tbl(['Nilai','$f$'],[['58 – 60','2'],['61 – 63','6'],['64 – 66','9'],['67 – 69','6'],['70 – 72','4'],['73 – 75','3']])}`,
+  options:['64,0','64,5','65,0','65,5','66,0'],
+  correct:2,
+  pembahasan:R`<b>Rumus modus data berkelompok:</b>
+$$Mo=t_b+\frac{d_1}{d_1+d_2}\times p$$
+$t_b$ = tepi bawah kelas modus, $d_1$ = selisih frekuensi kelas modus dengan kelas sebelumnya, $d_2$ = selisih dengan kelas sesudahnya, $p$ = panjang kelas.
+<b>Langkah 1.</b> Kelas modus = kelas berfrekuensi terbesar: kelas $64-66$ ($f=9$).
+<b>Langkah 2.</b> Data bulat, sehingga $t_b=64-0{,}5=63{,}5$.
+<b>Langkah 3.</b> $d_1=9-6=3$ (kelas sebelumnya $f=6$), $d_2=9-6=3$ (kelas sesudahnya $f=6$).
+<b>Langkah 4.</b> Panjang kelas $p=66{,}5-63{,}5=3$.
+<b>Langkah 5 – Hitung.</b>
+$$Mo=63{,}5+\frac{3}{3+3}\times3=63{,}5+1{,}5=65{,}0$$
+<b>Pengecekan cepat:</b> karena frekuensi kelas di kiri dan kanan kelas modus sama (6 dan 6), modus tepat di tengah kelas $64-66$, yaitu $65{,}0$.
+<b>Jawaban: C. 65,0</b>`,
+  cara_cepat:R`Jika $d_1=d_2$, modus tepat di tengah kelas modus. Tengah kelas $64-66$ adalah $65{,}0$.` },
+
+{ id:41, topic:'Data & Peluang – Peluang Tanpa Pengembalian', type:'single', image:'',
+  text:R`Sekolah P akan mengirim 2 perwakilan grup band untuk Pentas Musik Nusantara pada peringatan Hari Sumpah Pemuda. Sekolah tersebut memiliki 6 grup band putra dan 4 grup band putri. Berdasarkan penilaian, kemampuan grup band tersebut merata sehingga penentuan kedua perwakilan grup band dilakukan dengan cara mengambil secara acak satu per satu. Peluang terambil grup band putra pada pengambilan pertama dan grup band putri pada pengambilan kedua adalah ....`,
+  options:[R`$\frac{1}{5}$`, R`$\frac{6}{25}$`, R`$\frac{4}{15}$`, R`$\frac{2}{5}$`, R`$\frac{13}{25}$`],
+  correct:2,
+  pembahasan:R`<b>Diketahui:</b> putra 6, putri 4, total 10. Pengambilan satu per satu <b>tanpa pengembalian</b> (grup yang terambil tidak dikembalikan).
+<b>Langkah 1 – Pengambilan pertama (putra).</b>
+$$P(\text{putra})=\frac{6}{10}$$
+<b>Langkah 2 – Pengambilan kedua (putri).</b> Setelah satu putra terambil, tersisa 9 grup dan putri tetap 4.
+$$P(\text{putri}\mid\text{putra lebih dulu})=\frac49$$
+<b>Langkah 3 – Kalikan (kejadian berurutan).</b>
+$$P=\frac{6}{10}\times\frac49=\frac{24}{90}=\frac{4}{15}$$
+<b>Kesalahan umum:</b> memakai penyebut 10 pada pengambilan kedua ($\frac{6}{10}\times\frac{4}{10}=\frac{6}{25}$). Itu berlaku jika grup dikembalikan.
+<b>Jawaban: C. $\frac{4}{15}$</b>`,
+  cara_cepat:R`Tanpa pengembalian berarti penyebut kedua berkurang 1: $\frac{6}{10}\times\frac{4}{9}=\frac{4}{15}$.` },
+
+{ id:42, topic:'Data & Peluang – Menafsirkan Dua Sumber Data', type:'tf', image:img(42),
+  text:R`Manajer pemasaran sebuah biro perjalanan di Pulau Wisata Numerasi sedang merancang strategi promosi untuk periode berikutnya. Ia harus memastikan bahwa anggaran iklan yang terbatas dialokasikan pada target pasar yang memiliki potensi jumlah wisatawan paling besar. Manajer tersebut menggunakan dua data berikut: diagram batang <b>Data Jumlah Kunjungan Wisatawan Mancanegara</b> (Australia 120 ribu, China 85 ribu, Malaysia 65 ribu, Jepang 40 ribu) dan tabel aktivitas favorit berikut.
+${tbl(['Negara Asal','Aktivitas Favorit'],[['Australia','80% Wisata Budaya dan 20% Berselancar dan Pantai'],['China','40% Belanja dan 60% Wisata Kuliner'],['Malaysia','90% Perawatan Tubuh dan 10% Wisata Budaya'],['Jepang','70% Wisata Kuliner dan 30% Belanja']])}
+Berdasarkan data yang diberikan, bagaimana potensi jumlah wisatawan pada biro perjalanan tersebut? <b>Tentukan Benar atau Salah pada setiap pernyataan berikut!</b>`,
+  options:['Peningkatan iklan Berselancar untuk wisatawan Australia berpotensi mendatangkan volume wisatawan lebih besar daripada iklan Wisata Kuliner untuk wisatawan Jepang.','Target pasar wisatawan Perawatan Tubuh asal Malaysia lebih besar dibandingkan wisatawan Kuliner asal China.','Potensi wisatawan Belanja asal Jepang lebih kecil dibandingkan potensi wisatawan Belanja asal China.'],
+  correct:[false,true,true],
+  pembahasan:R`<b>Ide:</b> banyak wisatawan suatu aktivitas $=$ persentase aktivitas $\times$ jumlah wisatawan negara itu.
+<b>Langkah 1 – Baca diagram batang.</b> Australia 120 ribu, China 85 ribu, Malaysia 65 ribu, Jepang 40 ribu.
+<b>Langkah 2 – Potensi tiap aktivitas.</b>
+${tbl(['Negara','Aktivitas','Perhitungan','Hasil (ribu)'],[['Australia','Budaya','80% × 120','96'],['Australia','Selancar & Pantai','20% × 120','24'],['China','Belanja','40% × 85','34'],['China','Kuliner','60% × 85','51'],['Malaysia','Perawatan Tubuh','90% × 65','58,5'],['Malaysia','Budaya','10% × 65','6,5'],['Jepang','Kuliner','70% × 40','28'],['Jepang','Belanja','30% × 40','12']])}
+<b>Langkah 3 – Periksa pernyataan.</b>
+<b>A.</b> Selancar Australia $=24$ ribu, Kuliner Jepang $=28$ ribu. Karena $24<28$, A <b>Salah</b>.
+<b>B.</b> Perawatan Tubuh Malaysia $=58{,}5$ ribu, Kuliner China $=51$ ribu. Karena $58{,}5>51$, B <b>Benar</b>.
+<b>C.</b> Belanja Jepang $=12$ ribu, Belanja China $=34$ ribu. Karena $12<34$, C <b>Benar</b>.
+<b>Kesalahan umum:</b> membandingkan persentasenya saja (20% vs 70%, atau 30% vs 40%) tanpa memperhatikan jumlah wisatawan tiap negara yang berbeda.
+<b>Jawaban: A = Salah; B = Benar; C = Benar</b>`,
+  cara_cepat:R`Jangan bandingkan persentase saja. Kalikan persentase dengan jumlah wisatawan negara itu, lalu bandingkan angka sebenarnya: $24$ vs $28$, $58{,}5$ vs $51$, dan $12$ vs $34$.` },
+
+{ id:43, topic:'Data & Peluang – Modus (Frekuensi Hilang)', type:'single', image:'',
+  text:R`Perusahaan Kertas "Mayang" sedang merapikan data gaji bulanan karyawan tahun 2025 untuk bahan penyusunan laporan pajak. Namun, data pada salah satu rentang gaji tidak terbaca. Berikut data gaji bulanan karyawan:
+${tbl(['Rentang Gaji (Juta Rupiah)','Frekuensi'],[['5 – 7','4'],['8 – 10','9'],['11 – 13','<i>Tidak terbaca</i>'],['14 – 16','24'],['17 – 19','18'],['20 – 22','3']])}
+Diketahui bahwa modus gaji karyawan di Perusahaan Kertas "Mayang" adalah Rp15.750.000,00. Berapakah nilai data yang tidak terbaca tersebut?`,
+  options:['6','14','20','21','28'],
+  correct:0,
+  pembahasan:R`<b>Rumus modus:</b> $Mo=t_b+\dfrac{d_1}{d_1+d_2}\times p$.
+<b>Diketahui:</b> satuan juta rupiah, sehingga $Mo=15{,}75$. Misalkan frekuensi kelas $11-13$ adalah $x$. Karena $15{,}75$ berada pada rentang $14-16$, kelas modus adalah $14-16$ ($f=24$).
+<b>Langkah 1 – Unsur rumus.</b> $t_b=14-0{,}5=13{,}5$; $p=3$; $d_1=24-x$; $d_2=24-18=6$.
+<b>Langkah 2 – Masukkan ke rumus.</b>
+$$15{,}75=13{,}5+\frac{24-x}{(24-x)+6}\times3\Rightarrow2{,}25=\frac{24-x}{30-x}\times3\Rightarrow\frac{24-x}{30-x}=0{,}75$$
+<b>Langkah 3 – Selesaikan.</b>
+$$24-x=0{,}75(30-x)=22{,}5-0{,}75x\Rightarrow1{,}5=0{,}25x\Rightarrow x=6$$
+<b>Langkah 4 – Periksa.</b> $x=6$: $d_1=18$, $d_2=6$, $Mo=13{,}5+\frac{18}{24}\times3=13{,}5+2{,}25=15{,}75$ ✔.
+<b>Jawaban: A. 6</b>`,
+  cara_cepat:R`$Mo-t_b=15{,}75-13{,}5=2{,}25=\frac{d_1}{d_1+d_2}\times3$, sehingga $\frac{d_1}{d_1+d_2}=\frac34$. Maka $d_1=3d_2=18$ dan $x=24-18=6$.` },
+
+{ id:44, topic:'Data & Peluang – Peluang Ruang Sampel Berubah', type:'single', image:'',
+  text:R`Dalam sebuah acara pameran wisata internasional, panitia penyelenggara menyediakan doorprize untuk para pengunjung. Pengunjung yang berkesempatan mendapatkan hadiah doorprize adalah mereka yang termasuk 40 pengunjung pertama. Mereka akan diminta mengambil satu kupon secara acak. Apabila beruntung, kupon yang diperoleh bertuliskan salah satu jenis hadiah, sedangkan apabila belum beruntung maka akan memperoleh voucher kosong. Apabila kupon yang terambil adalah voucher kosong, maka kupon dimasukkan lagi ke dalam wadah.<br>Kupon doorprize yang disediakan:
+<ol class="list-decimal ml-6 my-1"><li>5 tiket gratis pp Jakarta–Kuala Lumpur</li><li>5 tiket gratis pp Jakarta–Bangkok</li><li>10 voucher menginap 3 malam di hotel bintang lima</li><li>10 voucher menginap 3 malam di hotel bintang empat</li><li>10 voucher kosong</li></ol>
+Anto adalah orang ke-6 yang berkesempatan mengambil hadiah doorprize. Diketahui bahwa 1 tiket pp Jakarta–Kuala Lumpur, 1 tiket pp Jakarta–Bangkok, dan 2 voucher menginap di hotel bintang empat sudah terambil. Adapun satu orang lainnya gagal mendapatkan doorprize.<br>Selanjutnya Anto yang berkesempatan mengambil satu hadiah secara acak. Berapa peluang Anto mendapatkan tiket gratis pp Jakarta–Kuala Lumpur?`,
+  options:[R`$\frac{1}{10}$`, R`$\frac{1}{9}$`, R`$\frac{4}{35}$`, R`$\frac{5}{36}$`, R`$\frac{1}{7}$`],
+  correct:1,
+  pembahasan:R`<b>Diketahui:</b> total kupon awal $=5+5+10+10+10=40$. Anto orang ke-6, sehingga sudah ada 5 orang sebelumnya: 4 orang memperoleh hadiah (1 tiket KL, 1 tiket Bangkok, 2 voucher bintang 4) dan 1 orang gagal (kuponnya dikembalikan).
+<b>Langkah 1 – Kupon yang tersisa di wadah.</b>
+${tbl(['Kupon','Awal','Tersisa'],[['Tiket Kuala Lumpur','5','5 − 1 = 4'],['Tiket Bangkok','5','5 − 1 = 4'],['Voucher bintang lima','10','10'],['Voucher bintang empat','10','10 − 2 = 8'],['Voucher kosong','10','10 (yang gagal dikembalikan)']])}
+<b>Langkah 2 – Seluruh kupon tersisa.</b>
+$$n(S)=4+4+10+8+10=36$$
+<b>Langkah 3 – Peluang.</b> Kupon yang diinginkan: tiket Kuala Lumpur $=4$.
+$$P=\frac{4}{36}=\frac19$$
+<b>Kesalahan umum:</b> memakai 40 kupon sebagai penyebut (hasil $\frac{4}{40}=\frac1{10}$, pilihan A). Padahal kupon yang sudah terambil tidak kembali ke wadah, kecuali voucher kosong.
+<b>Jawaban: B. $\frac{1}{9}$</b>`,
+  cara_cepat:R`Kupon hadiah yang terambil tidak kembali, tetapi voucher kosong dikembalikan. Penyebut $=40-4=36$ (4 hadiah hilang), pembilang $=5-1=4$. Peluang $=\frac4{36}=\frac19$.` },
+
+{ id:45, topic:'Data & Peluang – Menafsirkan Tabel', type:'single', image:'',
+  text:R`Amel memiliki toko bunga. Amel selalu mencatat hasil penjualannya. Hasil penjualannya digunakan untuk bahan evaluasi dan pertimbangan saat membeli bunga. Berikut disajikan data mengenai keuntungan dari penjualan bunga dari bulan Januari sampai Juli 2025:
+${tbl(['Bulan','Keuntungan'],[['Januari','Rp1.100.000,00'],['Februari','Rp1.450.000,00'],['Maret','Rp1.200.000,00'],['April','Rp1.530.000,00'],['Mei','Rp2.120.000,00'],['Juni','Rp1.509.000,00'],['Juli','Rp2.090.000,00']])}
+Berdasarkan data tersebut, keuntungan pada bulan manakah yang mengalami penurunan signifikan?`,
+  options:['Februari','Maret','April','Mei','Juni'],
+  correct:4,
+  pembahasan:R`<b>Ide:</b> penurunan terjadi bila keuntungan bulan itu lebih kecil daripada bulan sebelumnya. Penurunan "signifikan" adalah penurunan yang paling besar.
+<b>Hitung perubahan tiap bulan.</b>
+${tbl(['Bulan','Keuntungan','Perubahan','Keterangan'],[['Januari','1.100.000','–','–'],['Februari','1.450.000','+350.000','naik'],['Maret','1.200.000','−250.000','turun'],['April','1.530.000','+330.000','naik'],['Mei','2.120.000','+590.000','naik'],['Juni','1.509.000','<b>−611.000</b>','turun'],['Juli','2.090.000','+581.000','naik']])}
+Hanya dua bulan yang turun: Maret (turun Rp250.000, sekitar 17%) dan Juni (turun Rp611.000, sekitar 29%).
+$$\text{Persentase penurunan Juni}=\frac{611.000}{2.120.000}\times100\%\approx28{,}8\%$$
+Penurunan Juni jauh lebih besar, sehingga itulah penurunan yang signifikan.
+<b>Jawaban: E. Juni</b>`,
+  cara_cepat:R`Cari bulan yang nilainya lebih kecil dari bulan sebelumnya: hanya Maret ($-250.000$) dan Juni ($-611.000$). Pilih penurunan terbesar, yaitu Juni.` },
+
+{ id:46, topic:'Data & Peluang – Rata-rata Gabungan & Jangkauan', type:'multi', image:'',
+  text:R`Rata-rata nilai ulangan 17 murid dari skala 100 adalah 83. Ada 3 murid yang mengikuti ujian susulan sehingga rata-rata nilai ulangan dari 20 murid menjadi 82. Tentukan semua pernyataan berikut yang benar terkait dengan nilai ketiga murid yang mengikuti ujian susulan! <b>(Jawaban benar lebih dari satu.)</b>`,
+  options:['Jumlah nilai ketiga murid yang mengikuti ujian susulan adalah 229.','Rata-rata nilai ketiga murid yang mengikuti ujian susulan lebih dari 70.','Nilai terendah dari ketiga murid yang mengikuti ujian susulan tidak kurang dari 29.','Nilai tertinggi dari ketiga murid yang mengikuti ujian susulan lebih dari 76.','Jangkauan data nilai ketiga murid yang mengikuti ujian susulan lebih dari 72.'],
+  correct:[0,1,2,3],
+  pembahasan:R`<b>Konsep:</b> rata-rata $=\dfrac{\text{jumlah nilai}}{\text{banyak data}}$, sehingga jumlah nilai $=$ rata-rata $\times$ banyak data. Jangkauan $=$ nilai terbesar $-$ nilai terkecil. Nilai maksimum 100.
+<b>Langkah 1 – Jumlah nilai ketiga murid susulan.</b>
+$$17\times83=1.411,\qquad20\times82=1.640\Rightarrow1.640-1.411=229$$
+Pernyataan 1 <b>benar</b>.
+<b>Langkah 2 – Rata-rata ketiga murid.</b>
+$$\frac{229}{3}\approx76{,}33>70$$
+Pernyataan 2 <b>benar</b>.
+<b>Langkah 3 – Nilai terendah.</b> Misalkan tiga nilai $a\le b\le c$ dengan $a+b+c=229$. Nilai terendah paling kecil bila dua nilai lainnya sebesar mungkin (100 dan 100):
+$$a=229-100-100=29$$
+Jadi nilai terendah tidak mungkin kurang dari 29. Pernyataan 3 <b>benar</b>.
+<b>Langkah 4 – Nilai tertinggi.</b> Nilai tertinggi selalu paling sedikit sama dengan rata-ratanya ($\approx76{,}33$), sehingga lebih dari 76. Pernyataan 4 <b>benar</b>.
+<b>Langkah 5 – Jangkauan.</b> Jangkauan terbesar terjadi pada kasus ekstrem 100, 100, 29:
+$$\text{Jangkauan maksimum}=100-29=71$$
+Tidak mungkin lebih dari 72. Pernyataan 5 <b>salah</b>. (Contoh lain: 76, 76, 77 memenuhi jumlah 229 dengan jangkauan hanya 1.)
+<b>Jawaban: pernyataan 1, 2, 3, dan 4 benar; pernyataan 5 salah.</b>`,
+  cara_cepat:R`Jumlah susulan $=20\times82-17\times83=229$. Rata-ratanya $\approx76{,}3$, sehingga nilai tertinggi pasti $\ge76{,}3$. Untuk nilai terendah dan jangkauan, pakai kasus ekstrem (100, 100, 29) sehingga jangkauan maksimum hanya 71.` }
+
+];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const TOTAL_SECONDS = 60 * 60;
+const letters = ['A', 'B', 'C', 'D', 'E'];
+const typeOf = q => q.type || 'single';
+
+const state = {
+  mode: 'exam',
+  cur: 0,
+  remaining: TOTAL_SECONDS,
+  timer: null,
+  answers: questions.map(q => typeOf(q) === 'tf' ? q.options.map(() => null) : typeOf(q) === 'multi' ? [] : null),
+  autoSubmitted: false
+};
+
+const $ = id => document.getElementById(id);
+
+function isAnswered(i) {
+  const q = questions[i], a = state.answers[i], t = typeOf(q);
+  if (t === 'single') return a !== null;
+  if (t === 'multi') return a.length > 0;
+  return a.some(v => v !== null);
+}
+function isCorrect(i) {
+  const q = questions[i], a = state.answers[i], t = typeOf(q);
+  if (t === 'single') return a === q.correct;
+  if (t === 'multi') {
+    const x = [...a].sort().join(','), y = [...q.correct].sort().join(',');
+    return x === y;
+  }
+  return a.every((v, k) => v === q.correct[k]);
+}
+function fmtAns(q, a) {
+  const t = typeOf(q);
+  if (t === 'single') return a === null ? '—' : letters[a];
+  if (t === 'multi') return a.length ? [...a].sort().map(k => letters[k]).join(', ') : '—';
+  return a.map((v, k) => `${letters[k]}: ${v === null ? '–' : v ? 'Benar' : 'Salah'}`).join(' · ');
+}
+function fmtKey(q) {
+  const t = typeOf(q);
+  if (t === 'single') return letters[q.correct];
+  if (t === 'multi') return [...q.correct].sort().map(k => letters[k]).join(', ');
+  return q.correct.map((v, k) => `${letters[k]}: ${v ? 'Benar' : 'Salah'}`).join(' · ');
+}
+const answeredCount = () => questions.reduce((n, _, i) => n + (isAnswered(i) ? 1 : 0), 0);
+
+let mjChain = Promise.resolve();
+function typeset(root, tries = 0) {
+  const MJ = window.MathJax;
+  if (MJ && MJ.typesetPromise && MJ.startup && MJ.startup.promise) {
+    const els = root ? [root] : undefined;
+    mjChain = mjChain
+      .then(() => MJ.startup.promise)
+      .then(() => { if (MJ.typesetClear) MJ.typesetClear(els); return MJ.typesetPromise(els); })
+      .catch(err => console.warn('MathJax:', err));
+  } else if (tries < 160) {
+    setTimeout(() => typeset(root, tries + 1), 250);
+  }
+}
+const fmtTime = s => {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), d = s % 60;
+  return [h, m, d].map(v => String(v).padStart(2, '0')).join(':');
+};
+const stepsHtml = str => str.split('\n').map(l => l.trim()).filter(Boolean)
+  .map(l => `<div class="my-1.5 leading-relaxed break-words">${l}</div>`).join('');
+
+function questionBlock(q) {
+  const imgHtml = q.image
+    ? `<img src="${q.image}" alt="Gambar soal ${q.id}" loading="lazy" class="max-w-full h-auto object-contain block mx-auto rounded-lg border border-gray-600 bg-white/10 p-2 my-3" style="width:min(100%,600px)" onerror="this.style.display='none'">`
+    : '';
+  return `<div class="flex flex-col gap-4 overflow-hidden break-words p-1">
+    <div class="text-base sm:text-lg leading-relaxed">${q.text}</div>${imgHtml}
+  </div>`;
+}
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+function renderNav() {
+  const exam = state.mode === 'exam';
+  $('navbar').innerHTML = `
+  <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+    <div class="flex items-center gap-3 min-w-0">
+      <img src="logo.png" alt="Logo" class="h-9 w-9 object-contain" onerror="this.style.display='none'">
+      <div class="leading-tight">
+        <div class="font-extrabold text-[#00d6d8] text-base sm:text-lg">VisualMath.Lim</div>
+        <nav class="text-xs text-gray-300 flex items-center gap-1.5 flex-wrap">
+          <a href="index.html" class="hover:text-[#00d6d8]"><i class="fa-solid fa-house mr-1"></i>Home</a>
+          <i class="fa-solid fa-chevron-right text-[9px] opacity-60"></i>
+          <a href="tryout.html" class="hover:text-[#00d6d8]">Dashboard Tryout</a>
+          <i class="fa-solid fa-chevron-right text-[9px] opacity-60"></i>
+          <span class="text-white">Tryout Paket 3</span>
+        </nav>
+      </div>
+    </div>
+    ${exam ? `
+    <div class="order-3 sm:order-2 w-full sm:w-auto flex justify-center">
+      <div class="px-4 py-1.5 rounded-xl border border-[#00d6d8]/60 bg-[#022050] shadow-[0_0_14px_rgba(0,214,216,.35)] font-mono text-xl font-bold text-[#00d6d8]">
+        <i class="fa-regular fa-clock mr-2"></i><span id="timer">${fmtTime(state.remaining)}</span>
+      </div>
+    </div>
+    <button onclick="endExam()" class="order-2 sm:order-3 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 font-semibold text-sm">
+      <i class="fa-solid fa-flag-checkered mr-1"></i>Akhiri Ujian
+    </button>` : `
+    <a href="tryout.html" class="px-4 py-2 rounded-lg bg-[#00d6d8] text-[#022050] font-bold text-sm hover:brightness-110">
+      <i class="fa-solid fa-table-columns mr-1"></i>Dashboard
+    </a>`}
+  </div>`;
+}
+
+/* =========================================================
+   STATE 1: UJIAN
+   ========================================================= */
+function optionHtml(q, i) {
+  const t = typeOf(q), a = state.answers[i];
+  if (t === 'single') {
+    return q.options.map((o, k) => {
+      const sel = a === k;
+      return `<button onclick="pickSingle(${k})" class="opt ${sel ? 'sel' : ''} w-full text-left flex items-start gap-3 p-3 sm:p-4 rounded-xl border">
+        <span class="radio ${sel ? 'on' : ''} mt-0.5"></span>
+        <span class="font-bold w-6 shrink-0">${letters[k]}.</span>
+        <span class="min-w-0 break-words">${o}</span></button>`;
+    }).join('');
+  }
+  if (t === 'multi') {
+    return `<div class="text-sm text-[#00d6d8] mb-1"><i class="fa-solid fa-circle-info mr-1"></i>Pilih semua jawaban yang benar (lebih dari satu).</div>` +
+      q.options.map((o, k) => {
+        const sel = a.includes(k);
+        return `<button onclick="toggleMulti(${k})" class="opt ${sel ? 'sel' : ''} w-full text-left flex items-start gap-3 p-3 sm:p-4 rounded-xl border">
+          <span class="chk ${sel ? 'on' : ''} mt-0.5"></span>
+          <span class="font-bold w-6 shrink-0">${letters[k]}.</span>
+          <span class="min-w-0 break-words">${o}</span></button>`;
+      }).join('');
+  }
+  return `<div class="text-sm text-[#00d6d8] mb-1"><i class="fa-solid fa-circle-info mr-1"></i>Tentukan Benar atau Salah untuk setiap pernyataan.</div>` +
+    q.options.map((o, k) => `
+    <div class="opt w-full p-3 sm:p-4 rounded-xl border">
+      <div class="flex gap-3 mb-3"><span class="font-bold w-6 shrink-0">${letters[k]}.</span><span class="min-w-0 break-words">${o}</span></div>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="setTF(${k},true)" class="tfbtn ${a[k] === true ? 'on' : ''} py-2 rounded-lg"><i class="fa-solid fa-check mr-1"></i>Benar</button>
+        <button onclick="setTF(${k},false)" class="tfbtn ${a[k] === false ? 'on' : ''} py-2 rounded-lg"><i class="fa-solid fa-xmark mr-1"></i>Salah</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderExam() {
+  const i = state.cur, q = questions[i], last = i === questions.length - 1;
+  const squares = questions.map((_, n) => {
+    const done = isAnswered(n), curr = n === i;
+    return `<button onclick="go(${n})" class="shrink-0 w-11 h-11 lg:w-full lg:h-auto lg:aspect-square rounded-lg font-bold text-sm border transition
+      ${done ? 'bg-[#ffd300] text-black border-[#ffd300]' : 'bg-white/10 text-white border-white/20 hover:border-[#00d6d8]'}
+      ${curr ? 'ring-2 ring-[#00d6d8] ring-offset-2 ring-offset-[#022050]' : ''}">${n + 1}</button>`;
+  }).join('');
+
+  $('app').innerHTML = `
+  <div class="max-w-7xl mx-auto px-3 sm:px-4 py-4 grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <section class="lg:col-span-3 min-w-0">
+      <div class="rounded-2xl border border-[#00d6d8]/30 bg-white/5 p-4 sm:p-6 shadow-[0_0_24px_rgba(0,214,216,.12)]">
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <span class="px-3 py-1 rounded-full bg-[#00d6d8] text-[#022050] font-extrabold text-sm">Soal ${i + 1} / ${questions.length}</span>
+          <span class="px-3 py-1 rounded-full bg-white/10 text-xs text-gray-200">${q.topic}</span>
+        </div>
+        ${questionBlock(q)}
+        <div class="mt-5 flex flex-col gap-2.5">${optionHtml(q, i)}</div>
+        <div class="mt-6 flex items-center justify-between gap-3">
+          <button onclick="go(${i - 1})" ${i === 0 ? 'disabled' : ''} class="px-4 py-2.5 rounded-lg border border-[#00d6d8]/60 text-[#00d6d8] font-semibold hover:bg-[#00d6d8]/10 disabled:opacity-30 disabled:cursor-not-allowed">
+            <i class="fa-solid fa-arrow-left mr-1"></i>Sebelumnya</button>
+          ${last
+            ? `<button onclick="endExam()" class="px-4 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-110">Submit &amp; Lihat Pembahasan<i class="fa-solid fa-paper-plane ml-2"></i></button>`
+            : `<button onclick="go(${i + 1})" class="px-4 py-2.5 rounded-lg bg-[#00d6d8] text-[#022050] font-bold hover:brightness-110">Selanjutnya<i class="fa-solid fa-arrow-right ml-2"></i></button>`}
+        </div>
+      </div>
+    </section>
+    <aside class="lg:col-span-1 lg:sticky lg:top-24 self-start min-w-0">
+      <div class="rounded-2xl border border-[#00d6d8]/30 bg-white/5 p-3 sm:p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold text-[#00d6d8]"><i class="fa-solid fa-grip mr-2"></i>Navigasi Soal</h3>
+          <span class="text-xs text-gray-300">${answeredCount()}/${questions.length} terjawab</span>
+        </div>
+        <div class="navsq scrollx flex lg:grid lg:grid-cols-5 gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">${squares}</div>
+        <div class="mt-3 flex flex-wrap gap-3 text-xs text-gray-300">
+          <span><span class="inline-block w-3 h-3 rounded bg-[#ffd300] mr-1 align-middle"></span>Terjawab</span>
+          <span><span class="inline-block w-3 h-3 rounded bg-white/20 mr-1 align-middle"></span>Belum</span>
+          <span><span class="inline-block w-3 h-3 rounded border-2 border-[#00d6d8] mr-1 align-middle"></span>Aktif</span>
+        </div>
+      </div>
+    </aside>
+  </div>`;
+  typeset($('app'));
+}
+
+function go(n) {
+  if (n < 0 || n >= questions.length) return;
+  state.cur = n;
+  renderExam();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function pickSingle(k) { state.answers[state.cur] = k; renderExam(); }
+function toggleMulti(k) {
+  const a = state.answers[state.cur], p = a.indexOf(k);
+  if (p >= 0) a.splice(p, 1); else a.push(k);
+  renderExam();
+}
+function setTF(k, v) {
+  const a = state.answers[state.cur];
+  a[k] = a[k] === v ? null : v;
+  renderExam();
+}
+
+function startTimer() {
+  state.timer = setInterval(() => {
+    state.remaining--;
+    const t = $('timer');
+    if (t) {
+      t.textContent = fmtTime(Math.max(0, state.remaining));
+      if (state.remaining <= 300) t.parentElement.classList.add('text-red-400', 'border-red-400');
+    }
+    if (state.remaining <= 0) finish(true);
+  }, 1000);
+}
+
+function endExam() {
+  const kosong = questions.length - answeredCount();
+  const msg = kosong > 0
+    ? `Masih ada ${kosong} soal yang belum dijawab. Yakin ingin mengakhiri ujian dan melihat pembahasan?`
+    : 'Semua soal sudah dijawab. Akhiri ujian dan lihat pembahasan?';
+  showConfirm(msg);
+}
+
+/* Dialog konfirmasi buatan sendiri (confirm() bawaan browser diblokir di iframe/pratinjau) */
+function showConfirm(msg) {
+  closeConfirm();
+  const d = document.createElement('div');
+  d.id = 'confirmModal';
+  d.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70';
+  d.innerHTML = `
+    <div class="w-full max-w-md rounded-2xl border border-[#00d6d8]/50 bg-[#022050] p-6 shadow-[0_0_30px_rgba(0,214,216,.3)]">
+      <h3 class="text-lg font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-flag-checkered mr-2"></i>Akhiri Ujian?</h3>
+      <p class="text-sm text-gray-200 mb-5">${msg}</p>
+      <div class="flex gap-3 justify-end">
+        <button type="button" onclick="closeConfirm()" class="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10">Lanjut Mengerjakan</button>
+        <button type="button" onclick="closeConfirm();finish(false)" class="px-4 py-2 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-110">Ya, Akhiri &amp; Lihat Pembahasan</button>
+      </div>
+    </div>`;
+  document.body.appendChild(d);
+}
+function closeConfirm() {
+  const m = document.getElementById('confirmModal');
+  if (m) m.remove();
+}
+
+function finish(auto) {
+  clearInterval(state.timer);
+  window.removeEventListener('beforeunload', guard);
+  state.mode = 'review';
+  state.autoSubmitted = !!auto;
+  renderNav();
+  renderReview();
+  window.scrollTo({ top: 0 });
+}
+
+/* =========================================================
+   STATE 2: PEMBAHASAN
+   ========================================================= */
+function reviewOptions(q, i) {
+  const t = typeOf(q), a = state.answers[i];
+  if (t === 'single') {
+    return q.options.map((o, k) => {
+      const isKey = k === q.correct, isUser = a === k;
+      const cls = isKey ? 'ok' : (isUser ? 'bad' : '');
+      const tag = isKey && isUser ? '<span class="text-green-300 text-xs font-bold ml-auto shrink-0">✔ Jawaban Anda = Kunci</span>'
+        : isKey ? '<span class="text-green-300 text-xs font-bold ml-auto shrink-0">✔ Kunci</span>'
+        : isUser ? '<span class="text-red-300 text-xs font-bold ml-auto shrink-0">✘ Jawaban Anda</span>' : '';
+      return `<div class="opt ${cls} flex items-start gap-3 p-3 rounded-xl border"><span class="font-bold w-6 shrink-0">${letters[k]}.</span><span class="min-w-0 break-words">${o}</span>${tag}</div>`;
+    }).join('');
+  }
+  if (t === 'multi') {
+    return q.options.map((o, k) => {
+      const isKey = q.correct.includes(k), isUser = a.includes(k);
+      const cls = isKey ? 'ok' : (isUser ? 'bad' : '');
+      const tag = isKey && isUser ? '✔ Benar & Anda pilih' : isKey ? '✔ Kunci (tidak Anda pilih)' : isUser ? '✘ Anda pilih (salah)' : '';
+      const col = isKey ? 'text-green-300' : 'text-red-300';
+      return `<div class="opt ${cls} flex items-start gap-3 p-3 rounded-xl border"><span class="font-bold w-6 shrink-0">${letters[k]}.</span><span class="min-w-0 break-words">${o}</span>${tag ? `<span class="${col} text-xs font-bold ml-auto shrink-0">${tag}</span>` : ''}</div>`;
+    }).join('');
+  }
+  return q.options.map((o, k) => {
+    const u = a[k], c = q.correct[k], ok = u === c;
+    const cls = u === null ? '' : (ok ? 'ok' : 'bad');
+    return `<div class="opt ${cls} p-3 rounded-xl border">
+      <div class="flex gap-3"><span class="font-bold w-6 shrink-0">${letters[k]}.</span><span class="min-w-0 break-words">${o}</span></div>
+      <div class="mt-2 text-xs flex flex-wrap gap-x-4 gap-y-1">
+        <span>Jawaban Anda: <b>${u === null ? '—' : u ? 'Benar' : 'Salah'}</b></span>
+        <span class="text-green-300">Kunci: <b>${c ? 'Benar' : 'Salah'}</b></span>
+      </div></div>`;
+  }).join('');
+}
+
+function renderReview() {
+  let benar = 0, salah = 0, kosong = 0;
+  questions.forEach((_, i) => {
+    if (!isAnswered(i)) kosong++; else if (isCorrect(i)) benar++; else salah++;
+  });
+  const skor = Math.round((benar / questions.length) * 100);
+
+  const banner = `
+  <div class="rounded-2xl border border-[#00d6d8]/40 bg-gradient-to-br from-[#033075] to-[#022050] p-5 sm:p-8 shadow-[0_0_30px_rgba(0,214,216,.2)]">
+    ${state.autoSubmitted ? '<div class="mb-3 text-sm text-[#ffd300]"><i class="fa-solid fa-hourglass-end mr-1"></i>Waktu habis, jawaban dikumpulkan otomatis.</div>' : ''}
+    <div class="flex flex-col md:flex-row md:items-center gap-5 md:gap-10">
+      <div class="text-center">
+        <div class="text-xs uppercase tracking-widest text-gray-300">Skor Akhir</div>
+        <div class="text-6xl sm:text-7xl font-extrabold text-[#ffd300] leading-none mt-1">${skor}</div>
+        <div class="text-xs text-gray-400 mt-1">dari 100</div>
+      </div>
+      <div class="grid grid-cols-3 gap-3 flex-1 text-center">
+        <div class="rounded-xl bg-green-500/15 border border-green-500/40 p-3"><div class="text-2xl font-bold text-green-300">${benar}</div><div class="text-xs">Total Benar</div></div>
+        <div class="rounded-xl bg-red-500/15 border border-red-500/40 p-3"><div class="text-2xl font-bold text-red-300">${salah}</div><div class="text-xs">Salah</div></div>
+        <div class="rounded-xl bg-white/10 border border-white/20 p-3"><div class="text-2xl font-bold">${kosong}</div><div class="text-xs">Kosong</div></div>
+      </div>
+    </div>
+    <div class="mt-3 text-xs text-gray-300">Total salah/kosong: <b>${salah + kosong}</b> dari ${questions.length} soal. Soal pilihan ganda kompleks dan Benar/Salah dinilai benar jika seluruh jawaban sesuai kunci.</div>
+    <div class="mt-5"><a href="tryout.html" class="block w-full text-center py-4 rounded-xl bg-[#ffd300] text-black font-extrabold text-lg hover:brightness-110"><i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Dashboard</a></div>
+  </div>`;
+
+  const cards = questions.map((q, i) => {
+    const answered = isAnswered(i), ok = answered && isCorrect(i);
+    const badge = !answered ? '<span class="px-3 py-1 rounded-full bg-white/15 text-xs font-bold">Kosong</span>'
+      : ok ? '<span class="px-3 py-1 rounded-full bg-green-500/80 text-xs font-bold"><i class="fa-solid fa-check mr-1"></i>Benar</span>'
+      : '<span class="px-3 py-1 rounded-full bg-red-500/80 text-xs font-bold"><i class="fa-solid fa-xmark mr-1"></i>Salah</span>';
+    return `
+    <article class="rounded-2xl border border-white/15 bg-white/5 p-4 sm:p-6">
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <span class="px-3 py-1 rounded-full bg-[#00d6d8] text-[#022050] font-extrabold text-sm">Soal ${i + 1}</span>
+        <span class="px-3 py-1 rounded-full bg-white/10 text-xs">${q.topic}</span>${badge}
+      </div>
+      ${questionBlock(q)}
+      <div class="mt-4 flex flex-col gap-2">${reviewOptions(q, i)}</div>
+      <div class="mt-4 grid sm:grid-cols-2 gap-2 text-sm">
+        <div class="rounded-lg bg-white/10 p-3"><span class="text-gray-300">Jawaban Anda:</span> <b class="${!answered ? '' : ok ? 'text-green-300' : 'text-red-300'}">${fmtAns(q, state.answers[i])}</b></div>
+        <div class="rounded-lg bg-green-500/15 border border-green-500/40 p-3"><span class="text-gray-300">Kunci Jawaban:</span> <b class="text-green-300">${fmtKey(q)}</b></div>
+      </div>
+      <div class="mt-4 rounded-xl border border-gray-500 bg-[#011a42] p-4">
+        <h4 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open mr-2"></i>Pembahasan Lengkap</h4>
+        <div class="pemb text-sm sm:text-base">${stepsHtml(q.pembahasan)}</div>
+        ${q.pembahasan_image ? `<img src="${q.pembahasan_image}" alt="Ilustrasi pembahasan soal ${q.id}" loading="lazy" class="max-w-full h-auto object-contain block mx-auto rounded-lg border border-gray-600 bg-white/10 p-2 my-3" style="width:min(100%,600px)">` : ''}
+      </div>
+      <div class="mt-3 rounded-xl border border-[#00d6d8]/50 bg-[#00d6d8]/10 p-4">
+        <h4 class="font-bold text-[#00d6d8] mb-2">🔥 Cara Cepat</h4>
+        <div class="text-sm sm:text-base leading-relaxed break-words">${q.cara_cepat}</div>
+      </div>
+    </article>`;
+  }).join('');
+
+  $('app').innerHTML = `
+  <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 flex flex-col gap-5">
+    ${banner}
+    <h2 class="text-xl font-bold text-[#00d6d8] mt-2"><i class="fa-solid fa-list-check mr-2"></i>Pembahasan Seluruh Soal</h2>
+    ${cards}
+    <a href="tryout.html" class="block w-full text-center py-4 rounded-xl bg-[#ffd300] text-black font-extrabold text-lg hover:brightness-110"><i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Dashboard</a>
+  </div>`;
+  typeset($('app'));
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+function guard(e) { e.preventDefault(); e.returnValue = ''; }
+window.addEventListener('beforeunload', guard);
+renderNav();
+renderExam();
+startTimer();
+</script>
+</body>
+</html>
