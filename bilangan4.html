@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualMath.Lim - Latihan Bilangan 4 (HOTS, PGK, Benar/Salah)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  body { background: #022050; color: #fff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .nav-scroll::-webkit-scrollbar { height: 6px; }
+  .nav-scroll::-webkit-scrollbar-thumb { background: #00d6d8; border-radius: 9px; }
+  mjx-container { color: inherit; }
+  mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: .6em 0; margin: .3em 0 !important; }
+  mjx-container:not([display="true"]) { padding: .15em 0; }
+  .math-text { overflow-wrap: anywhere; }
+  .opt:focus-within { outline: 2px solid #00d6d8; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<header class="sticky top-0 z-30 bg-[#022050]/95 backdrop-blur border-b border-[#00d6d8]/30">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <a href="index.html" title="Home"><img src="logo.png" alt="Logo VisualMath.Lim" class="h-9 w-9 object-contain" onerror="this.style.display='none'"></a>
+      <h1 class="font-bold text-sm sm:text-lg truncate">VisualMath.Lim - <span class="text-[#00d6d8]">Latihan bilangan</span></h1>
+    </div>
+    <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+      <div class="font-mono text-[#00d6d8] border border-[#00d6d8]/60 rounded-lg px-3 py-1 text-sm sm:text-base">
+        <i class="fa-regular fa-clock mr-1"></i><span id="timer">00:00</span>
+      </div>
+      <a href="bilangan.html" class="bg-[#ffd300] text-black font-semibold rounded-lg px-3 py-1.5 text-xs sm:text-sm hover:brightness-95">
+        <i class="fa-solid fa-arrow-left mr-1"></i><span class="hidden sm:inline">Kembali ke </span>Dashboard bilangan
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="app" class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6"></main>
+
+<script>
+/* ===================== DATA SOAL ===================== */
+// type: 'pg' (pilihan ganda), 'pgk' (pilihan ganda kompleks, lebih dari satu jawaban), 'bs' (benar/salah per pernyataan)
+// Gambar (jika ada) dibuat dengan kode SVG lewat svgToUri(), tanpa upload file.
+const svgToUri = (svg) => 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+
+const questions = [
+  {
+    id: 1, type: 'pg', level: 'HOTS',
+    question_text: String.raw`Untuk setiap bilangan bulat $n$, nilai dari $\dfrac{9^{n+1}-3^{2n+1}}{3^{2n-1}}$ adalah ....`,
+    image: '',
+    options: { A: String.raw`$6$`, B: String.raw`$9$`, C: String.raw`$18$`, D: String.raw`$27$`, E: String.raw`$54$` },
+    correct_answer: 'C',
+    konsep: String.raw`mengubah basis ($9=3^{2}$), memfaktorkan suku berpangkat, dan pembagian pangkat.`,
+    analisis_salah: {
+      A: String.raw`Selisih pangkat dihitung $1$, bukan $2$: $(2n+1)-(2n-1)=2$, jadi $2\cdot 3^{2}$, bukan $2\cdot 3^{1}$.`,
+      B: String.raw`Faktor $(3-1)=2$ dari pemfaktoran terlewat, sehingga hanya $3^{2}=9$.`,
+      D: String.raw`Suku pengurang $3^{2n+1}$ terlewat: yang dihitung hanya $\frac{9^{n+1}}{3^{2n-1}}=3^{3}=27$.`,
+      E: String.raw`Faktor persekutuan salah dipilih (misalnya $3^{2n+2}$), sehingga pangkat sisa menjadi $3^{3}$ dan hasilnya $2\cdot 27=54$.`
+    },
+    pembahasan: String.raw`Ubah $9^{n+1}=(3^{2})^{n+1}=3^{2n+2}$, lalu faktorkan $3^{2n+1}$ dari pembilang.
+$$\dfrac{3^{2n+2}-3^{2n+1}}{3^{2n-1}}=\dfrac{3^{2n+1}(3-1)}{3^{2n-1}}$$
+$$=2\cdot 3^{(2n+1)-(2n-1)}$$
+$$=2\cdot 3^{2}=18$$`,
+    cara_cepat: String.raw`Hasilnya konstan untuk setiap bilangan bulat $n$, jadi substitusi $n=1$:
+$$\dfrac{9^{2}-3^{3}}{3^{1}}=\dfrac{81-27}{3}=18$$`
+  },
+  {
+    id: 2, type: 'pgk', level: 'HOTS',
+    question_text: String.raw`Diketahui $x=2^{\frac{1}{3}}$. Pilih <b>semua</b> pernyataan yang benar.`,
+    image: '',
+    options: {
+      A: String.raw`$x^{3}=2$`,
+      B: String.raw`$x^{6}=6$`,
+      C: String.raw`$x^{-3}=\dfrac{1}{2}$`,
+      D: String.raw`$x^{9}=6$`,
+      E: String.raw`$\sqrt{x^{6}}=4$`
+    },
+    correct_answer: ['A', 'C'],
+    konsep: String.raw`pangkat dari pangkat $(a^{m})^{n}=a^{mn}$, pangkat negatif, dan akar sebagai pangkat pecahan.`,
+    analisis_opsi: {
+      A: String.raw`Benar: $x^{3}=\left(2^{\frac{1}{3}}\right)^{3}=2^{1}=2$.`,
+      B: String.raw`Salah: $x^{6}=(x^{3})^{2}=2^{2}=4$. Angka $6$ muncul bila basis dan pangkat dikalikan ($2\times 3$).`,
+      C: String.raw`Benar: $x^{-3}=\frac{1}{x^{3}}=\frac{1}{2}$.`,
+      D: String.raw`Salah: $x^{9}=(x^{3})^{3}=2^{3}=8$, bukan $6$.`,
+      E: String.raw`Salah: $\sqrt{x^{6}}=\sqrt{4}=2$. Akar kuadrat dari $4$ adalah $2$, bukan $4$.`
+    },
+    pembahasan: String.raw`Gunakan $x^{3}=2$ dan $(a^{m})^{n}=a^{mn}$.
+$$x^{3}=2\ \Rightarrow\ \text{A benar}$$
+$$x^{-3}=\dfrac{1}{x^{3}}=\dfrac{1}{2}\ \Rightarrow\ \text{C benar}$$
+$$x^{6}=(x^{3})^{2}=4\ne 6,\qquad x^{9}=(x^{3})^{3}=8\ne 6,\qquad \sqrt{x^{6}}=\sqrt{4}=2\ne 4$$`,
+    cara_cepat: String.raw`Ubah semuanya ke $x^{3}=2$: setiap pangkat kelipatan $3$ langsung menjadi pangkat dari $2$ ($x^{6}=2^{2}$, $x^{9}=2^{3}$).`
+  },
+  {
+    id: 3, type: 'bs', level: 'HOTS',
+    question_text: String.raw`Operasi $\star$ pada bilangan real didefinisikan sebagai $a\star b=a+b-2ab$. Tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan berikut.`,
+    image: '',
+    statements: [
+      { text: String.raw`Bilangan $1$ adalah elemen identitas, yaitu $a\star 1=a$ untuk setiap bilangan real $a$.`, correct: false,
+        alasan: String.raw`$a\star 1=a+1-2a=1-a\ne a$. Elemen identitasnya $0$, sebab $a\star 0=a$. Identitas tidak selalu $1$; bergantung pada definisi operasi.` },
+      { text: String.raw`$a\star b=b\star a$ untuk setiap bilangan real $a$ dan $b$.`, correct: true,
+        alasan: String.raw`$a+b-2ab=b+a-2ba$ karena penjumlahan dan perkalian bersifat komutatif.` },
+      { text: String.raw`$\dfrac{1}{2}\star x=\dfrac{1}{2}$ untuk setiap bilangan real $x$.`, correct: true,
+        alasan: String.raw`$\frac{1}{2}\star x=\frac{1}{2}+x-2\cdot\frac{1}{2}\cdot x=\frac{1}{2}+x-x=\frac{1}{2}$. Suku $x$ saling menghilangkan.` }
+    ],
+    konsep: String.raw`substitusi pada definisi operasi biner, sifat komutatif, dan elemen identitas.`,
+    pembahasan: String.raw`Pernyataan 1: substitusi $b=1$.
+$$a\star 1=a+1-2a(1)=1-a$$
+Hasilnya tidak sama dengan $a$, jadi pernyataan 1 **salah** (identitasnya $0$).
+Pernyataan 2:
+$$a\star b=a+b-2ab=b+a-2ba=b\star a$$
+**Benar.**
+Pernyataan 3: substitusi $a=\frac{1}{2}$.
+$$\dfrac{1}{2}\star x=\dfrac{1}{2}+x-x=\dfrac{1}{2}$$
+**Benar.**`,
+    cara_cepat: String.raw`Untuk memeriksa pernyataan yang berlaku untuk "setiap" bilangan, cukup cari satu contoh yang gagal: $a=2$ menghasilkan $2\star 1=-1\ne 2$, sehingga pernyataan 1 salah.`
+  },
+  {
+    id: 4, type: 'pg', level: 'HOTS',
+    question_text: String.raw`Diberikan $A=\{x\mid x \text{ bilangan prima},\ x<20\}$, $B=\{x\mid x \text{ bilangan ganjil},\ 1\le x\le 15\}$, dan $C=\{x\mid x \text{ kelipatan } 3,\ x\in\text{Bilangan Cacah},\ x\le 18\}$. Banyak anggota $(A\cap B)\cup C$ adalah ....`,
+    image: '',
+    options: { A: String.raw`$9$`, B: String.raw`$10$`, C: String.raw`$11$`, D: String.raw`$12$`, E: String.raw`$13$` },
+    correct_answer: 'C',
+    konsep: String.raw`bilangan prima (1 bukan prima), bilangan cacah (termasuk 0), irisan, gabungan, dan $n(P\cup Q)=n(P)+n(Q)-n(P\cap Q)$.`,
+    analisis_salah: {
+      A: String.raw`Kemungkinan ada anggota $A\cap B$ atau $C$ yang tidak terdaftar. Daftarkan semua anggota dulu sebelum menghitung.`,
+      B: String.raw`Bilangan $0$ tidak dihitung. Pada $C$, bilangan cacah mencakup $0$ (kelipatan $3$ yang pertama).`,
+      D: String.raw`Anggota $3$ terhitung dua kali ($5+7=12$). Karena $3\in A\cap B$ dan $3\in C$, jumlah harus dikurangi irisannya. Hasil $12$ juga muncul bila $1$ dianggap prima.`,
+      E: String.raw`Dua kesalahan sekaligus: $1$ dianggap bilangan prima ($6$ anggota di $A\cap B$) dan anggota $3$ terhitung dua kali ($6+7=13$).`
+    },
+    pembahasan: String.raw`Daftarkan anggota setiap himpunan.
+$$A=\{2,3,5,7,11,13,17,19\}$$
+$$B=\{1,3,5,7,9,11,13,15\}$$
+$$C=\{0,3,6,9,12,15,18\}$$
+Irisan $A\cap B$ (prima yang ganjil di $B$):
+$$A\cap B=\{3,5,7,11,13\}\ \Rightarrow\ n=5$$
+Anggota yang sama antara $A\cap B$ dan $C$ hanya $3$, sehingga:
+$$n\big((A\cap B)\cup C\big)=5+7-1=11$$`,
+    cara_cepat: String.raw`Jangan lupa tiga jebakan: $1$ bukan prima, $0$ termasuk bilangan cacah, dan anggota yang sama dihitung sekali. Hitung $5+7-1=11$.`
+  },
+  {
+    id: 5, type: 'pgk', level: 'HOTS',
+    question_text: String.raw`Pilih <b>semua</b> pernyataan yang benar tentang bilangan real.`,
+    image: '',
+    options: {
+      A: String.raw`Jumlah dua bilangan irasional selalu merupakan bilangan irasional.`,
+      B: String.raw`Hasil kali bilangan rasional bukan nol dengan bilangan irasional selalu merupakan bilangan irasional.`,
+      C: String.raw`$\sqrt{8}\times\sqrt{2}$ adalah bilangan rasional.`,
+      D: String.raw`$0{,}\overline{9}$ bukan bilangan rasional.`,
+      E: String.raw`Akar kuadrat dari setiap bilangan asli adalah bilangan irasional.`
+    },
+    correct_answer: ['B', 'C'],
+    konsep: String.raw`jenis dan sifat bilangan real: rasional, irasional, desimal berulang, dan sifat akar.`,
+    analisis_opsi: {
+      A: String.raw`Salah. Contoh penyangkal: $\sqrt{2}+(-\sqrt{2})=0$ yang rasional. Dua irasional bisa berjumlah rasional.`,
+      B: String.raw`Benar. Jika $r\cdot x$ rasional dengan $r\ne 0$ rasional, maka $x=\frac{r\cdot x}{r}$ juga rasional, bertentangan dengan $x$ irasional.`,
+      C: String.raw`Benar. $\sqrt{8}\times\sqrt{2}=\sqrt{16}=4$.`,
+      D: String.raw`Salah. $0{,}\overline{9}=1$, yaitu bilangan rasional.`,
+      E: String.raw`Salah. $\sqrt{4}=2$ dan $\sqrt{9}=3$ rasional. Akar bilangan kuadrat sempurna adalah bilangan bulat.`
+    },
+    pembahasan: String.raw`Periksa tiap pernyataan.
+$$\sqrt{2}+(-\sqrt{2})=0\ \Rightarrow\ \text{A salah}$$
+$$r\ne 0\text{ rasional},\ x\text{ irasional}\ \Rightarrow\ rx\text{ irasional}\ \Rightarrow\ \text{B benar}$$
+$$\sqrt{8}\times\sqrt{2}=\sqrt{16}=4\ \Rightarrow\ \text{C benar}$$
+$$0{,}\overline{9}=1\ \Rightarrow\ \text{D salah}$$
+$$\sqrt{4}=2\ \Rightarrow\ \text{E salah}$$`,
+    cara_cepat: String.raw`Pernyataan yang memakai kata "selalu" atau "setiap" cukup dibuktikan salah dengan satu contoh: $\sqrt{2}+(-\sqrt{2})=0$ (A) dan $\sqrt{4}=2$ (E).`
+  },
+  {
+    id: 6, type: 'pg', level: 'HOTS',
+    question_text: String.raw`Nilai dari $\dfrac{2026^{2}-2024^{2}}{2025}$ adalah ....`,
+    image: '',
+    options: { A: String.raw`$2$`, B: String.raw`$4$`, C: String.raw`$8$`, D: String.raw`$4.050$`, E: String.raw`$8.100$` },
+    correct_answer: 'B',
+    konsep: String.raw`selisih kuadrat $a^{2}-b^{2}=(a-b)(a+b)$ untuk menghindari perhitungan bilangan besar.`,
+    analisis_salah: {
+      A: String.raw`Faktor $(2026-2024)=2$ terlewat, sehingga hanya $\frac{2026+2024}{2025}=2$.`,
+      C: String.raw`Kemungkinan $(2026-2024)$ dikuadratkan menjadi $4$ lalu dikali $2$. Pada selisih kuadrat, faktornya adalah $(a-b)$ dan $(a+b)$, tanpa pangkat.`,
+      D: String.raw`Hanya faktor $(2026+2024)=4050$ yang dihitung. Faktor $(a-b)$ dan pembagian dengan $2025$ belum dikerjakan.`,
+      E: String.raw`Pembilang $2\times 4050=8100$ sudah benar, tetapi belum dibagi $2025$.`
+    },
+    pembahasan: String.raw`Gunakan selisih kuadrat $a^{2}-b^{2}=(a-b)(a+b)$.
+$$\dfrac{2026^{2}-2024^{2}}{2025}=\dfrac{(2026-2024)(2026+2024)}{2025}$$
+$$=\dfrac{2\times 4050}{2025}$$
+$$=2\times 2=4$$`,
+    cara_cepat: String.raw`Perhatikan $2026+2024=2\times 2025$. Maka $\frac{2\times 2\times 2025}{2025}=4$, tanpa menghitung kuadrat sama sekali.`
+  },
+  {
+    id: 7, type: 'bs', level: 'HOTS',
+    question_text: String.raw`Diketahui $p=3^{\frac{1}{2}}$ dan $q=3^{-\frac{1}{2}}$. Tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan berikut.`,
+    image: '',
+    statements: [
+      { text: String.raw`$p\times q=1$`, correct: true,
+        alasan: String.raw`$p\times q=3^{\frac{1}{2}-\frac{1}{2}}=3^{0}=1$.` },
+      { text: String.raw`$\dfrac{p}{q}=\sqrt{3}$`, correct: false,
+        alasan: String.raw`$\frac{p}{q}=3^{\frac{1}{2}-(-\frac{1}{2})}=3^{1}=3$, bukan $\sqrt{3}$. Mengurangkan pangkat negatif sama dengan menambah: $\frac{1}{2}+\frac{1}{2}=1$.` },
+      { text: String.raw`$(p+q)^{2}=\dfrac{16}{3}$`, correct: true,
+        alasan: String.raw`$(p+q)^{2}=p^{2}+2pq+q^{2}=3+2+\frac{1}{3}=\frac{16}{3}$.` }
+    ],
+    konsep: String.raw`sifat pangkat pecahan dan negatif, serta bentuk $(p+q)^{2}=p^{2}+2pq+q^{2}$.`,
+    pembahasan: String.raw`Pernyataan 1:
+$$p\times q=3^{\frac{1}{2}}\times 3^{-\frac{1}{2}}=3^{0}=1\ \Rightarrow\ \textbf{Benar}$$
+Pernyataan 2:
+$$\dfrac{p}{q}=3^{\frac{1}{2}-\left(-\frac{1}{2}\right)}=3^{1}=3\ne\sqrt{3}\ \Rightarrow\ \textbf{Salah}$$
+Pernyataan 3: $p^{2}=3$, $q^{2}=\frac{1}{3}$, dan $pq=1$.
+$$(p+q)^{2}=p^{2}+2pq+q^{2}=3+2+\dfrac{1}{3}=\dfrac{16}{3}\ \Rightarrow\ \textbf{Benar}$$`,
+    cara_cepat: String.raw`Catat dulu $pq=1$, $p^{2}=3$, $q^{2}=\frac{1}{3}$. Semua pernyataan bisa diperiksa dari tiga nilai ini.`
+  },
+  {
+    id: 8, type: 'pgk', level: 'HOTS',
+    question_text: String.raw`Pilih <b>semua</b> bentuk berikut yang bernilai bilangan rasional.`,
+    image: '',
+    options: {
+      A: String.raw`$(\sqrt{3}-1)(\sqrt{3}+1)$`,
+      B: String.raw`$\dfrac{2}{\sqrt{5}-\sqrt{3}}+\dfrac{2}{\sqrt{5}+\sqrt{3}}$`,
+      C: String.raw`$\dfrac{1}{2-\sqrt{3}}+\dfrac{1}{2+\sqrt{3}}$`,
+      D: String.raw`$\sqrt{3}\times\sqrt{12}$`,
+      E: String.raw`$\sqrt{2}+\sqrt{8}$`
+    },
+    correct_answer: ['A', 'C', 'D'],
+    konsep: String.raw`merasionalkan penyebut, selisih kuadrat, dan menyederhanakan bentuk akar ($\sqrt{8}=2\sqrt{2}$).`,
+    analisis_opsi: {
+      A: String.raw`Rasional: selisih kuadrat, $3-1=2$.`,
+      B: String.raw`Irasional: $\frac{2}{\sqrt{5}-\sqrt{3}}=\sqrt{5}+\sqrt{3}$ dan $\frac{2}{\sqrt{5}+\sqrt{3}}=\sqrt{5}-\sqrt{3}$. Jumlahnya $2\sqrt{5}$.`,
+      C: String.raw`Rasional: $\frac{1}{2-\sqrt{3}}=2+\sqrt{3}$ dan $\frac{1}{2+\sqrt{3}}=2-\sqrt{3}$. Jumlahnya $4$.`,
+      D: String.raw`Rasional: $\sqrt{3}\times\sqrt{12}=\sqrt{36}=6$.`,
+      E: String.raw`Irasional: $\sqrt{8}=2\sqrt{2}$, sehingga $\sqrt{2}+2\sqrt{2}=3\sqrt{2}$.`
+    },
+    pembahasan: String.raw`Sederhanakan setiap bentuk.
+$$(\sqrt{3}-1)(\sqrt{3}+1)=3-1=2\quad(\text{rasional})$$
+$$\dfrac{2}{\sqrt{5}-\sqrt{3}}+\dfrac{2}{\sqrt{5}+\sqrt{3}}=(\sqrt{5}+\sqrt{3})+(\sqrt{5}-\sqrt{3})=2\sqrt{5}\quad(\text{irasional})$$
+$$\dfrac{1}{2-\sqrt{3}}+\dfrac{1}{2+\sqrt{3}}=(2+\sqrt{3})+(2-\sqrt{3})=4\quad(\text{rasional})$$
+$$\sqrt{3}\times\sqrt{12}=\sqrt{36}=6\quad(\text{rasional})$$
+$$\sqrt{2}+\sqrt{8}=3\sqrt{2}\quad(\text{irasional})$$`,
+    cara_cepat: String.raw`Jumlah dua bentuk sekawan seperti $(2+\sqrt{3})+(2-\sqrt{3})$ membuat akar saling menghilang. Pada B, akar yang tersisa adalah $\sqrt{5}$ (tidak saling menghilang).`
+  },
+  {
+    id: 9, type: 'pg', level: 'HOTS',
+    question_text: String.raw`Massa suatu zat radioaktif meluruh menurut $M(t)=M_{0}\times 2^{-\frac{t}{5}}$, dengan $t$ dalam hari. Jika massa awal $640$ gram, zat tersebut tersisa $5$ gram setelah .... hari.`,
+    image: '',
+    options: { A: String.raw`$25$`, B: String.raw`$30$`, C: String.raw`$35$`, D: String.raw`$40$`, E: String.raw`$45$` },
+    correct_answer: 'C',
+    konsep: String.raw`persamaan eksponen: menyamakan basis lalu menyamakan pangkat, dan pangkat negatif.`,
+    analisis_salah: {
+      A: String.raw`$t=25$ berarti $\frac{t}{5}=5$. Bilangan $128$ salah ditulis sebagai $2^{5}$ (padahal $2^{5}=32$).`,
+      B: String.raw`$t=30$ berarti $\frac{t}{5}=6$. Bilangan $128$ salah ditulis sebagai $2^{6}$ (padahal $2^{6}=64$).`,
+      D: String.raw`$t=40$ berarti $\frac{t}{5}=8$. Bilangan $128$ salah ditulis sebagai $2^{8}$ (padahal $2^{8}=256$).`,
+      E: String.raw`$t=45$ berarti $\frac{t}{5}=9$. Bilangan $128$ salah ditulis sebagai $2^{9}$ (padahal $2^{9}=512$).`
+    },
+    pembahasan: String.raw`Substitusikan $M(t)=5$ dan $M_{0}=640$.
+$$5=640\times 2^{-\frac{t}{5}}$$
+$$2^{-\frac{t}{5}}=\dfrac{5}{640}=\dfrac{1}{128}=2^{-7}$$
+$$-\dfrac{t}{5}=-7\ \Rightarrow\ t=35$$`,
+    cara_cepat: String.raw`Massa tinggal setengah tiap $5$ hari. Dari $640$ ke $5$: $\frac{640}{5}=128=2^{7}$, yaitu $7$ kali setengah.
+$$7\times 5=35\text{ hari}$$`
+  },
+  {
+    id: 10, type: 'bs', level: 'HOTS',
+    question_text: String.raw`Diketahui bilangan real $a$ dan $b$ dengan $a<0<b$ dan $|a|>b$. Tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan berikut.`,
+    image: '',
+    statements: [
+      { text: String.raw`$a+b<0$`, correct: true,
+        alasan: String.raw`Bilangan negatif $a$ lebih besar nilai mutlaknya daripada $b$, sehingga jumlahnya negatif. Contoh $a=-3$, $b=1$: $a+b=-2$.` },
+      { text: String.raw`$ab>0$`, correct: false,
+        alasan: String.raw`Negatif dikali positif menghasilkan negatif, jadi $ab<0$. Contoh $(-3)(1)=-3$.` },
+      { text: String.raw`$\dfrac{b}{a}<-1$`, correct: false,
+        alasan: String.raw`$\frac{b}{a}$ negatif dan $\left|\frac{b}{a}\right|=\frac{b}{|a|}<1$, sehingga $-1<\frac{b}{a}<0$. Contoh $\frac{1}{-3}=-\frac{1}{3}$, yang lebih besar dari $-1$.` }
+    ],
+    konsep: String.raw`sifat urutan bilangan real, nilai mutlak, dan tanda hasil operasi bilangan positif dan negatif.`,
+    pembahasan: String.raw`Gunakan contoh yang memenuhi syarat, yaitu $a=-3$ dan $b=1$ (karena $-3<0<1$ dan $|-3|>1$).
+$$a+b=-3+1=-2<0\ \Rightarrow\ \textbf{Benar}$$
+$$ab=(-3)(1)=-3<0\ \Rightarrow\ \textbf{Salah}$$
+$$\dfrac{b}{a}=\dfrac{1}{-3}=-\dfrac{1}{3}>-1\ \Rightarrow\ \textbf{Salah}$$
+Alasan umum: $|a|>b$ berarti $\left|\dfrac{b}{a}\right|<1$.`,
+    cara_cepat: String.raw`Ambil satu contoh yang memenuhi syarat soal ($a=-3$, $b=1$), lalu periksa semua pernyataan sekaligus. Satu contoh cukup untuk membuktikan pernyataan "salah".`
+  }
+];
+
+/* ===================== STATE & UTIL ===================== */
+const state = { current: 0, answers: {}, seconds: 0, timerId: null, warn: false };
+const $ = (id) => document.getElementById(id);
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+const TYPE_LABEL = {
+  pg: 'Pilihan Ganda',
+  pgk: 'Pilihan Ganda Kompleks: pilih semua jawaban yang benar',
+  bs: 'Benar / Salah: tentukan setiap pernyataan'
+};
+
+function fmtTime(s) { return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; }
+
+function typeset(el) {
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise(el ? [el] : undefined).catch(() => {});
+  else window.addEventListener('load', () => MathJax.typesetPromise && MathJax.typesetPromise(el ? [el] : undefined));
+}
+
+function renderSteps(text) {
+  const parts = text.split(/(\$\$[\s\S]*?\$\$)/g).filter((p) => p.trim() !== '');
+  return parts.map((p) => {
+    if (p.startsWith('$$')) return `<div class="my-1 text-center">${p}</div>`;
+    const html = p.trim().replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#ffd300]">$1</strong>').replace(/\n/g, '<br>');
+    return `<p class="leading-relaxed">${html}</p>`;
+  }).join('');
+}
+
+function imageTag(q) {
+  if (!q.image) return '';
+  return `<img src="${q.image}" alt="Gambar soal ${q.id}" class="max-w-full h-auto object-contain rounded-lg border border-gray-600 bg-white/10 p-2 my-4 block">`;
+}
+
+function isAnswered(q) {
+  const a = state.answers[q.id];
+  if (a === undefined) return false;
+  if (q.type === 'pgk') return a.length > 0;
+  if (q.type === 'bs') return Object.keys(a).length === q.statements.length;
+  return true;
+}
+
+function isCorrect(q) {
+  const a = state.answers[q.id];
+  if (!isAnswered(q)) return false;
+  if (q.type === 'pgk') return a.length === q.correct_answer.length && q.correct_answer.every((x) => a.includes(x));
+  if (q.type === 'bs') return q.statements.every((s, i) => a[i] === s.correct);
+  return a === q.correct_answer;
+}
+
+/* ===================== STOPWATCH ===================== */
+function startTimer() {
+  state.timerId = setInterval(() => { state.seconds++; $('timer').textContent = fmtTime(state.seconds); }, 1000);
+}
+function stopTimer() { clearInterval(state.timerId); }
+
+/* ===================== STATE 1: LATIHAN ===================== */
+function practiceOptions(q) {
+  if (q.type === 'bs') {
+    const ans = state.answers[q.id] || {};
+    return '<div class="space-y-3">' + q.statements.map((s, i) => {
+      const btn = (val, label) => `<button type="button" data-bs="${i}|${val}" class="px-4 py-2 rounded-lg font-semibold border transition ${ans[i] === val ? 'bg-[#00d6d8] text-[#022050] border-[#00d6d8]' : 'border-white/25 text-white hover:border-[#00d6d8] hover:bg-[#00d6d8]/10'}">${label}</button>`;
+      return `<div class="rounded-xl border border-white/15 bg-white/5 p-3 sm:flex sm:items-center sm:justify-between gap-3">
+        <div class="min-w-0 math-text"><span class="font-bold text-[#00d6d8] mr-2">${i + 1}.</span>${s.text}</div>
+        <div class="flex gap-2 mt-3 sm:mt-0 shrink-0">${btn(true, 'Benar')}${btn(false, 'Salah')}</div></div>`;
+    }).join('') + '</div>';
+  }
+  const multi = q.type === 'pgk';
+  const sel = state.answers[q.id];
+  return '<div class="space-y-3" id="options">' + LETTERS.filter((l) => q.options[l]).map((l) => {
+    const on = multi ? (sel || []).includes(l) : sel === l;
+    return `<label class="opt flex items-center gap-3 w-full cursor-pointer rounded-xl border px-4 py-3 transition ${on ? 'bg-[#00d6d8]/25 border-[#00d6d8]' : 'bg-white/5 border-white/15 hover:border-[#00d6d8] hover:bg-[#00d6d8]/10'}">
+      <input type="${multi ? 'checkbox' : 'radio'}" name="opt" value="${l}" class="sr-only" ${on ? 'checked' : ''}>
+      <span class="shrink-0 w-8 h-8 ${multi ? 'rounded-md' : 'rounded-full'} grid place-items-center font-bold ${on ? 'bg-[#00d6d8] text-[#022050]' : 'bg-white/10 text-[#00d6d8]'}">${l}</span>
+      <span class="min-w-0 py-1 math-text">${q.options[l]}</span></label>`;
+  }).join('') + '</div>';
+}
+
+function renderPractice() {
+  const q = questions[state.current];
+  const isLast = state.current === questions.length - 1;
+  const answeredN = questions.filter(isAnswered).length;
+  const allDone = answeredN === questions.length;
+  const missing = questions.map((x, i) => (isAnswered(x) ? null : i + 1)).filter(Boolean);
+  const note = allDone ? '' : `<p class="text-sm ${state.warn ? 'text-rose-300 font-semibold' : 'text-[#ffd300]'}"><i class="fa-solid fa-circle-info mr-1"></i>Jawab semua soal dulu untuk mengirim jawaban dan melihat pembahasan. Belum dijawab: nomor ${missing.join(', ')}.</p>`;
+  const banner = state.warn && !allDone ? `<div class="mb-4 rounded-xl border border-rose-400 bg-rose-500/15 p-3 text-rose-200 text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Belum bisa dikirim. Lengkapi dulu soal nomor ${missing.join(', ')}.</div>` : '';
+  const finishCls = allDone ? 'bg-[#ffd300] text-black hover:brightness-95' : 'bg-white/10 text-white/40 cursor-not-allowed';
+
+  const boxes = questions.map((x, i) => `<button data-nav="${i}" aria-label="Soal ${i + 1}" class="shrink-0 w-11 h-11 rounded-lg font-bold border-2 transition
+    ${isAnswered(x) ? 'bg-[#ffd300] text-black border-[#ffd300]' : 'bg-transparent text-white border-white/25 hover:border-[#00d6d8] hover:shadow-[0_0_10px_#00d6d8]'}
+    ${i === state.current ? 'ring-2 ring-[#00d6d8] ring-offset-2 ring-offset-[#022050]' : ''}">${i + 1}</button>`).join('');
+
+  $('app').innerHTML = `${banner}
+  <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+    <section class="lg:w-3/4 w-full">
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3 text-sm">
+          <span class="text-[#00d6d8] font-semibold">Soal ${state.current + 1} dari ${questions.length}</span>
+          <span class="flex items-center gap-2">
+            ${q.level ? `<span class="px-2 py-0.5 rounded-full bg-[#ffd300] text-black text-xs font-bold">${q.level}</span>` : ''}
+            <span class="text-white/60">${answeredN} terjawab</span>
+          </span>
+        </div>
+        <p class="text-xs text-[#00d6d8]/90 mb-2"><i class="fa-solid fa-list-check mr-1"></i>${TYPE_LABEL[q.type]}</p>
+        <div class="text-base sm:text-lg leading-relaxed math-text">${q.question_text}</div>
+        ${imageTag(q)}
+        <div class="mt-4">${practiceOptions(q)}</div>
+      </div>
+      <div class="flex items-center justify-between gap-3 mt-4">
+        <button id="prevBtn" class="px-4 py-2.5 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8]/10 disabled:opacity-30 disabled:cursor-not-allowed" ${state.current === 0 ? 'disabled' : ''}>
+          <i class="fa-solid fa-chevron-left mr-1"></i> Sebelumnya</button>
+        ${isLast
+          ? `<button data-finish ${allDone ? '' : 'aria-disabled="true"'} class="px-4 py-2.5 rounded-lg font-bold ${finishCls}"><i class="fa-solid fa-flag-checkered mr-1"></i> Selesai &amp; Lihat Pembahasan</button>`
+          : `<button id="nextBtn" class="px-4 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-95">Selanjutnya <i class="fa-solid fa-chevron-right ml-1"></i></button>`}
+      </div>
+      <div class="mt-3">${note}</div>
+    </section>
+    <aside class="lg:w-1/4 w-full">
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 lg:sticky lg:top-24">
+        <h2 class="font-semibold text-[#00d6d8] mb-3"><i class="fa-solid fa-table-cells mr-1"></i> Navigasi Soal</h2>
+        <div class="nav-scroll flex gap-2 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">${boxes}</div>
+        <div class="hidden lg:flex flex-col gap-1 mt-4 text-xs text-white/70">
+          <span><span class="inline-block w-3 h-3 rounded bg-[#ffd300] mr-2 align-middle"></span>Sudah dijawab lengkap</span>
+          <span><span class="inline-block w-3 h-3 rounded border border-white/40 mr-2 align-middle"></span>Belum dijawab</span>
+        </div>
+        <button data-finish ${allDone ? '' : 'aria-disabled="true"'} class="w-full mt-4 px-4 py-2.5 rounded-lg font-bold text-sm ${finishCls}">Selesai &amp; Lihat Pembahasan</button>
+        <div class="mt-3 lg:hidden">${note}</div>
+      </div>
+    </aside>
+  </div>`;
+  bindPractice();
+  typeset($('app'));
+}
+
+function bindPractice() {
+  const q = questions[state.current];
+  document.querySelectorAll('#options input').forEach((inp) => inp.addEventListener('change', () => {
+    if (q.type === 'pgk') {
+      const vals = [...document.querySelectorAll('#options input:checked')].map((i) => i.value);
+      if (vals.length) state.answers[q.id] = vals; else delete state.answers[q.id];
+    } else state.answers[q.id] = inp.value;
+    renderPractice();
+  }));
+  document.querySelectorAll('[data-bs]').forEach((b) => b.addEventListener('click', () => {
+    const [i, v] = b.dataset.bs.split('|');
+    state.answers[q.id] = Object.assign({}, state.answers[q.id], { [i]: v === 'true' });
+    renderPractice();
+  }));
+  document.querySelectorAll('[data-nav]').forEach((b) => b.addEventListener('click', () => { state.current = +b.dataset.nav; renderPractice(); }));
+  const prev = $('prevBtn'), next = $('nextBtn');
+  if (prev) prev.addEventListener('click', () => { state.current--; renderPractice(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  if (next) next.addEventListener('click', () => { state.current++; renderPractice(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  document.querySelectorAll('[data-finish]').forEach((b) => b.addEventListener('click', finish));
+}
+
+function finish() {
+  const first = questions.findIndex((q) => !isAnswered(q));
+  if (first !== -1) {
+    state.warn = true;
+    state.current = first;
+    renderPractice();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  state.warn = false;
+  stopTimer();
+  renderReview();
+  window.scrollTo({ top: 0 });
+}
+
+/* ===================== STATE 2: PEMBAHASAN & EVALUASI ===================== */
+function reviewAnswerBlock(q) {
+  const mine = state.answers[q.id];
+  if (q.type === 'bs') {
+    return '<div class="mt-3 space-y-2">' + q.statements.map((s, i) => {
+      const ok = mine[i] === s.correct;
+      return `<div class="rounded-xl border px-4 py-2.5 ${ok ? 'bg-emerald-500/15 border-emerald-400' : 'bg-rose-500/15 border-rose-400'}">
+        <div class="math-text"><span class="font-bold mr-2">${i + 1}.</span>${s.text}</div>
+        <p class="text-sm mt-1"><i class="fa-solid ${ok ? 'fa-circle-check text-emerald-300' : 'fa-circle-xmark text-rose-300'} mr-1"></i>
+        Jawabanmu: <strong>${mine[i] ? 'Benar' : 'Salah'}</strong> | Kunci: <strong class="text-emerald-300">${s.correct ? 'Benar' : 'Salah'}</strong></p></div>`;
+    }).join('') + '</div>';
+  }
+  const keys = q.type === 'pgk' ? q.correct_answer : [q.correct_answer];
+  const mines = q.type === 'pgk' ? mine : [mine];
+  const opts = LETTERS.filter((l) => q.options[l]).map((l) => {
+    const isKey = keys.includes(l), isMine = mines.includes(l);
+    let cls = 'bg-white/5 border-white/15', tag = '';
+    if (isKey && isMine) { cls = 'bg-emerald-500/20 border-emerald-400'; tag = '<span class="ml-auto shrink-0 text-xs text-emerald-300"><i class="fa-solid fa-user-check mr-1"></i>Dipilih &amp; Kunci</span>'; }
+    else if (isKey) { cls = 'bg-amber-500/15 border-amber-300'; tag = '<span class="ml-auto shrink-0 text-xs text-amber-300"><i class="fa-solid fa-key mr-1"></i>Kunci (terlewat)</span>'; }
+    else if (isMine) { cls = 'bg-rose-500/20 border-rose-400'; tag = '<span class="ml-auto shrink-0 text-xs text-rose-300"><i class="fa-solid fa-user mr-1"></i>Dipilih (salah)</span>'; }
+    return `<div class="flex items-center gap-3 w-full rounded-xl border px-4 py-2.5 ${cls}">
+      <span class="shrink-0 w-7 h-7 ${q.type === 'pgk' ? 'rounded-md' : 'rounded-full'} bg-white/10 grid place-items-center font-bold text-sm">${l}</span>
+      <span class="min-w-0 py-1 math-text">${q.options[l]}</span>${tag}</div>`;
+  }).join('');
+  return `<div class="mt-3 space-y-2">${opts}</div>
+    <p class="mt-3 text-sm text-white/80">Jawabanmu: <strong>${mines.join(', ')}</strong> | Kunci: <strong class="text-emerald-300">${keys.join(', ')}</strong></p>`;
+}
+
+function errorAnalysis(q) {
+  if (isCorrect(q)) return '';
+  const mine = state.answers[q.id];
+  let body = '';
+  if (q.type === 'pg') {
+    body = `<p class="leading-relaxed math-text">Kamu memilih <strong>${mine}</strong>. ${q.analisis_salah[mine]}</p>`;
+  } else if (q.type === 'pgk') {
+    body = LETTERS.filter((l) => q.options[l] && (q.correct_answer.includes(l) !== mine.includes(l))).map((l) =>
+      `<p class="leading-relaxed math-text mb-1"><strong>Opsi ${l}</strong> ${q.correct_answer.includes(l) ? '(seharusnya dipilih)' : '(seharusnya tidak dipilih)'}: ${q.analisis_opsi[l]}</p>`).join('');
+  } else {
+    body = q.statements.map((s, i) => (mine[i] === s.correct ? '' :
+      `<p class="leading-relaxed math-text mb-1"><strong>Pernyataan ${i + 1}</strong> (jawabanmu ${mine[i] ? 'Benar' : 'Salah'}, seharusnya ${s.correct ? 'Benar' : 'Salah'}): ${s.alasan}</p>`)).join('');
+  }
+  return `<div class="mt-4 rounded-xl border border-rose-400/50 bg-rose-500/10 p-4">
+    <h4 class="font-bold text-rose-300 mb-2"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>Analisis Kesalahan</h4>${body}
+    <p class="mt-2 text-sm text-white/80 math-text"><i class="fa-solid fa-lightbulb text-[#ffd300] mr-1"></i>Konsep yang perlu diulang: ${q.konsep}</p></div>`;
+}
+
+function renderReview() {
+  const total = questions.length;
+  const benar = questions.filter(isCorrect).length;
+  const salah = total - benar;
+  const skor = Math.round((benar / total) * 100);
+  const stat = (label, val, cls = '') => `<div class="bg-[#022050]/60 rounded-xl p-3 text-center border border-white/10">
+    <div class="text-2xl sm:text-3xl font-extrabold ${cls}">${val}</div><div class="text-xs sm:text-sm text-white/70">${label}</div></div>`;
+
+  const cards = questions.map((q, i) => {
+    const ok = isCorrect(q);
+    return `<article class="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+        <h3 class="font-bold text-[#00d6d8]">Soal ${i + 1} ${q.level ? `<span class="ml-2 px-2 py-0.5 rounded-full bg-[#ffd300] text-black text-xs">${q.level}</span>` : ''}</h3>
+        <span class="text-sm font-semibold px-3 py-1 rounded-full ${ok ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+          <i class="fa-solid ${ok ? 'fa-circle-check' : 'fa-circle-xmark'} mr-1"></i>${ok ? 'Benar' : 'Salah'}</span>
+      </div>
+      <p class="text-xs text-[#00d6d8]/90 mb-2">${TYPE_LABEL[q.type]}</p>
+      <div class="text-base sm:text-lg leading-relaxed math-text">${q.question_text}</div>
+      ${imageTag(q)}
+      ${reviewAnswerBlock(q)}
+      ${errorAnalysis(q)}
+      <div class="mt-5 rounded-xl border border-white/15 bg-[#011538]/70 p-4">
+        <h4 class="font-bold text-[#ffd300] mb-2"><i class="fa-solid fa-book-open mr-2"></i>Pembahasan Lengkap</h4>
+        <div class="space-y-2 math-text">${renderSteps(q.pembahasan)}</div>
+      </div>
+      <div class="mt-4 rounded-xl border border-[#00d6d8]/40 bg-[#00d6d8]/10 p-4">
+        <h4 class="font-bold text-[#00d6d8] mb-2">🔥 Cara Cepat / Trik</h4>
+        <div class="space-y-2 math-text">${renderSteps(q.cara_cepat)}</div>
+      </div></article>`;
+  }).join('');
+
+  $('app').innerHTML = `<div class="max-w-4xl mx-auto space-y-5">
+    <section class="rounded-2xl p-4 sm:p-6 border border-[#00d6d8]/50 bg-gradient-to-br from-[#00d6d8]/15 to-white/5 shadow-[0_0_25px_rgba(0,214,216,0.15)]">
+      <h2 class="text-xl sm:text-2xl font-bold mb-4"><i class="fa-solid fa-trophy text-[#ffd300] mr-2"></i>Ringkasan Hasil Latihan</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        ${stat('Skor Akhir', skor, 'text-[#ffd300]')}${stat('Total Benar', benar, 'text-emerald-300')}
+        ${stat('Total Salah', salah, 'text-rose-300')}${stat('Waktu Pengerjaan', fmtTime(state.seconds), 'text-[#00d6d8] font-mono')}
+      </div>
+      <p class="text-xs text-white/60 mt-3">Soal PGK dan Benar/Salah dinilai benar bila seluruh jawaban pada soal tersebut tepat.</p>
+    </section>
+    ${cards}
+    <div class="flex flex-wrap justify-center gap-3 pb-6">
+      <button id="retryBtn" class="px-5 py-2.5 rounded-lg border border-[#00d6d8] text-[#00d6d8] font-semibold hover:bg-[#00d6d8]/10"><i class="fa-solid fa-rotate-right mr-1"></i> Ulangi Latihan</button>
+      <a href="bilangan.html" class="px-5 py-2.5 rounded-lg bg-[#ffd300] text-black font-bold hover:brightness-95">Kembali ke Dashboard bilangan</a>
+    </div></div>`;
+  $('retryBtn').addEventListener('click', () => {
+    state.current = 0; state.answers = {}; state.seconds = 0; state.warn = false;
+    $('timer').textContent = '00:00';
+    startTimer();
+    renderPractice();
+  });
+  typeset($('app'));
+}
+
+/* ===================== INIT ===================== */
+document.addEventListener('DOMContentLoaded', () => { renderPractice(); startTimer(); });
+</script>
+</body>
+</html>
